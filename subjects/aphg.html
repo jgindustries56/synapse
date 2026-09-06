@@ -1,0 +1,3022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP Human Geography Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Piazzolla:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F2EFE4;
+    --surface:#FFFDF7;
+    --surface-2:#E7E1CE;
+    --ink:#20281F;
+    --ink-soft:#5B6152;
+    --rule:#D8D1B8;
+    --accent-navy:#2B4570;
+    --accent-navy-ink:#1E3255;
+    --accent-pine:#2F6355;
+    --accent-pine-ink:#204A40;
+    --accent-gold:#B87F1F;
+    --accent-gold-ink:#82590F;
+    --accent-clay:#A8531F;
+    --accent-clay-ink:#7A3B14;
+    --accent-red:#AC3A2C;
+    --accent-red-ink:#8A2D22;
+    --on-accent:#FBF8EF;
+    --shadow: 0 1px 2px rgba(32,40,31,.06), 0 6px 16px -8px rgba(32,40,31,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#181A15;
+      --surface:#21241C;
+      --surface-2:#2B2E23;
+      --ink:#EEE9D8;
+      --ink-soft:#A6A18C;
+      --rule:#3B3E31;
+      --accent-navy:#8AA3D6;
+      --accent-navy-ink:#C4D3EE;
+      --accent-pine:#6FBBA1;
+      --accent-pine-ink:#B3E4D2;
+      --accent-gold:#E3AC4E;
+      --accent-gold-ink:#F4D599;
+      --accent-clay:#E2915C;
+      --accent-clay-ink:#F5C39C;
+      --accent-red:#E17A69;
+      --accent-red-ink:#F3B4A8;
+      --on-accent:#1B1D16;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#181A15;
+    --surface:#21241C;
+    --surface-2:#2B2E23;
+    --ink:#EEE9D8;
+    --ink-soft:#A6A18C;
+    --rule:#3B3E31;
+    --accent-navy:#8AA3D6;
+    --accent-navy-ink:#C4D3EE;
+    --accent-pine:#6FBBA1;
+    --accent-pine-ink:#B3E4D2;
+    --accent-gold:#E3AC4E;
+    --accent-gold-ink:#F4D599;
+    --accent-clay:#E2915C;
+    --accent-clay-ink:#F5C39C;
+    --accent-red:#E17A69;
+    --accent-red-ink:#F3B4A8;
+    --on-accent:#1B1D16;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Work Sans',ui-sans-serif,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Piazzolla',Georgia,'Times New Roman',serif;
+    text-wrap:balance;
+    font-weight:600;
+    margin:0;
+  }
+  .mono{font-family:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace; font-variant-numeric:tabular-nums;}
+  .gloss{color:var(--ink-soft); font-size:.85em; font-style:italic;}
+  button{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent-navy); outline-offset:2px;}
+
+  .app-shell{max-width:920px; margin:0 auto; padding:20px 20px 64px;}
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding-bottom:18px; border-bottom:1px solid var(--rule); margin-bottom:22px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex; flex-direction:column; gap:2px; cursor:pointer; background:none; border:none; text-align:left; padding:0; color:inherit;}
+  .brand h1{font-size:1.6rem; letter-spacing:.2px;}
+  .brand .sub{color:var(--ink-soft); font-size:.82rem;}
+  .top-stats{display:flex; align-items:center; gap:14px;}
+  .chip{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:999px;
+    padding:7px 12px; font-size:.82rem; box-shadow:var(--shadow);
+  }
+  .chip .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:.95rem;}
+  .ring-wrap{position:relative; width:44px; height:44px;}
+  .ring-wrap svg{transform:rotate(-90deg);}
+  .ring-wrap .pct{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono',monospace; font-size:.62rem; font-weight:600;
+  }
+  .info-btn{
+    background:var(--surface-2); border:1px solid var(--rule); color:var(--ink);
+    width:30px; height:30px; border-radius:50%; cursor:pointer; font-family:'Piazzolla',serif; font-style:italic; font-weight:700;
+  }
+  .info-panel{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; padding:16px 18px;
+    margin-bottom:20px; box-shadow:var(--shadow); font-size:.88rem; line-height:1.55;
+  }
+  .info-panel h3{font-size:.95rem; margin-bottom:8px;}
+  .info-panel ul{margin:0; padding-left:1.1em; color:var(--ink-soft);}
+  .info-panel li{margin-bottom:4px;}
+  .info-panel li b{color:var(--ink); font-weight:600;}
+
+  /* ---------- dashboard ---------- */
+  .section-label{
+    font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-soft);
+    margin:26px 0 10px; font-weight:600;
+  }
+  .dash-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px;}
+  .topic-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px;
+    box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;
+  }
+  .topic-tab{height:6px; width:100%;}
+  .topic-tab.cat-concepts{background:var(--accent-gold);}
+  .topic-tab.cat-formulas{background:var(--accent-navy);}
+  .topic-tab.cat-models{background:var(--accent-pine);}
+  .topic-tab.cat-cases{background:var(--accent-clay);}
+  .topic-body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .topic-title{font-family:'Piazzolla',serif; font-weight:600; font-size:1.05rem;}
+  .topic-blurb{font-size:.8rem; color:var(--ink-soft); line-height:1.4;}
+  .mastery-row{display:flex; align-items:center; gap:8px; font-size:.72rem; color:var(--ink-soft);}
+  .mastery-bar{flex:1; height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+  .mastery-fill{height:100%; border-radius:99px;}
+  .mastery-fill.cat-concepts{background:var(--accent-gold);}
+  .mastery-fill.cat-formulas{background:var(--accent-navy);}
+  .mastery-fill.cat-models{background:var(--accent-pine);}
+  .mastery-fill.cat-cases{background:var(--accent-clay);}
+  .topic-actions{display:flex; gap:8px; margin-top:auto;}
+
+  .btn{
+    border-radius:8px; border:1px solid var(--rule); background:var(--surface);
+    padding:9px 14px; font-size:.83rem; font-weight:600; cursor:pointer; color:var(--ink);
+    transition:transform .08s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-sm{padding:7px 11px; font-size:.78rem; flex:1;}
+  .btn-primary{background:var(--accent-navy); border-color:var(--accent-navy); color:var(--on-accent);}
+  .btn-pine{background:var(--accent-pine); border-color:var(--accent-pine); color:var(--on-accent);}
+  .btn-ghost{background:transparent;}
+  .btn-block{width:100%;}
+  .btn-lg{padding:14px 18px; font-size:.95rem; border-radius:10px;}
+
+  .global-actions{display:flex; gap:12px; margin-top:24px; flex-wrap:wrap;}
+  .global-card{
+    flex:1; min-width:220px; background:var(--surface); border:1px solid var(--rule); border-radius:12px;
+    padding:18px 20px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:8px;
+  }
+  .global-card h3{font-size:1.05rem;}
+  .global-card p{margin:0; font-size:.82rem; color:var(--ink-soft); line-height:1.45;}
+
+  .footer-links{margin-top:34px; text-align:center; font-size:.76rem; color:var(--ink-soft);}
+  .footer-links button{background:none; border:none; color:var(--ink-soft); text-decoration:underline; cursor:pointer; font-size:.76rem;}
+
+  /* ---------- learn (flashcards) ---------- */
+  .view-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:10px; flex-wrap:wrap;}
+  .back-btn{background:none; border:none; color:var(--ink-soft); font-size:.84rem; cursor:pointer; display:flex; align-items:center; gap:6px;}
+  .progress-track{flex:1; height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden; margin:0 14px;}
+  .progress-fill{height:100%; background:var(--accent-navy); border-radius:99px; transition:width .25s ease;}
+  .progress-text{font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink-soft); white-space:nowrap;}
+
+  .flip-outer{perspective:1400px; max-width:520px; margin:0 auto;}
+  .flip-card{
+    position:relative; min-height:260px; cursor:pointer;
+  }
+  .flip-inner{
+    position:relative; width:100%; min-height:260px; transition:transform .45s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  @media (prefers-reduced-motion:reduce){ .flip-inner{transition:none;} }
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:14px; border:1px solid var(--rule);
+    background:var(--surface); box-shadow:var(--shadow); padding:30px 26px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; gap:10px;
+    background-image:repeating-linear-gradient(var(--surface) 0 27px, var(--rule) 27px 28px);
+  }
+  .flip-face.back{transform:rotateY(180deg);}
+  .card-icon{font-size:2rem; line-height:1;}
+  .card-prompt{font-family:'Piazzolla',serif; font-size:1.5rem; font-weight:600;}
+  .card-hint{color:var(--ink-soft); font-size:.82rem;}
+  .card-answer{font-family:'Piazzolla',serif; font-size:1.6rem; font-weight:600; color:var(--accent-pine-ink);}
+  .card-note{font-size:.85rem; color:var(--ink-soft); max-width:380px; line-height:1.4;}
+  .learn-actions{display:flex; gap:10px; justify-content:center; margin-top:20px;}
+  .tap-hint{text-align:center; color:var(--ink-soft); font-size:.78rem; margin-top:14px;}
+
+  /* ---------- session (quiz/test) ---------- */
+  .session-card{
+    max-width:560px; margin:0 auto; background:var(--surface); border:1px solid var(--rule); border-radius:14px;
+    box-shadow:var(--shadow); padding:28px 26px;
+  }
+  .qchip{
+    display:inline-block; font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; font-weight:700;
+    padding:3px 9px; border-radius:99px; margin-bottom:14px;
+  }
+  .qchip.cat-concepts{background:color-mix(in srgb, var(--accent-gold) 20%, transparent); color:var(--accent-gold-ink);}
+  .qchip.cat-formulas{background:color-mix(in srgb, var(--accent-navy) 18%, transparent); color:var(--accent-navy-ink);}
+  .qchip.cat-models{background:color-mix(in srgb, var(--accent-pine) 18%, transparent); color:var(--accent-pine-ink);}
+  .qchip.cat-cases{background:color-mix(in srgb, var(--accent-clay) 20%, transparent); color:var(--accent-clay-ink);}
+  .q-prompt{font-family:'Piazzolla',serif; font-size:1.35rem; font-weight:600; line-height:1.35; margin-bottom:18px;}
+  .choices{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .choice-btn{
+    text-align:left; padding:12px 14px; border-radius:9px; border:1px solid var(--rule); background:var(--surface-2);
+    font-size:.92rem; cursor:pointer; color:var(--ink);
+  }
+  .choice-btn{display:flex; align-items:center; gap:10px;}
+  .choice-btn:hover{border-color:var(--accent-navy);}
+  .choice-key{
+    flex-shrink:0; width:20px; height:20px; border-radius:5px; background:var(--surface);
+    border:1px solid var(--rule); font-size:.7rem; color:var(--ink-soft);
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  @media (hover:none){ .choice-key{display:none;} }
+  .choice-btn.correct{background:color-mix(in srgb, var(--accent-pine) 22%, var(--surface)); border-color:var(--accent-pine);}
+  .choice-btn.incorrect{background:color-mix(in srgb, var(--accent-red) 20%, var(--surface)); border-color:var(--accent-red);}
+  .choice-btn:disabled{cursor:default;}
+  .text-row{display:flex; gap:10px;}
+  .text-input{
+    flex:1; padding:12px 14px; border-radius:9px; border:1px solid var(--rule); background:var(--surface-2);
+    color:var(--ink); font-size:.95rem; font-family:'IBM Plex Mono',monospace;
+  }
+  .feedback{
+    margin-top:18px; padding:13px 15px; border-radius:9px; font-size:.88rem; line-height:1.5;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .feedback.correct{background:color-mix(in srgb, var(--accent-pine) 16%, var(--surface)); border:1px solid var(--accent-pine);}
+  .feedback.incorrect{background:color-mix(in srgb, var(--accent-red) 14%, var(--surface)); border:1px solid var(--accent-red);}
+  .feedback .fmark{font-weight:700; font-size:1.05rem;}
+  .feedback.correct .fmark{color:var(--accent-pine-ink);}
+  .feedback.incorrect .fmark{color:var(--accent-red-ink);}
+  .feedback b{font-weight:700;}
+  .session-footer{display:flex; justify-content:flex-end; margin-top:18px;}
+
+  /* ---------- results ---------- */
+  .results-top{text-align:center; margin-bottom:26px;}
+  .score-big{font-family:'Piazzolla',serif; font-weight:700; font-size:3rem;}
+  .score-sub{color:var(--ink-soft); font-size:.9rem;}
+  .breakdown-list{display:flex; flex-direction:column; gap:10px; margin-bottom:26px;}
+  .breakdown-row{display:flex; align-items:center; gap:10px; font-size:.83rem;}
+  .breakdown-name{width:170px; flex-shrink:0; color:var(--ink-soft);}
+  .breakdown-track{flex:1; height:8px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+  .breakdown-fill{height:100%; border-radius:99px; background:var(--accent-navy);}
+  .breakdown-num{font-family:'IBM Plex Mono',monospace; font-size:.76rem; width:44px; text-align:right; color:var(--ink-soft);}
+  .missed-list{display:flex; flex-direction:column; gap:10px; margin-bottom:24px;}
+  .missed-item{background:var(--surface); border:1px solid var(--rule); border-radius:9px; padding:12px 14px; font-size:.85rem;}
+  .missed-item .mp{color:var(--ink-soft); margin-bottom:3px;}
+  .missed-item .ma{color:var(--accent-pine-ink); font-weight:600;}
+  .results-actions{display:flex; gap:10px; flex-wrap:wrap;}
+
+  @media (max-width:520px){
+    .choices{grid-template-columns:1fr;}
+    .breakdown-name{width:120px;}
+  }
+
+  /* ---------- nav bar ---------- */
+  .nav-wrap{display:flex; flex-direction:column; gap:7px; margin-bottom:24px;}
+  .nav-bar, .nav-subbar{display:flex; gap:6px;}
+  .nav-btn, .nav-subbtn{
+    flex:1 1 0; min-width:0; text-align:center; padding:8px 4px; border-radius:10px; border:1px solid var(--rule);
+    background:var(--surface); font-size:.68rem; font-weight:700; color:var(--ink-soft); cursor:pointer;
+    line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .nav-btn.active, .nav-subbtn.active{background:var(--accent-navy); border-color:var(--accent-navy); color:var(--on-accent);}
+  .nav-btn{display:flex; flex-direction:column; align-items:center; gap:2px; white-space:normal;}
+  .nav-btn>span:last-child{max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .nav-icon{font-size:1.05rem; line-height:1;}
+  .nav-subbtn{border-radius:999px; padding:7px 4px; font-size:.72rem; background:var(--surface-2); border-color:transparent;}
+  .nav-subbtn.active{background:var(--accent-navy);}
+
+  /* ---------- page header ---------- */
+  .page-title{font-size:1.5rem; margin-bottom:8px; text-wrap:balance;}
+  .page-desc{color:var(--ink-soft); font-size:.9rem; line-height:1.55; max-width:62ch; margin:0 0 18px;}
+
+  /* ---------- home progress ---------- */
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px;}
+  .stat-tile{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+    padding:16px 18px; display:flex; flex-direction:column; gap:4px;
+  }
+  .stat-value{font-family:'Piazzolla',serif; font-size:1.7rem; font-weight:700;}
+  .stat-label{font-size:.74rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);}
+  .cat-bars{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+    padding:14px 18px; display:flex; flex-direction:column; gap:10px; margin-bottom:8px;
+  }
+  .cat-bar-row{display:flex; align-items:center; gap:10px; font-size:.82rem;}
+  .cat-bar-name{width:100px; flex-shrink:0; color:var(--ink-soft);}
+  .mastery-pct{font-size:.76rem; color:var(--ink-soft); width:38px; text-align:right;}
+
+  .jump-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-bottom:8px;}
+
+  /* ---------- study methods ---------- */
+  .method-icon{font-size:1.8rem; line-height:1;}
+
+  /* ---------- guided exercises ---------- */
+  .rule-card{max-width:560px; margin:0 auto; text-align:left;}
+  .rule-card .page-title{margin-bottom:12px;}
+  .rule-text{font-size:.95rem; line-height:1.6; color:var(--ink); margin:0 0 18px;}
+  .rule-example{background:var(--surface-2); border-radius:9px; padding:14px 16px; margin-bottom:22px;}
+  .rule-example-main{font-family:'Piazzolla',serif; font-size:1.1rem; font-weight:600; margin-bottom:4px;}
+  .hint-row{margin:-4px 0 16px;}
+  .hint-text{
+    font-size:.82rem; color:var(--accent-gold-ink);
+    background:color-mix(in srgb, var(--accent-gold) 14%, var(--surface));
+    padding:9px 12px; border-radius:8px; line-height:1.4;
+  }
+
+  /* ---------- matching pairs ---------- */
+  .match-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:6px;}
+  .match-tile{
+    min-height:72px; padding:12px 14px; border-radius:9px; border:1px solid var(--rule);
+    background:var(--surface-2); font-size:.8rem; line-height:1.4; cursor:pointer; color:var(--ink);
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    overflow-wrap:break-word; word-break:break-word; hyphens:auto;
+  }
+  .match-tile:disabled{cursor:default;}
+  .match-tile.selected{border-color:var(--accent-navy); background:color-mix(in srgb, var(--accent-navy) 14%, var(--surface));}
+  .match-tile.matched{opacity:.35; border-color:var(--accent-pine);}
+  .match-tile.wrong{border-color:var(--accent-red); background:color-mix(in srgb, var(--accent-red) 16%, var(--surface));}
+
+  /* ---------- auth ---------- */
+  .auth-area{display:flex; align-items:center;}
+  .gsi-btn-holder{min-width:100px; min-height:32px;}
+  .auth-chip{display:flex; align-items:center; gap:6px; cursor:pointer;}
+  .auth-chip .avatar{width:20px; height:20px; border-radius:50%; display:block;}
+  .sync-note{
+    font-size:.8rem; color:var(--ink-soft); background:var(--surface); border:1px solid var(--rule);
+    border-radius:9px; padding:10px 14px; margin-bottom:18px; line-height:1.4;
+  }
+
+  /* ---------- history / recent activity ---------- */
+  .history-list{display:flex; flex-direction:column; gap:8px; margin-bottom:20px;}
+  .history-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:9px; padding:11px 14px;
+  }
+  .history-left{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .history-label{font-size:.86rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .history-date{font-size:.72rem; color:var(--ink-soft);}
+  .history-score{display:flex; align-items:center; gap:8px; font-size:.82rem; flex-shrink:0;}
+  .history-pct{font-weight:700; min-width:3.2em; text-align:right;}
+  .history-score.good .history-pct{color:var(--accent-pine-ink);}
+  .history-score.ok .history-pct{color:var(--accent-gold-ink);}
+  .history-score.low .history-pct{color:var(--accent-red-ink);}
+
+  /* ---------- report card ---------- */
+  .grade-hero{
+    background:var(--surface); border:1px solid var(--rule); border-radius:14px; box-shadow:var(--shadow);
+    padding:20px 22px; display:flex; align-items:center; gap:18px; margin-bottom:14px;
+  }
+  .grade-letter{font-family:'Piazzolla',serif; font-weight:700; font-size:2.6rem; line-height:1; min-width:58px; text-align:center;}
+  .grade-hero.good .grade-letter{color:var(--accent-pine-ink);}
+  .grade-hero.ok .grade-letter{color:var(--accent-gold-ink);}
+  .grade-hero.low .grade-letter{color:var(--accent-red-ink);}
+  .grade-info{display:flex; flex-direction:column; gap:3px;}
+  .grade-score{font-size:1.2rem; font-weight:700;}
+  .grade-formula{font-size:.76rem; color:var(--ink-soft); line-height:1.45; max-width:48ch;}
+  .trend-note{font-size:.83rem; padding:9px 14px; border-radius:9px; background:var(--surface); border:1px solid var(--rule); margin-bottom:16px; line-height:1.4;}
+  .trend-note.up{color:var(--accent-pine-ink);}
+  .trend-note.down{color:var(--accent-red-ink);}
+  .breakdown-fill.good{background:var(--accent-pine);}
+  .breakdown-fill.ok{background:var(--accent-gold);}
+  .breakdown-fill.low{background:var(--accent-red);}
+  .breakdown-row.topic-row{cursor:pointer;}
+  .breakdown-row.topic-row:hover .breakdown-name{color:var(--ink); text-decoration:underline;}
+  .breakdown-row.unattempted .breakdown-fill{background:var(--surface-2);}
+  .breakdown-row.unattempted .breakdown-num{color:var(--ink-soft); opacity:.7;}
+
+  /* ---------- topic icons ---------- */
+  .topic-title{display:flex; align-items:center; gap:8px;}
+  .topic-icon{font-size:1.05rem; line-height:1; flex-shrink:0;}
+
+  /* ---------- recommended session ---------- */
+  .recommend{
+    background:var(--surface); border:1px solid var(--accent-navy); border-radius:14px;
+    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:18px;
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+  .recommend-body{flex:1; min-width:200px; display:flex; flex-direction:column; gap:5px;}
+  .recommend-body h3{font-size:1.15rem;}
+  .recommend-body p{margin:0; font-size:.83rem; color:var(--ink-soft); line-height:1.45;}
+  .recommend .btn{flex-shrink:0;}
+
+  /* ---------- streak heatmap ---------- */
+  .heatmap{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+    padding:14px 18px; margin-bottom:8px; overflow-x:auto;
+  }
+  .heat-grid{display:grid; grid-template-rows:repeat(7,11px); grid-auto-flow:column; grid-auto-columns:11px; gap:3px;}
+  .heat-cell{width:11px; height:11px; border-radius:2px; background:var(--surface-2); border:1px solid transparent;}
+  .heat-cell.l1{background:color-mix(in srgb, var(--accent-pine) 34%, var(--surface-2));}
+  .heat-cell.l2{background:color-mix(in srgb, var(--accent-pine) 62%, var(--surface-2));}
+  .heat-cell.l3{background:var(--accent-pine);}
+  .heat-cell.today{border-color:var(--accent-gold);}
+  .heat-legend{display:flex; align-items:center; gap:6px; font-size:.72rem; color:var(--ink-soft); margin-top:10px;}
+
+  /* ---------- badges ---------- */
+  .badge-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-bottom:8px;}
+  .badge{
+    background:var(--surface); border:1px solid var(--rule); border-radius:10px; padding:12px 14px;
+    display:flex; align-items:center; gap:10px; font-size:.8rem; box-shadow:var(--shadow);
+  }
+  .badge .bicon{font-size:1.3rem; line-height:1;}
+  .badge .bname{font-weight:600;}
+  .badge .bdesc{font-size:.72rem; color:var(--ink-soft); line-height:1.35;}
+  .badge.locked{opacity:.45; box-shadow:none;}
+
+  /* ---------- sparkline ---------- */
+  .sparkline{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+    padding:14px 18px; margin-bottom:14px;
+  }
+  .sparkline svg{display:block; width:100%; height:96px; overflow:visible;}
+
+  /* ---------- filters ---------- */
+  .filter-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .filter-group{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .filter-label{font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); font-weight:600;}
+  .filter-btn{
+    padding:6px 11px; border-radius:999px; border:1px solid var(--rule); background:var(--surface);
+    font-size:.76rem; font-weight:600; color:var(--ink-soft); cursor:pointer; white-space:nowrap;
+  }
+  .filter-btn.active{background:var(--accent-navy); border-color:var(--accent-navy); color:var(--on-accent);}
+
+  /* ---------- settings ---------- */
+  .setting-card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow);
+    padding:16px 18px; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;
+  }
+  .setting-card h3{font-size:1rem;}
+  .setting-card p{margin:0; font-size:.8rem; color:var(--ink-soft); line-height:1.5;}
+  .setting-control{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .setting-control .btn{flex:0 0 auto;}
+  .setting-value{font-family:'IBM Plex Mono',monospace; font-size:.85rem; font-weight:600; min-width:5.5em;}
+  .setting-input{
+    padding:9px 12px; border-radius:8px; border:1px solid var(--rule); background:var(--surface-2);
+    color:var(--ink); font-size:.88rem; font-family:'IBM Plex Mono',monospace;
+  }
+  .why-note{
+    font-size:.76rem; color:var(--ink-soft); line-height:1.5; border-left:2px solid var(--rule);
+    padding-left:10px; margin-top:2px;
+  }
+
+  /* ---------- speed round timer ---------- */
+  .timer-row{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .timer-track{flex:1; height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+  .timer-fill{height:100%; border-radius:99px; background:var(--accent-gold); transition:width .2s linear;}
+  .timer-fill.urgent{background:var(--accent-red);}
+  .timer-text{font-family:'IBM Plex Mono',monospace; font-size:.8rem; color:var(--ink-soft); min-width:3.2em; text-align:right;}
+
+  /* ---------- reference sheet ---------- */
+  .ref-table{width:100%; border-collapse:collapse; font-size:.86rem; margin-bottom:20px;}
+  .ref-table th, .ref-table td{border:1px solid var(--rule); padding:7px 10px; text-align:left;}
+  .ref-table th{background:var(--surface-2); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft);}
+  .ref-section{background:var(--surface); border:1px solid var(--rule); border-radius:12px; padding:18px 20px; margin-bottom:16px; box-shadow:var(--shadow);}
+  .ref-section h3{font-size:1.1rem; margin-bottom:10px;}
+
+  /* ---------- tablet + landscape ---------- */
+  @media (min-width:521px) and (max-width:900px){
+    .app-shell{padding:18px 24px 56px;}
+    .dash-grid{grid-template-columns:repeat(2,1fr);}
+    .jump-grid{grid-template-columns:repeat(2,1fr);}
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .match-grid{grid-template-columns:repeat(3,1fr);}
+    .session-card{max-width:100%;}
+    .flip-outer{max-width:100%;}
+  }
+  @media (max-height:480px) and (orientation:landscape){
+    .app-shell{padding:12px 20px 40px;}
+    .flip-card, .flip-inner{min-height:170px;}
+    .flip-face{padding:18px 20px;}
+    .card-prompt{font-size:1.2rem;}
+    .card-answer{font-size:1.25rem;}
+    .topbar{padding-bottom:12px; margin-bottom:14px;}
+  }
+
+  @media print{
+    .nav-wrap, .topbar, .footer-links, .btn, .back-btn{display:none !important;}
+    .ref-section{break-inside:avoid; box-shadow:none; border-color:#999;}
+    body{background:#fff; color:#000;}
+  }
+</style>
+</head>
+<body style="margin:0;">
+
+<div class="app-shell" id="app"></div>
+
+<script>window.__GOOGLE_CLIENT_ID__ = "%%GOOGLE_CLIENT_ID%%";</script>
+<script>
+(function(){
+  "use strict";
+
+  /* ============================= DATA ============================= */
+  var CATEGORIES = [
+    {id:'concepts', label:'Concepts'},
+    {id:'formulas', label:'Formulas'},
+    {id:'models', label:'Models'},
+    {id:'cases', label:'Case Studies'}
+  ];
+
+  var TOPICS = [
+    {id:'vocab-core', name:'Chapter 2 Vocabulary', cat:'concepts', blurb:'Demography, density, key rates & models — the term list'},
+    {id:'chronic-disease', name:'Chronic & Degenerative Disease', cat:'concepts', blurb:'Non-communicable disease and the nutrition transition'},
+    {id:'density-measures', name:'Population Density', cat:'formulas', blurb:'Arithmetic, physiological & agricultural density'},
+    {id:'rni-doubling', name:'RNI & Doubling Time', cat:'formulas', blurb:'Rate of natural increase and the Rule of 70'},
+    {id:'imr', name:'Infant Mortality Rate', cat:'formulas', blurb:'Formula, global patterns, contributing factors'},
+    {id:'youth-dependency', name:'Youth Dependency Ratio', cat:'formulas', blurb:'Formula, youth bulge, demographic dividend'},
+    {id:'old-age-dependency', name:'Old-Age Dependency Ratio', cat:'formulas', blurb:'Formula, pension strain, aging societies'},
+    {id:'composite-formulas', name:'Formula Sheet Drill', cat:'formulas', blurb:'Every Chapter 2 formula, mixed together'},
+    {id:'dtm', name:'Demographic Transition Model', cat:'models', blurb:'Five stages of CBR, CDR, and RNI'},
+    {id:'epi-transition', name:'Epidemiologic Transition', cat:'models', blurb:'Omran’s stages of what people die of'},
+    {id:'pop-pyramids', name:'Population Pyramids', cat:'models', blurb:'Reading age-sex structure and anomalies'},
+    {id:'pop-clusters', name:'Population Clusters', cat:'cases', blurb:'World’s largest population concentrations'},
+    {id:'census', name:'The U.S. Census', cat:'cases', blurb:'Frequency, purpose, apportionment, the ACS'},
+    {id:'malthus', name:'Malthus & Neo-Malthusians', cat:'cases', blurb:'The original theory and its modern revival'},
+    {id:'life-expectancy', name:'Life Expectancy', cat:'cases', blurb:'What shortens it, and the highest/lowest countries'},
+    {id:'pop-policy', name:'Population Policies', cat:'cases', blurb:'Pronatalist, anti-natalist, and eugenic policy'}
+  ];
+  var TOPIC_MAP = {};
+  TOPICS.forEach(function(t){ TOPIC_MAP[t.id] = t; });
+
+  var TOPIC_ICONS = {
+    'vocab-core':'📚', 'chronic-disease':'🫀', 'density-measures':'🗺️',
+    'rni-doubling':'📈', 'imr':'👶', 'youth-dependency':'🧒',
+    'old-age-dependency':'🧓', 'composite-formulas':'🧮', 'dtm':'🔀',
+    'epi-transition':'🦠', 'pop-pyramids':'🔺', 'pop-clusters':'🌏',
+    'census':'🗳️', 'malthus':'🌾', 'life-expectancy':'⎳', 'pop-policy':'📜'
+  };
+  function topicIcon(id){ return TOPIC_ICONS[id] || '📖'; }
+
+  /* ---------- 1. Chapter 2 vocabulary (28 terms) ---------- */
+  var VOCAB_CORE = [
+    {term:'Demography', def:'The statistical study of human populations — size, structure, and change.'},
+    {term:'Population distribution', def:'Where people are located across space.'},
+    {term:'Population density', def:'The number of people per unit of area.'},
+    {term:'Arithmetic density', def:'Total population divided by total land area.'},
+    {term:'Physiological density', def:'Total population divided by the area of arable (farmable) land.'},
+    {term:'Agricultural density', def:'The number of farmers divided by the area of arable land.'},
+    {term:'Carrying capacity', def:'The maximum population an environment can sustain with its available resources.'},
+    {term:'Ecumene', def:'The permanently inhabited portion of Earth’s surface — about one-third of all land.'},
+    {term:'Census', def:'An official count of a population, taken at regular intervals.'},
+    {term:'CBR (Crude Birth Rate)', def:'Live births per 1,000 people per year.'},
+    {term:'CDR (Crude Death Rate)', def:'Deaths per 1,000 people per year.'},
+    {term:'RNI (Rate of Natural Increase)', def:'CBR minus CDR, divided by 10, expressed as a percent. Excludes migration.'},
+    {term:'TFR (Total Fertility Rate)', def:'The average number of children a woman will bear in her lifetime.'},
+    {term:'Replacement fertility', def:'About 2.1 children per woman — the TFR needed to keep a population stable.'},
+    {term:'IMR (Infant Mortality Rate)', def:'Deaths of infants under age 1, per 1,000 live births per year.'},
+    {term:'Life expectancy', def:'The average number of years a newborn is expected to live.'},
+    {term:'Doubling time', def:'Years for a population to double: 70 divided by the RNI percentage.'},
+    {term:'Demographic Transition Model (DTM)', def:'A five-stage model linking birth and death rates to economic development.'},
+    {term:'Epidemiologic transition', def:'A model of the leading causes of death at each stage of the DTM.'},
+    {term:'Population pyramid', def:'A bar graph showing a population broken down by age and sex.'},
+    {term:'Dependency ratio', def:'The ratio of dependents (under 15 and over 64) to working-age people (15–64).'},
+    {term:'Sex ratio', def:'The number of males per 100 females.'},
+    {term:'Malthusian theory', def:'The idea that population growth will outrun the food supply.'},
+    {term:'Neo-Malthusian', def:'The modern view that population growth outruns all resources, not just food.'},
+    {term:'Pronatalist policy', def:'A government policy that encourages higher birth rates.'},
+    {term:'Anti-natalist policy', def:'A government policy that discourages births.'},
+    {term:'Zero population growth (ZPG)', def:'When CBR equals CDR, so there is no natural increase.'},
+    {term:'Overpopulation', def:'When a population exceeds the resources available to support it.'}
+  ];
+
+  /* ---------- 14. Chronic / degenerative disease ---------- */
+  var CHRONIC_FACTS = [
+    {term:'Chronic (degenerative) disease', def:'A long-lasting, generally non-communicable condition that develops slowly and is not spread person-to-person — often driven by aging, genetics, and lifestyle.'},
+    {term:'World’s leading cause of death', def:'Cardiovascular disease (heart disease and stroke).'},
+    {term:'Nutrition transition', def:'The shift toward processed food and sedentary lifestyles that is driving chronic disease up fast in middle-income countries.'},
+    {term:'Countries most affected by chronic disease historically', def:'Developed countries with older populations — Japan, Germany, Italy, the United States, UK, France, South Korea, Canada, Australia.'}
+  ];
+  var CHRONIC_MC = [
+    {prompt:'Chronic disease is concentrated in which two epidemiologic-transition stages?', answer:'Stages 3 and 4', choices:['Stages 3 and 4','Stages 1 and 2','Stage 5 only','All five stages equally']},
+    {prompt:'Where is chronic disease rising fastest today?', answer:'Middle-income countries (China, India, Mexico, Brazil)', choices:['Middle-income countries (China, India, Mexico, Brazil)','Sub-Saharan Africa','Western Europe','Small Pacific island nations']},
+    {prompt:'Which of these is an infectious disease, NOT a chronic one?', answer:'Tuberculosis', choices:['Tuberculosis','Type 2 diabetes','Alzheimer’s disease','Osteoporosis']},
+    {prompt:'The WHO reports that most global deaths from non-communicable disease now occur in…', answer:'low- and middle-income countries', choices:['low- and middle-income countries','high-income countries only','countries in DTM Stage 1','countries in DTM Stage 2']}
+  ];
+
+  /* ---------- 2 & 3. Population density ---------- */
+  var DENSITY_FORMULAS = [
+    {name:'Arithmetic density', formula:'total population divided by total land area'},
+    {name:'Physiological density', formula:'total population divided by the area of arable land'},
+    {name:'Agricultural density', formula:'the number of farmers divided by the area of arable land'}
+  ];
+  var DENSITY_FACTS = [
+    {prompt:'What is the main weakness of arithmetic density as a measure?', answer:'It treats a desert, a swamp, and farmland as equally usable land.', choices:['It treats a desert, a swamp, and farmland as equally usable land.','It only counts farmers, not the whole population.','It cannot be calculated for small countries.','It requires satellite imagery to compute.']},
+    {prompt:'Which density measure best shows the real pressure on food-producing land?', answer:'Physiological density', choices:['Physiological density','Arithmetic density','Agricultural density','Ecumene ratio']},
+    {prompt:'The United States’ arithmetic density is roughly how many people per square mile?', answer:['95','95 people per square mile'], note:'About 340 million people over roughly 3.5 million square miles — low by global standards.'},
+    {prompt:'Egypt’s arithmetic density looks only moderate (~110/km²) mainly because…', answer:'the Sahara Desert counts as land area even though almost no one lives there', choices:['the Sahara Desert counts as land area even though almost no one lives there','Egypt has very few farmers','Egypt’s population is shrinking','Egypt has no arable land at all']},
+    {prompt:'About what share of Egyptians live on the roughly 4% of territory along the Nile?', answer:['95%','95'], note:'Physiological density there runs into the thousands per km² of arable land — one of the highest on Earth.'},
+    {prompt:'Agricultural density tends to be highest in…', answer:'developing countries, where farming is less mechanized', choices:['developing countries, where farming is less mechanized','developed countries, where farming is heavily mechanized','city-states with almost no farmland','countries with the lowest population density']},
+    {prompt:'Which of these is NOT one of the world’s high-arithmetic-density regions?', answer:'Sub-Saharan Africa', choices:['Sub-Saharan Africa','East Asia (China, Japan, Korea, Taiwan)','South Asia (India, Bangladesh, Pakistan)','Western/Central Europe (Netherlands, Belgium, Germany, UK)']},
+    {prompt:'Which of these is an extreme arithmetic-density outlier (a city-state, or Bangladesh)?', answer:'Singapore', choices:['Singapore','Canada','Australia','Russia']}
+  ];
+
+  /* ---------- 7 & 8. RNI and doubling time ---------- */
+  var RNI_CALC_ITEMS = [
+    {prompt:'CBR = 22, CDR = 8. What is the RNI?', answer:['1.4%','1.4'], choices:['1.4%','3.0%','0.7%','14%']},
+    {prompt:'CBR = 40, CDR = 15. What is the RNI?', answer:['2.5%','2.5'], choices:['2.5%','5.5%','1.25%','25%']},
+    {prompt:'CBR = 10, CDR = 12. What is the RNI?', answer:['-0.2%','-0.2','−0.2%'], choices:['-0.2%','0.2%','2.2%','-2%'], note:'A negative RNI means natural decrease — CDR exceeds CBR.'},
+    {prompt:'An RNI of 1.4% gives a doubling time of about how many years?', answer:['50 years','50'], choices:['50 years','20 years','35 years','140 years']},
+    {prompt:'An RNI of 3.5% (Niger) gives a doubling time of about how many years?', answer:['20 years','20'], choices:['20 years','50 years','140 years','7 years']},
+    {prompt:'An RNI of 0.5% gives a doubling time of about how many years?', answer:['140','140 years']},
+    {prompt:'An RNI of 2% gives a doubling time of about how many years?', answer:['35','35 years']}
+  ];
+  var RNI_FACTS = [
+    {prompt:'RNI counts births and deaths only — it deliberately excludes…', answer:'migration', choices:['migration','infant mortality','fertility rate','life expectancy']},
+    {prompt:'Why does the U.S. grow faster than its own RNI would predict?', answer:'Immigration adds population that RNI does not count.', choices:['Immigration adds population that RNI does not count.','U.S. life expectancy is unusually high.','The U.S. has an unusually high CBR.','The U.S. undercounts its census every decade.']},
+    {prompt:'Which of these countries has a negative RNI (natural decrease)?', answer:'Japan', choices:['Japan','Niger','Nigeria','Afghanistan']}
+  ];
+
+  /* ---------- 12. Infant Mortality Rate ---------- */
+  var IMR_FACTS = [
+    {prompt:'IMR is widely considered the single best indicator of a country’s…', answer:'overall health-care quality and level of development', choices:['overall health-care quality and level of development','average household income','literacy rate','urbanization rate']},
+    {prompt:'Which region has by far the highest IMR rates in the world?', answer:'Sub-Saharan Africa', choices:['Sub-Saharan Africa','Western Europe','East Asia','North America']},
+    {prompt:'Outside Sub-Saharan Africa, which South Asian countries also have very high IMR?', answer:'Afghanistan and Pakistan', choices:['Afghanistan and Pakistan','Japan and South Korea','France and Germany','Brazil and Argentina']},
+    {prompt:'Which single factor is one of the strongest predictors of a country’s IMR?', answer:'Maternal education level', choices:['Maternal education level','Average temperature','Number of universities','Currency exchange rate']},
+    {prompt:'The U.S. has a notably higher IMR (~5.5) than peer developed nations, largely due to…', answer:'unequal health-care access and higher preterm birth rates', choices:['unequal health-care access and higher preterm birth rates','a very high CBR','a shortage of vaccines worldwide','its large land area']}
+  ];
+  var IMR_CAUSES = [
+    {term:'Lack of access to health care', def:'Few doctors, hospitals, or trained midwives — a top driver of high IMR.'},
+    {term:'No prenatal care', def:'Leaves complications during pregnancy undetected and untreated.'},
+    {term:'Malnutrition', def:'Of mother and infant — raises IMR sharply.'},
+    {term:'Unsafe water and poor sanitation', def:'Drives diarrheal disease, a major cause of infant death.'},
+    {term:'Low vaccination rates', def:'Leaves infants exposed to preventable infectious disease.'}
+  ];
+
+  /* ---------- 16 & 17. Dependency ratios ---------- */
+  var YOUTH_DEP_FACTS = [
+    {prompt:'Which country has the highest youth dependency ratio in the world?', answer:'Niger', choices:['Niger','Japan','Italy','South Korea']},
+    {prompt:'A huge youth cohort that later can’t find enough jobs is called a…', answer:'youth bulge', choices:['youth bulge','demographic dividend','epidemiologic transition','zero population growth']},
+    {prompt:'When a country successfully educates and employs its large youth cohort, it can earn a…', answer:'demographic dividend', choices:['demographic dividend','carrying capacity','replacement fertility','ecumene']},
+    {term:'Why a high youth dependency ratio strains a country', def:'Enormous demand on schools, health care, food, and housing, with few working-age taxpayers to fund it — and money spent on immediate needs can’t go toward infrastructure or development.'}
+  ];
+  var OLD_AGE_DEP_FACTS = [
+    {prompt:'Which country has the highest old-age dependency ratio in the world?', answer:'Japan', choices:['Japan','Niger','Nigeria','Mexico']},
+    {prompt:'Most pension systems are structured so that…', answer:'current workers fund current retirees (pay-as-you-go)', choices:['current workers fund current retirees (pay-as-you-go)','retirees are fully self-funded from savings','the government prints money to cover pensions','pensions are funded entirely by tourism revenue']},
+    {term:'Why a high old-age dependency ratio strains a country', def:'Rising health-care costs, a shrinking labor force and tax base, and a higher tax burden on working-age adults — every political fix (raising the retirement age, raising taxes, cutting benefits, more immigration) is unpopular.'},
+    {prompt:'Besides Japan, which of these countries also has a very high old-age dependency ratio?', answer:'Italy', choices:['Italy','Niger','Chad','Uganda']}
+  ];
+
+  /* ---------- Quick formula sheet (composite formulas topic) ---------- */
+  var FORMULA_SHEET = [
+    {name:'Arithmetic density', formula:'population divided by total land area'},
+    {name:'Physiological density', formula:'population divided by arable land area'},
+    {name:'Agricultural density', formula:'number of farmers divided by arable land area'},
+    {name:'RNI', formula:'CBR minus CDR, divided by 10, as a percent'},
+    {name:'Doubling time', formula:'70 divided by RNI percent'},
+    {name:'IMR', formula:'infant deaths under age 1 divided by live births, times 1,000'},
+    {name:'Youth dependency ratio', formula:'population under 15 divided by population 15 to 64, times 100'},
+    {name:'Old-age dependency ratio', formula:'population 65 plus divided by population 15 to 64, times 100'},
+    {name:'Total dependency ratio', formula:'under 15 plus over 64, divided by population 15 to 64, times 100'},
+    {name:'Sex ratio', formula:'males divided by females, times 100'}
+  ];
+
+  /* ---------- 9. Demographic Transition Model ---------- */
+  var DTM_STAGES = [
+    {n:1, name:'High Stationary', cbr:'High', cdr:'High', rni:'Near zero', examples:['no countries today','pre-1750 world','isolated groups such as some Amazonian peoples'], why:'Disease, famine, and unpredictable food supply keep birth and death rates high and roughly equal, so population stays flat. This lasted for nearly all of human history until about 1750.'},
+    {n:2, name:'Early Expanding', cbr:'High', cdr:'Falling fast', rni:'Very high', examples:['Niger','Chad','Mali','Angola','Afghanistan','DR Congo'], why:'The Industrial and Medical Revolutions crash the death rate (clean water, sanitation, vaccines, nutrition) while the birth rate stays high because cultural habits lag behind — the result is a population explosion. Europe entered around 1750; most of Africa and Asia entered around 1950.'},
+    {n:3, name:'Late Expanding', cbr:'Falling', cdr:'Low', rni:'Moderate, slowing', examples:['Mexico','India','Brazil','South Africa','Indonesia'], why:'The birth rate falls as urbanization turns children into an economic cost rather than farm labor, women gain education and workforce access, contraception spreads, and falling infant mortality removes the need for "spare" children.'},
+    {n:4, name:'Low Stationary', cbr:'Low', cdr:'Low', rni:'Near zero (ZPG)', examples:['United States','United Kingdom','France','China','Australia'], why:'TFR sits near or below replacement (2.1). Growth is near zero — zero population growth — and the population starts aging.'},
+    {n:5, name:'Declining', cbr:'Very low', cdr:'Slightly higher than CBR', rni:'Negative', examples:['Japan','Germany','Italy','Russia','South Korea','Hungary'], why:'CDR exceeds CBR, so the population shrinks and ages sharply. Japan and Italy are the textbook cases. This stage is a contested addition to the classic four-stage model.'}
+  ];
+
+  /* ---------- 10. Epidemiologic transition ---------- */
+  var EPI_STAGES = [
+    {n:1, name:'Pestilence and Famine', dtm:1, cause:'Infectious and parasitic disease plus malnutrition are the main killers — Malthus’s "positive checks."', example:'The Black Death (bubonic plague), which killed roughly a third of Europe in the 1300s.'},
+    {n:2, name:'Receding Pandemics', dtm:2, cause:'Improved sanitation, nutrition, and medicine cause death rates to collapse; epidemics decline but don’t vanish.', example:'Cholera — John Snow’s 1854 London map tracing an outbreak to the Broad Street pump, the founding moment of medical geography.'},
+    {n:3, name:'Degenerative and Human-Created Diseases', dtm:3, cause:'Infectious deaths fall away while chronic, non-communicable disease rises with longer lifespans, sedentary work, processed diets, and smoking.', example:'Cardiovascular disease and cancer.'},
+    {n:4, name:'Delayed Degenerative Diseases', dtm:4, cause:'Medicine, surgery, and drug therapy delay the onset of chronic disease rather than eliminating it.', example:'Statins, bypass surgery, and cancer treatment push heart-disease and cancer deaths into older age, and life expectancy climbs.'},
+    {n:5, name:'Reemergence of Infectious Diseases', dtm:null, cause:'Infectious disease returns through evolution (antibiotic resistance), poverty (weak sanitation and health care), and improved travel and connectivity.', example:'MRSA, drug-resistant TB and malaria; and fast global spread such as COVID-19, H1N1, Ebola, and HIV/AIDS.'}
+  ];
+
+  /* ---------- 11. Population pyramids ---------- */
+  var PYRAMID_SHAPES = [
+    {shape:'Triangle / true pyramid', dtm:'Stage 2', desc:'Very wide base, rapidly narrowing sides, tiny top — high birth rate, high death rate at every age.', examples:['Niger','Afghanistan','Chad']},
+    {shape:'Column / rectangle / "beehive"', dtm:'Stage 4', desc:'Narrow base, roughly straight sides — low birth rate, most people survive to old age.', examples:['United States','France']},
+    {shape:'Inverted / constrictive', dtm:'Stage 5', desc:'Base narrower than the middle, top-heavy.', examples:['Japan','Germany','Italy']}
+  ];
+  var PYRAMID_ANOMALIES = [
+    {term:'Military bases and prisons', def:'Create a male-heavy bulge at working age.'},
+    {term:'Retirement communities', def:'Create a top-heavy pyramid.'},
+    {term:'Gulf states (UAE, Qatar)', def:'Show an enormous male bulge from migrant labor.'}
+  ];
+  var PYRAMID_READS = [
+    'Age and sex structure of a population', 'Dependency ratios (young and old)', 'Sex ratio at each age band',
+    'Approximate CBR, CDR, and TFR', 'Which DTM stage the country is in',
+    'Historical events — notches from wars, famines, epidemics; bulges from baby booms',
+    'Future needs — schools and jobs versus pensions and hospitals'
+  ];
+
+  /* ---------- 4. Population clusters ---------- */
+  var POP_CLUSTERS = [
+    {term:'East Asia', def:'China, Japan, North & South Korea, Taiwan — roughly one-quarter of world population.'},
+    {term:'South Asia', def:'India, Pakistan, Bangladesh, Sri Lanka, Nepal — another roughly one-quarter of world population.'},
+    {term:'Southeast Asia', def:'Indonesia (especially Java), Philippines, Vietnam, Thailand.'},
+    {term:'Europe', def:'Germany, France, UK, Italy, Poland, Netherlands, Belgium, western Russia.'},
+    {term:'Secondary cluster: eastern North America', def:'U.S. Northeast + Great Lakes, and southeastern Canada.'}
+  ];
+  var CLUSTER_FACTORS = ['Fertile alluvial soil', 'Reliable fresh water', 'Mild climate', 'Low elevation', 'Access to the sea for trade'];
+
+  /* ---------- 5. The U.S. Census ---------- */
+  var CENSUS_FACTS = [
+    {prompt:'How often is the U.S. census taken?', answer:'Every 10 years (a decennial census)', choices:['Every 10 years (a decennial census)','Every 5 years','Every year','Every 20 years']},
+    {prompt:'What part of the Constitution requires the census?', answer:'Article I, Section 2', choices:['Article I, Section 2','Article II, Section 1','The 14th Amendment','The 19th Amendment']},
+    {prompt:'When was the first U.S. census taken?', answer:['1790'], choices:['1790','1776','1800','1850']},
+    {prompt:'What is the main purpose of the census?', answer:'Apportionment — dividing the 435 House seats among the states', choices:['Apportionment — dividing the 435 House seats among the states','Setting income tax rates','Choosing the President','Drawing international borders']},
+    {prompt:'Besides apportionment, census counts also drive…', answer:'redistricting and Electoral College allocation', choices:['redistricting and Electoral College allocation','minimum wage laws','interest rates','trade tariffs']},
+    {prompt:'What is the American Community Survey (ACS)?', answer:'A yearly survey of a sample of the population, adding data on income, education, occupation, commuting, and language', choices:['A yearly survey of a sample of the population, adding data on income, education, occupation, commuting, and language','A one-time survey done only in census years','A survey only of immigrants','A survey conducted by the United Nations']}
+  ];
+
+  /* ---------- 6. Malthus & Neo-Malthusians ---------- */
+  var MALTHUS_FACTS = [
+    {prompt:'In what year, and in what essay, did Malthus make his prediction?', answer:'1798, An Essay on the Principle of Population', choices:['1798, An Essay on the Principle of Population','1859, On the Origin of Species','1968, The Population Bomb','1972, Limits to Growth']},
+    {prompt:'Malthus argued population grows… while food supply grows…', answer:'exponentially (1,2,4,8,16); arithmetically (1,2,3,4,5)', choices:['exponentially (1,2,4,8,16); arithmetically (1,2,3,4,5)','arithmetically; exponentially','exponentially; exponentially','arithmetically; arithmetically']},
+    {prompt:'Malthus’s term for famine, disease, and war checking population growth?', answer:'Positive checks', choices:['Positive checks','Preventive checks','Natural increase','Demographic dividend']},
+    {prompt:'Malthus’s preferred, gentler way to limit population (later marriage, abstinence)?', answer:'Preventive checks', choices:['Preventive checks','Positive checks','Pronatalist policy','Zero population growth']},
+    {prompt:'What technological shift did Malthus fail to anticipate, which raised food output far faster than he expected?', answer:'The Green Revolution (high-yield seeds, fertilizer, irrigation, mechanization)', choices:['The Green Revolution (high-yield seeds, fertilizer, irrigation, mechanization)','The invention of the printing press','The rise of the internet','The discovery of penicillin']},
+    {prompt:'Which scientist is closely associated with the Green Revolution?', answer:'Norman Borlaug', choices:['Norman Borlaug','Thomas Malthus','Abdel Omran','Paul Ehrlich']},
+    {prompt:'Besides underestimating technology, what else did Malthus fail to foresee?', answer:'That birth rates fall as countries develop', choices:['That birth rates fall as countries develop','That death rates would keep rising','That food would become the only resource that matters','That population growth would stop entirely']},
+    {prompt:'Neo-Malthusians broaden the argument from food to…', answer:'all resources — fresh water, arable land, fossil fuels, minerals — plus environmental limits like climate change', choices:['all resources — fresh water, arable land, fossil fuels, minerals — plus environmental limits like climate change','only oil and coal','only fresh water','military resources only']},
+    {prompt:'Who wrote The Population Bomb (1968), predicting mass famines that did not occur?', answer:'Paul Ehrlich', choices:['Paul Ehrlich','Thomas Malthus','Norman Borlaug','Abdel Omran']},
+    {prompt:'What 1972 report made a similar Neo-Malthusian argument?', answer:'The Club of Rome’s Limits to Growth', choices:['The Club of Rome’s Limits to Growth','The United Nations’ World Population Report','The Green Revolution Report','Malthus’s Second Essay']}
+  ];
+
+  /* ---------- 13 & 18. Life expectancy ---------- */
+  var LIFE_EXP_FACTORS = [
+    'Infectious disease burden (HIV/AIDS, malaria, tuberculosis)', 'High infant and child mortality',
+    'War and armed conflict', 'Famine and chronic malnutrition', 'Unsafe water and lack of sanitation',
+    'Poor or inaccessible health care', 'Poverty', 'Substance abuse, especially alcohol; smoking',
+    'Pollution (indoor cooking smoke, industrial air pollution)', 'Violence and homicide rates'
+  ];
+  var LIFE_EXP_CASES = [
+    {term:'Southern Africa (Lesotho, Eswatini, Botswana, South Africa)', def:'HIV/AIDS cut life expectancy by 15+ years at its peak in the 1990s–2000s; antiretroviral programs have partly reversed this.'},
+    {term:'Russia and Eastern Europe', def:'Alcohol-related deaths, cardiovascular disease, and industrial pollution give men unusually short lives.'},
+    {term:'Chad, Central African Republic, Nigeria, South Sudan, Somalia', def:'Conflict, weak health systems, and high child mortality keep life expectancy in the mid-50s.'},
+    {term:'Afghanistan', def:'Decades of war plus a very high IMR.'}
+  ];
+  var LIFE_EXP_EXTREMES = [
+    {prompt:'Which country/territory has the highest life expectancy in the world (~87 years)?', answer:'Monaco', choices:['Monaco','Japan','Switzerland','Iceland']},
+    {prompt:'Among countries with populations over 20 million, which three lead life expectancy (all 84+)?', answer:'Japan, South Korea, and Australia', choices:['Japan, South Korea, and Australia','United States, Canada, and Mexico','Germany, France, and Italy','China, India, and Brazil']},
+    {prompt:'Which country is among the lowest in life expectancy, at roughly 55 years?', answer:'Nigeria', choices:['Nigeria','Japan','Monaco','Australia']},
+    {prompt:'Africa’s continental average life expectancy (~64 years) sits roughly how far below the global average (~73.5)?', answer:['9 years','9'], choices:['9 years','1 year','20 years','30 years']},
+    {prompt:'Which country has an unusually large gender gap in life expectancy — women outliving men by roughly 10 years?', answer:'Russia', choices:['Russia','Japan','Monaco','Canada']},
+    {prompt:'What mainly drives Russia’s ~10-year male/female life expectancy gap?', answer:'Alcohol consumption, smoking, cardiovascular disease, workplace accidents, violence, and suicide among working-age men', choices:['Alcohol consumption, smoking, cardiovascular disease, workplace accidents, violence, and suicide among working-age men','A shortage of female doctors','Higher birth rates among men','A law restricting men’s access to health care']},
+    {prompt:'Besides Russia, which other countries show the same large male/female life-expectancy gap pattern?', answer:'Belarus, Ukraine, Lithuania, Latvia, Estonia', choices:['Belarus, Ukraine, Lithuania, Latvia, Estonia','France, Germany, Spain, Italy','Brazil, Argentina, Chile, Peru','Egypt, Libya, Tunisia, Morocco']},
+    {prompt:'In Syria, the male/female life-expectancy gap is driven mainly by…', answer:'war deaths concentrated among men', choices:['war deaths concentrated among men','a very low female literacy rate','an unusually high female CBR','import restrictions on medicine']},
+    {prompt:'Worldwide, women outlive men by roughly how many years on average?', answer:['5 years','5'], choices:['5 years','1 year','15 years','20 years']},
+    {prompt:'Which of these is a biological (not behavioral) reason women tend to outlive men?', answer:'Estrogen’s cardiovascular protection and a stronger immune response', choices:['Estrogen’s cardiovascular protection and a stronger immune response','Women smoke and drink more','Women work more dangerous jobs','Women see doctors less often']}
+  ];
+
+  /* ---------- 15. Population policies ---------- */
+  var POLICY_TYPES = [
+    {term:'Pronatalist policy', def:'Government policy that encourages higher birth rates — typically used by Stage 4/5 countries worried about a shrinking labor force and pension system.'},
+    {term:'Anti-natalist policy', def:'Government policy that discourages births — used by rapidly growing Stage 2/3 countries.'},
+    {term:'Eugenic policy', def:'Policy that favors reproduction by one racial, ethnic, or social group over another.'}
+  ];
+  var PRONATALIST_TOOLS = ['Cash "baby bonuses"', 'Extended paid parental leave', 'Subsidized childcare', 'Tax breaks per child', 'Free or cheap fertility treatment', 'Housing benefits'];
+  var ANTINATALIST_TOOLS = ['Free contraception', 'Family-planning education', 'Financial penalties for extra children', 'Incentives for sterilization', 'Raising the legal marriage age'];
+  var POLICY_CASES = [
+    {prompt:'Which country reversed from "Stop at Two" to "Have Three or More, If You Can Afford It"?', answer:'Singapore', choices:['Singapore','China','India','Iran']},
+    {prompt:'Which country has paid "Maternity Capital" cash bonuses since 2007?', answer:'Russia', choices:['Russia','France','Japan','Sweden']},
+    {prompt:'Which country gives a lifetime income-tax exemption to mothers of four or more children?', answer:'Hungary', choices:['Hungary','Germany','Canada','Mexico']},
+    {prompt:'Romania’s Decree 770 (1966) under Ceaușescu did what?', answer:'Banned abortion and contraception — births spiked, then maternal deaths and orphanage overcrowding followed', choices:['Banned abortion and contraception — births spiked, then maternal deaths and orphanage overcrowding followed','Paid every family a large cash bonus per child','Legalized abortion nationwide','Required two years of national service before marriage']},
+    {prompt:'Which countries are known for long-running family allowances and generous childcare supporting relatively high TFR in Europe?', answer:'France', choices:['France','Italy','Spain','Greece']},
+    {prompt:'China’s One-Child Policy (1979–2015) produced a sex ratio at birth of roughly…', answer:'115 boys per 100 girls', choices:['115 boys per 100 girls','100 boys per 100 girls','150 boys per 100 girls','90 boys per 100 girls']},
+    {prompt:'What is the "4-2-1 problem" created by China’s One-Child Policy?', answer:'One child ends up supporting two parents and four grandparents', choices:['One child ends up supporting two parents and four grandparents','Four children share one job','Two children must support one parent and one grandparent','One family gets four housing subsidies']},
+    {prompt:'China’s One-Child Policy was replaced by a two-child policy in 2016, then a three-child policy in 2021, because…', answer:'China’s population had begun declining', choices:['China’s population had begun declining','the one-child policy was ruled unconstitutional','of pressure from the United Nations','food shortages made more children necessary']},
+    {prompt:'Which Indian Prime Minister-era program ran mass, widely-criticized sterilization campaigns in the 1970s?', answer:'Indira Gandhi’s Emergency', choices:['Indira Gandhi’s Emergency','Nehru’s Five-Year Plan','Modi’s Digital India','The Green Revolution in India']},
+    {prompt:'Iran’s 1989–2006 anti-natalist program was notable because it was…', answer:'highly successful and voluntary — TFR fell from ~6.5 to ~2.0', choices:['highly successful and voluntary — TFR fell from ~6.5 to ~2.0','coercive and largely unsuccessful','aimed only at rural farmers','later found to have had no effect on TFR']},
+    {prompt:'The Nazi Germany program encouraging "Aryan" births was called…', answer:'Lebensborn', choices:['Lebensborn','Anschluss','Blitzkrieg','Kristallnacht']},
+    {prompt:'What did the U.S. Supreme Court uphold in Buck v. Bell (1927)?', answer:'Forced sterilization laws', choices:['Forced sterilization laws','School desegregation','Women’s suffrage','Child labor laws']},
+    {prompt:'Roughly how many people were sterilized without consent under U.S. eugenics laws in the early 20th century?', answer:'More than 60,000', choices:['More than 60,000','About 500','About 5,000','More than 1 million']},
+    {prompt:'Which country’s Eugenic Protection Law (1948–1996) authorized sterilization of people with disabilities?', answer:'Japan', choices:['Japan','Sweden','United States','Germany']},
+    {prompt:'Which country ran a eugenic sterilization program into the 1970s?', answer:'Sweden', choices:['Sweden','Japan','Iran','Singapore']}
+  ];
+
+  /* ---------- Guided-exercise / reference-sheet explainer text per topic ---------- */
+  var RULES = {
+    'vocab-core': {title:'Chapter 2 Vocabulary', explanation:'These 28 terms are the vocabulary backbone of the whole population unit — nearly every other topic in this app uses them. Learn the term-to-definition direction first, then the reverse.'},
+    'chronic-disease': {title:'Chronic & Degenerative Disease', explanation:'Chronic diseases are long-lasting and non-communicable — they are not "caught" from someone else, and they usually develop from aging, genetics, or lifestyle rather than a single infection.', example:{main:'Cardiovascular disease and cancer', note:'The world’s leading causes of death, concentrated in countries at epidemiologic transition Stages 3 and 4.'}},
+    'density-measures': {title:'Population Density', explanation:'Arithmetic density is the simplest measure (population ÷ total land) but treats all land as equally usable. Physiological density (population ÷ arable land) is preferred because it measures real pressure on food-producing land. Agricultural density (farmers ÷ arable land) shows how mechanized farming is.', example:{main:'Egypt: moderate arithmetic density, but extreme physiological density', note:'~95% of Egyptians live on ~4% of the country’s territory, along the Nile — the desert inflates the "total land" figure without anyone living there.'}},
+    'rni-doubling': {title:'RNI & Doubling Time', explanation:'RNI = (CBR − CDR) ÷ 10, expressed as a percent, and excludes migration. Doubling time = 70 ÷ RNI%. Small changes in RNI produce huge changes in doubling time — that is the entire point of the Rule of 70.', example:{main:'CBR 22, CDR 8 → RNI 1.4% → doubling time 50 years', note:'Compare Niger’s RNI of 3.5%, which doubles its population in only 20 years.'}},
+    'imr': {title:'Infant Mortality Rate', explanation:'IMR = (infant deaths under age 1 ÷ live births) × 1,000. It is considered the single best indicator of a country’s health-care quality, and it is driven by prenatal care, nutrition, sanitation, vaccination, and — most strongly — maternal education.', example:{main:'Highest IMR: Sub-Saharan Africa', note:'Rates can exceed 60–80 per 1,000, versus about 5 per 1,000 in Western Europe and Japan.'}},
+    'youth-dependency': {title:'Youth Dependency Ratio', explanation:'Youth dependency = (population under 15 ÷ population 15–64) × 100. It is highest in Stage 2 countries with very high TFRs, and it strains schools, health care, and housing — but a well-managed youth bulge can become a demographic dividend.', example:{main:'Niger has the highest youth dependency ratio on Earth', note:'Its economy must grow fast enough to employ that huge cohort once it reaches working age, or face unemployment and instability.'}},
+    'old-age-dependency': {title:'Old-Age Dependency Ratio', explanation:'Old-age dependency = (population 65+ ÷ population 15–64) × 100. It is highest in Stage 4/5 countries, and it strains pay-as-you-go pension systems and health-care budgets as the working-age tax base shrinks.', example:{main:'Japan has the highest old-age dependency ratio on Earth', note:'Every policy fix — later retirement, higher taxes, lower benefits, more immigration — is politically unpopular.'}},
+    'composite-formulas': {title:'Formula Sheet Drill', explanation:'Every formula from this chapter, mixed together. If you can recall all ten of these cold, you can handle almost any calculation question on the exam.'},
+    'dtm': {title:'Demographic Transition Model', explanation:'Five stages link birth rate (CBR), death rate (CDR), and rate of natural increase (RNI) to a country’s level of economic development. The death rate drops first (Stage 2, from the Industrial and Medical Revolutions), and the birth rate catches down later (Stage 3) — the gap between the two lines is the RNI, and it is widest in Stage 2.', example:{main:'Stage 2: Niger, Chad, Afghanistan — high CBR, fast-falling CDR, very high RNI', note:'This is the "population explosion" stage — death rates crash while birth rates lag behind.'}},
+    'epi-transition': {title:'Epidemiologic Transition', explanation:'Proposed by Abdel Omran (1971), this four-(or five-)stage model tracks what people actually die of at each stage of the DTM: famine and infectious disease first, then receding pandemics, then chronic disease, then delayed chronic disease, and — argued as a fifth stage — a reemergence of infectious disease through resistance, poverty, and global travel.', example:{main:'Stage 2: cholera, and John Snow’s 1854 map', note:'Tracing a London cholera outbreak to the Broad Street pump is considered the founding moment of medical geography.'}},
+    'pop-pyramids': {title:'Population Pyramids', explanation:'A population pyramid is a bar graph of a population by age and sex, and it can reveal dependency ratios, sex ratio, roughly the CBR/CDR/TFR, the DTM stage, and even historical shocks like wars or baby booms as notches or bulges.', example:{main:'Triangle shape = DTM Stage 2 (Niger, Afghanistan, Chad)', note:'Column/rectangle shape = Stage 4 (U.S., France); inverted/top-heavy shape = Stage 5 (Japan, Germany, Italy).'}},
+    'pop-clusters': {title:'Population Clusters', explanation:'Four clusters hold the vast majority of the world’s population, all in low-lying river valleys or coastal areas of the Northern Hemisphere’s temperate zone, thanks to fertile soil, fresh water, mild climate, and access to trade.', example:{main:'East Asia and South Asia together hold roughly half of humanity', note:'A secondary cluster sits in eastern North America — the U.S. Northeast, Great Lakes, and southeastern Canada.'}},
+    'census': {title:'The U.S. Census', explanation:'Required by Article I, Section 2 of the Constitution, the census is taken every 10 years and is used above all for apportionment — dividing the 435 House seats among the states — plus redistricting, the Electoral College, and federal funding decisions.', example:{main:'First census: 1790. Most recent: 2020.', note:'The American Community Survey (ACS) is a yearly sample survey that adds income, education, occupation, commuting, and language data the decennial census does not collect.'}},
+    'malthus': {title:'Malthus & Neo-Malthusians', explanation:'Thomas Malthus (1798) predicted population grows exponentially while food supply grows only arithmetically, so famine, disease, and war ("positive checks") would eventually cap population. He preferred "preventive checks" like later marriage. He has been wrong so far because he underestimated technology (the Green Revolution) and did not foresee that birth rates fall as countries develop.', example:{main:'Neo-Malthusians revive the argument for all resources', note:'Paul Ehrlich’s The Population Bomb (1968) and the Club of Rome’s Limits to Growth (1972) both predicted crises that did not occur as described, but broadened the concern from food to water, land, fuel, and climate.'}},
+    'life-expectancy': {title:'Life Expectancy', explanation:'Life expectancy is shortened by infectious disease, high infant/child mortality, war, famine, unsafe water, poor health care, poverty, substance abuse, pollution, and violence. Women outlive men in essentially every country on Earth — by about 5 years globally — for both biological and behavioral reasons.', example:{main:'Highest: Monaco (~87). Lowest: Nigeria (~55).', note:'Russia has an unusually large gender gap (~10 years) driven by alcohol, smoking, cardiovascular disease, workplace accidents, violence, and suicide among working-age men.'}},
+    'pop-policy': {title:'Population Policies', explanation:'Pronatalist policies encourage births (used by aging Stage 4/5 countries); anti-natalist policies discourage births (used by fast-growing Stage 2/3 countries); eugenic policies favor reproduction by one group over another. Real-world examples show both successes (Iran’s voluntary program) and severe, coercive failures (China’s One-Child Policy, Romania’s Decree 770, U.S. and Nazi eugenics laws).', example:{main:'China’s One-Child Policy (1979–2015)', note:'Produced a skewed sex ratio (~115 boys per 100 girls), a "missing women" problem, and the "4-2-1 problem" — one child supporting two parents and four grandparents.'}}
+  };
+
+  var METHODS = [
+    {id:'flashcards', title:'Flashcards', icon:'🗂️', blurb:'Flip a virtual notecard: see the prompt, try to recall the answer before you reveal it, then rate yourself honestly. Self-testing before checking beats just re-reading.'},
+    {id:'typed-drill', title:'Fill-in-the-Blank', icon:'⌨️', blurb:'Type every answer from memory — no multiple-choice safety net. Producing an answer yourself is harder, and more effective, than just recognizing it (a "desirable difficulty").'},
+    {id:'mc-drill', title:'Multiple Choice Drill', icon:'☑️', blurb:'A lower-pressure warm-up: recognize the right answer among a few options. Good for a first pass on new material before you’re ready to produce it from scratch.'},
+    {id:'matching', title:'Matching Pairs', icon:'🔗', blurb:'Match each term to its definition. Actively building the connection yourself, instead of just seeing the two side by side, makes the pairing stick ("elaborative encoding").'},
+    {id:'missed', title:'Missed-Cards Deck', icon:'🎯', blurb:'Every card you have ever gotten wrong, in one standing deck — not just the last session’s misses. Retrieval practice pays off most exactly where memory is weakest (Roediger & Karpicke, 2006).'},
+    {id:'sentence', title:'Long-Answer Drill', icon:'✍️', blurb:'Type full definitions and explanations from memory, not just single words or numbers. Producing the whole answer yourself beats recognizing one (the generation effect: Slamecka & Graf, 1978).'},
+    {id:'listening', title:'Listening Drill', icon:'🎧', blurb:'Your device reads a card’s answer aloud and you type what you heard. Adds an auditory channel alongside the visual one (dual coding). Voice quality depends on the voices your browser has installed.'},
+    {id:'speed', title:'Timed Speed Round', icon:'⚡', blurb:'Mastered cards only, against a clock. Time pressure is a useful difficulty once material is solid and a harmful one while it is still new, so this deck stays locked to cards you have already mastered (Bjork).'}
+  ];
+
+  var NAV_GROUPS = [
+    {id:'home', label:'Home', icon:'🏠', views:['home']},
+    {id:'practice', label:'Practice', icon:'🎯', views:['study','quiz','test','guided','guidedIntro','methods','methodPicker'], items:[
+      {id:'study', label:'Study'},
+      {id:'quiz', label:'Quiz'},
+      {id:'test', label:'Test'},
+      {id:'guided', label:'Guided', views:['guided','guidedIntro']},
+      {id:'methods', label:'Modes', views:['methods','methodPicker']}
+    ]},
+    {id:'progress', label:'Stats', icon:'📈', views:['history','grades'], items:[
+      {id:'history', label:'History'},
+      {id:'grades', label:'Report Card'}
+    ]},
+    {id:'reference', label:'Sheets', icon:'📖', views:['reference','referenceSheet']},
+    {id:'settings', label:'Settings', icon:'⚙️', views:['settings']}
+  ];
+
+  /* ============================= ITEM BUILDERS ============================= */
+  var CAT_ACCENT = {concepts:'gold', formulas:'navy', models:'pine', cases:'clay'};
+
+  function defsItems(list, topic){
+    var out = [];
+    var termPool = list.map(function(w){return w.term;});
+    var defPool = list.map(function(w){return w.def;});
+    list.forEach(function(w, i){
+      out.push({id:'t2d-'+topic+'-'+i, topic:topic, type:'term2def', prompt:w.term, answer:[w.def], pool:defPool});
+      out.push({id:'d2t-'+topic+'-'+i, topic:topic, type:'def2term', prompt:w.def, answer:[w.term], pool:termPool});
+    });
+    return out;
+  }
+
+  function mcItems(list, topic, idPrefix){
+    var out = [];
+    list.forEach(function(it, i){
+      var answer = Array.isArray(it.answer) ? it.answer : [it.answer];
+      out.push({id:idPrefix+'-'+topic+'-'+i, topic:topic, type: it.choices ? 'mc' : 'typed', forceTyped: !it.choices, prompt:it.prompt, answer:answer, choices:it.choices, note:it.note});
+    });
+    return out;
+  }
+
+  function buildVocabCoreItems(){ return defsItems(VOCAB_CORE, 'vocab-core'); }
+
+  function buildChronicItems(){
+    return defsItems(CHRONIC_FACTS, 'chronic-disease').concat(mcItems(CHRONIC_MC, 'chronic-disease', 'mc'));
+  }
+
+  function buildDensityItems(){
+    var out = [];
+    var formPool = DENSITY_FORMULAS.map(function(f){return f.formula;});
+    var namePool = DENSITY_FORMULAS.map(function(f){return f.name;});
+    DENSITY_FORMULAS.forEach(function(f, i){
+      out.push({id:'dens-f2n-'+i, topic:'density-measures', type:'term2def', prompt:f.name+' — formula?', answer:[f.formula], pool:formPool});
+      out.push({id:'dens-n2f-'+i, topic:'density-measures', type:'def2term', prompt:f.formula, answer:[f.name], pool:namePool});
+    });
+    return out.concat(mcItems(DENSITY_FACTS, 'density-measures', 'mc'));
+  }
+
+  function buildRniDoublingItems(){
+    return mcItems(RNI_CALC_ITEMS, 'rni-doubling', 'calc').concat(mcItems(RNI_FACTS, 'rni-doubling', 'mc'));
+  }
+
+  function buildImrItems(){
+    return mcItems(IMR_FACTS, 'imr', 'mc').concat(defsItems(IMR_CAUSES, 'imr'));
+  }
+
+  function buildYouthDepItems(){
+    var terms = YOUTH_DEP_FACTS.filter(function(it){ return !!it.term; });
+    var facts = YOUTH_DEP_FACTS.filter(function(it){ return !it.term; });
+    return defsItems(terms, 'youth-dependency').concat(mcItems(facts, 'youth-dependency', 'mc'));
+  }
+
+  function buildOldAgeDepItems(){
+    var terms = OLD_AGE_DEP_FACTS.filter(function(it){ return !!it.term; });
+    var facts = OLD_AGE_DEP_FACTS.filter(function(it){ return !it.term; });
+    return defsItems(terms, 'old-age-dependency').concat(mcItems(facts, 'old-age-dependency', 'mc'));
+  }
+
+  function buildFormulaSheetItems(){
+    var out = [];
+    var formPool = FORMULA_SHEET.map(function(f){return f.formula;});
+    var namePool = FORMULA_SHEET.map(function(f){return f.name;});
+    FORMULA_SHEET.forEach(function(f, i){
+      out.push({id:'fs-f2n-'+i, topic:'composite-formulas', type:'term2def', prompt:f.name, answer:[f.formula], pool:formPool});
+      out.push({id:'fs-n2f-'+i, topic:'composite-formulas', type:'def2term', prompt:f.formula, answer:[f.name], pool:namePool});
+    });
+    return out;
+  }
+
+  function buildDtmItems(){
+    var out = [];
+    var namePool = DTM_STAGES.map(function(s){return s.name;});
+    var descPool = DTM_STAGES.map(function(s){return 'CBR '+s.cbr+', CDR '+s.cdr+', RNI '+s.rni;});
+    var exPool = DTM_STAGES.map(function(s){return s.examples[0];});
+    var whyPool = DTM_STAGES.map(function(s){return s.why;});
+    DTM_STAGES.forEach(function(s, i){
+      out.push({id:'dtm-name-'+s.n, topic:'dtm', type:'term2def', prompt:'DTM Stage '+s.n+' — name?', answer:[s.name], pool:namePool});
+      out.push({id:'dtm-num-'+s.n, topic:'dtm', type:'def2term', prompt:s.name, answer:['Stage '+s.n], pool:DTM_STAGES.map(function(x){return 'Stage '+x.n;})});
+      out.push({id:'dtm-desc-'+s.n, topic:'dtm', type:'mc', prompt:'In DTM Stage '+s.n+' ('+s.name+'), what is happening to CBR, CDR, and RNI?', answer:['CBR '+s.cbr+', CDR '+s.cdr+', RNI '+s.rni], pool:descPool});
+      out.push({id:'dtm-ex-'+s.n, topic:'dtm', type:'mc', prompt:'Which country is a real-world example of DTM Stage '+s.n+' ('+s.name+')?', answer:[s.examples[0]], pool:exPool});
+      out.push({id:'dtm-why-'+s.n, topic:'dtm', type:'mc', prompt:'What best explains why DTM Stage '+s.n+' ("'+s.name+'") happens?', answer:[s.why], pool:whyPool});
+    });
+    out.push({id:'dtm-gap', topic:'dtm', type:'mc', prompt:'On the DTM graph, the gap between the CBR and CDR lines (the RNI) is widest in which stage?', answer:['Stage 2'], choices:['Stage 2','Stage 1','Stage 4','Stage 5']});
+    out.push({id:'dtm-zpg', topic:'dtm', type:'mc', prompt:'What do we call the point where CBR equals CDR, as in Stage 4?', answer:['Zero population growth (ZPG)'], choices:['Zero population growth (ZPG)','Carrying capacity','Demographic dividend','Replacement fertility']});
+    return out;
+  }
+
+  function buildEpiItems(){
+    var out = [];
+    var namePool = EPI_STAGES.map(function(s){return s.name;});
+    var causePool = EPI_STAGES.map(function(s){return s.cause;});
+    var examplePool = EPI_STAGES.map(function(s){return s.example;});
+    EPI_STAGES.forEach(function(s){
+      out.push({id:'epi-name-'+s.n, topic:'epi-transition', type:'term2def', prompt:'Epidemiologic transition Stage '+s.n+' — name?', answer:[s.name], pool:namePool});
+      out.push({id:'epi-num-'+s.n, topic:'epi-transition', type:'def2term', prompt:s.name, answer:['Stage '+s.n], pool:EPI_STAGES.map(function(x){return 'Stage '+x.n;})});
+      out.push({id:'epi-cause-'+s.n, topic:'epi-transition', type:'mc', prompt:'What causes deaths in epidemiologic transition Stage '+s.n+' ('+s.name+')?', answer:[s.cause], pool:causePool});
+      out.push({id:'epi-example-'+s.n, topic:'epi-transition', type:'mc', prompt:'Which example is associated with epidemiologic transition Stage '+s.n+' ('+s.name+')?', answer:[s.example], pool:examplePool});
+      if(s.dtm){ out.push({id:'epi-dtm-'+s.n, topic:'epi-transition', type:'mc', prompt:'Epidemiologic transition Stage '+s.n+' matches which DTM stage?', answer:['DTM Stage '+s.dtm], choices:['DTM Stage '+s.dtm, 'DTM Stage '+(s.dtm%5+1), 'DTM Stage '+((s.dtm+1)%5+1), 'DTM Stage '+((s.dtm+2)%5+1)]}); }
+    });
+    out.push({id:'epi-omran', topic:'epi-transition', type:'mc', prompt:'Who proposed the epidemiologic transition model, in 1971?', answer:['Abdel Omran'], choices:['Abdel Omran','Thomas Malthus','John Snow','Norman Borlaug']});
+    out.push({id:'epi-snow', topic:'epi-transition', type:'mc', prompt:'Whose 1854 map of a London cholera outbreak founded medical geography?', answer:['John Snow'], choices:['John Snow','Abdel Omran','Thomas Malthus','Paul Ehrlich']});
+    return out;
+  }
+
+  function buildPyramidItems(){
+    var out = [];
+    var shapePool = PYRAMID_SHAPES.map(function(p){return p.shape;});
+    var dtmPool = PYRAMID_SHAPES.map(function(p){return p.dtm;});
+    PYRAMID_SHAPES.forEach(function(p, i){
+      out.push({id:'pyr-shape-'+i, topic:'pop-pyramids', type:'mc', prompt:'A '+p.dtm+' population pyramid is shaped like a…', answer:[p.shape], pool:shapePool, note:p.desc});
+      out.push({id:'pyr-dtm-'+i, topic:'pop-pyramids', type:'mc', prompt:'A "'+p.shape+'" pyramid shape matches which DTM stage?', answer:[p.dtm], pool:dtmPool});
+      out.push({id:'pyr-ex-'+i, topic:'pop-pyramids', type:'mc', prompt:'Which country would you expect to have a "'+p.shape+'" pyramid?', answer:[p.examples[0]], choices:[p.examples[0]].concat(PYRAMID_SHAPES.filter(function(x){return x!==p;}).map(function(x){return x.examples[0];}))});
+    });
+    out = out.concat(defsItems(PYRAMID_ANOMALIES, 'pop-pyramids'));
+    out.push({id:'pyr-read-1', topic:'pop-pyramids', type:'mc', prompt:'Which of these can you reliably determine from a population pyramid?', answer:[PYRAMID_READS[0]], choices:[PYRAMID_READS[0], 'The country’s exact GDP per capita', 'The literacy rate', 'Average household income']});
+    out.push({id:'pyr-read-2', topic:'pop-pyramids', type:'mc', prompt:'Which of these can you reliably determine from a population pyramid?', answer:[PYRAMID_READS[4]], choices:[PYRAMID_READS[4], 'The country’s exact GDP per capita', 'The unemployment rate', 'The average commute time']});
+    out.push({id:'pyr-read-3', topic:'pop-pyramids', type:'mc', prompt:'A sudden notch (a missing age band) in a population pyramid usually reflects…', answer:[PYRAMID_READS[5]], choices:[PYRAMID_READS[5], 'A recent change in the tax code', 'A new trade agreement', 'A currency devaluation']});
+    return out;
+  }
+
+  function buildClustersItems(){
+    var out = defsItems(POP_CLUSTERS, 'pop-clusters');
+    var factorPool = CLUSTER_FACTORS.slice();
+    CLUSTER_FACTORS.forEach(function(f, i){
+      out.push({id:'clus-factor-'+i, topic:'pop-clusters', type:'mc', prompt:'Which of these is a common factor behind the world’s major population clusters?', answer:[f], pool:factorPool});
+    });
+    out.push({id:'clus-which-not', topic:'pop-clusters', type:'mc', prompt:'Which of these is NOT one of the world’s four largest population clusters?', answer:['Sub-Saharan Africa'], choices:['Sub-Saharan Africa','East Asia','South Asia','Europe']});
+    return out;
+  }
+
+  function buildCensusItems(){ return mcItems(CENSUS_FACTS, 'census', 'mc'); }
+  function buildMalthusItems(){ return mcItems(MALTHUS_FACTS, 'malthus', 'mc'); }
+
+  function buildLifeExpectancyItems(){
+    var out = mcItems(LIFE_EXP_EXTREMES, 'life-expectancy', 'mc').concat(defsItems(LIFE_EXP_CASES, 'life-expectancy'));
+    var factorPool = LIFE_EXP_FACTORS.slice();
+    LIFE_EXP_FACTORS.forEach(function(f, i){
+      out.push({id:'life-factor-'+i, topic:'life-expectancy', type:'mc', prompt:'Which of these is a factor that reduces life expectancy?', answer:[f], pool:factorPool});
+    });
+    return out;
+  }
+
+  function buildPolicyItems(){
+    var out = defsItems(POLICY_TYPES, 'pop-policy').concat(mcItems(POLICY_CASES, 'pop-policy', 'mc'));
+    var proPool = PRONATALIST_TOOLS.slice();
+    PRONATALIST_TOOLS.forEach(function(f, i){
+      out.push({id:'pro-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is a pronatalist policy tool (encourages births)?', answer:[f], pool:proPool});
+    });
+    var antiPool = ANTINATALIST_TOOLS.slice();
+    ANTINATALIST_TOOLS.forEach(function(f, i){
+      out.push({id:'anti-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is an anti-natalist policy tool (discourages births)?', answer:[f], pool:antiPool});
+    });
+    return out;
+  }
+
+  var ALL_ITEMS = []
+    .concat(buildVocabCoreItems())
+    .concat(buildChronicItems())
+    .concat(buildDensityItems())
+    .concat(buildRniDoublingItems())
+    .concat(buildImrItems())
+    .concat(buildYouthDepItems())
+    .concat(buildOldAgeDepItems())
+    .concat(buildFormulaSheetItems())
+    .concat(buildDtmItems())
+    .concat(buildEpiItems())
+    .concat(buildPyramidItems())
+    .concat(buildClustersItems())
+    .concat(buildCensusItems())
+    .concat(buildMalthusItems())
+    .concat(buildLifeExpectancyItems())
+    .concat(buildPolicyItems());
+
+  var ITEMS_BY_TOPIC = {};
+  ALL_ITEMS.forEach(function(it){
+    if(!ITEMS_BY_TOPIC[it.topic]) ITEMS_BY_TOPIC[it.topic] = [];
+    ITEMS_BY_TOPIC[it.topic].push(it);
+  });
+
+  /* ============================= UTIL ============================= */
+  function $(sel, root){ return (root||document).querySelector(sel); }
+  function el(tag, cls, html){
+    var e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function stripHtml(html){
+    return String(html).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function shuffled(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  function sample(arr, n){ return shuffled(arr).slice(0, n); }
+  // Loose matching: case, punctuation, and surrounding whitespace don't count.
+  function normalize(s){
+    return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+      .replace(/[’']/g, "'").replace(/[¿?¡!.,;:%]/g,'').replace(/\s+/g,' ').trim();
+  }
+  function isCorrectTyped(item, val){
+    return item.answer.some(function(a){ return normalize(a) === normalize(val); });
+  }
+  function todayStr(){
+    var d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function daysFromToday(n){
+    var d = new Date();
+    d.setDate(d.getDate()+n);
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+
+  /* ============================= PROGRESS / SRS ============================= */
+  var STORE_KEY = 'aphg_progress_v1';
+  var INTERVALS = [0,1,3,7,14,30];
+
+  function loadProgress(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {items:{}, streak:{count:0,last:null}};
+  }
+  var PROGRESS = loadProgress();
+  migrateProgress(PROGRESS);
+
+  function migrateProgress(P){
+    if(!P.history) P.history = [];
+    if(!P.settings) P.settings = {};
+    if(!P.days){
+      P.days = {};
+      P.history.forEach(function(h){ if(h.date) P.days[h.date] = (P.days[h.date]||0) + (h.total||1); });
+      if(P.streak && P.streak.last && !P.days[P.streak.last]) P.days[P.streak.last] = 1;
+    }
+    if(!P.streak) P.streak = {count:0, last:null};
+    if(!P.items) P.items = {};
+    return P;
+  }
+
+  var DEFAULT_SETTINGS = {
+    quizSize:12, testSize:30, typedFrom:2,
+    theme:'system', textScale:100
+  };
+  function settings(){
+    var out = {};
+    var saved = PROGRESS.settings || {};
+    Object.keys(DEFAULT_SETTINGS).forEach(function(k){
+      out[k] = (saved[k] === undefined || saved[k] === null) ? DEFAULT_SETTINGS[k] : saved[k];
+    });
+    return out;
+  }
+  function setSetting(k, v){
+    if(!PROGRESS.settings) PROGRESS.settings = {};
+    PROGRESS.settings[k] = v;
+    saveProgress();
+  }
+
+  function saveProgress(){
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROGRESS)); }catch(e){}
+    if(AUTH.user) pushProgress();
+  }
+
+  /* ============================= GOOGLE SIGN-IN / CLOUD SYNC =============================
+     Entirely optional and self-disabling: on a page not served by our own
+     backend (e.g. this same file published elsewhere), the client id
+     placeholder is never replaced and every /api/* call below just fails
+     silently — the app then behaves exactly as the local-only version it
+     always was. Nothing here is required for the app to work. */
+  var GOOGLE_CLIENT_ID = (function(){
+    var v = (typeof window !== 'undefined') ? window.__GOOGLE_CLIENT_ID__ : null;
+    return (v && v.indexOf('.apps.googleusercontent.com') !== -1) ? v : null;
+  })();
+  var AUTH = { user:null };
+  // Tags this subject's progress/session data so the shared hub server keeps
+  // it in its own file, separate from every other section's.
+  var SUBJECT = 'aphg';
+
+  function apiFetch(url, opts){
+    opts = opts || {};
+    var headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+    return fetch(url, Object.assign({credentials:'same-origin'}, opts, {headers:headers}))
+      .then(function(r){
+        return r.json().catch(function(){ return {}; }).then(function(data){
+          return {ok:r.ok, status:r.status, data:data};
+        });
+      });
+  }
+
+  function pushProgress(){
+    if(!AUTH.user) return;
+    apiFetch('/api/progress?subject='+SUBJECT, {method:'PUT', body: JSON.stringify(PROGRESS)}).catch(function(){});
+  }
+
+  function pullProgress(){
+    return apiFetch('/api/progress?subject='+SUBJECT, {method:'PUT', body: JSON.stringify(PROGRESS)}).then(function(res){
+      if(res.ok && res.data.progress){
+        PROGRESS = migrateProgress(res.data.progress);
+      }
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROGRESS)); }catch(e){}
+      render();
+    }).catch(function(){});
+  }
+
+  function replaceProgressOnServer(){
+    if(!AUTH.user) return;
+    apiFetch('/api/progress?subject='+SUBJECT+'&mode=replace', {method:'PUT', body: JSON.stringify(PROGRESS)}).catch(function(){});
+  }
+
+  function handleGoogleCredential(response){
+    apiFetch('/api/auth/google', {method:'POST', body: JSON.stringify({credential: response.credential})})
+      .then(function(res){
+        if(res.ok && res.data.user){
+          AUTH.user = res.data.user;
+          return pullProgress();
+        }
+        render();
+      }).catch(function(){});
+  }
+
+  function signOut(){
+    apiFetch('/api/auth/logout', {method:'POST'}).catch(function(){});
+    AUTH.user = null;
+    render();
+  }
+
+  function initAuth(){
+    if(!GOOGLE_CLIENT_ID) return;
+    apiFetch('/api/me').then(function(res){
+      if(res.ok && res.data.user){
+        AUTH.user = res.data.user;
+        pullProgress();
+      }
+    }).catch(function(){});
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true; s.defer = true;
+    s.onload = function(){
+      try{
+        google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID, callback:handleGoogleCredential});
+      }catch(e){}
+      render();
+    };
+    document.head.appendChild(s);
+  }
+
+  function getProg(id){ return PROGRESS.items[id]; }
+
+  function recordAnswer(id, correct){
+    var p = PROGRESS.items[id] || {box:-1, due:todayStr(), seen:0, correct:0, incorrect:0};
+    p.seen++;
+    if(correct){
+      p.correct++;
+      p.box = Math.min((p.box<0?-1:p.box)+1, 5);
+      p.due = daysFromToday(INTERVALS[Math.max(p.box,0)]);
+    }else{
+      p.incorrect++;
+      p.box = 0;
+      p.due = todayStr();
+    }
+    PROGRESS.items[id] = p;
+    bumpDay();
+    bumpStreak();
+    saveProgress();
+  }
+
+  function seedLearn(id, gotIt){
+    var p = PROGRESS.items[id] || {box:-1, due:todayStr(), seen:0, correct:0, incorrect:0};
+    p.seen++;
+    if(gotIt){ p.box = Math.max(p.box,1); p.due = daysFromToday(INTERVALS[1]); }
+    else { p.box = 0; p.due = todayStr(); }
+    PROGRESS.items[id] = p;
+    bumpDay();
+    bumpStreak();
+    saveProgress();
+  }
+
+  function bumpDay(){
+    if(!PROGRESS.days) PROGRESS.days = {};
+    var t = todayStr();
+    PROGRESS.days[t] = (PROGRESS.days[t]||0) + 1;
+  }
+
+  function bumpStreak(){
+    var t = todayStr();
+    var s = PROGRESS.streak;
+    if(s.last === t) return;
+    if(s.last){
+      var y = new Date(); y.setDate(y.getDate()-1);
+      var yStr = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+      s.count = (s.last === yStr) ? s.count+1 : 1;
+    } else {
+      s.count = 1;
+    }
+    s.last = t;
+  }
+
+  function isMastered(id){ var p = getProg(id); return p && p.box >= 3; }
+  function isDue(id){ var p = getProg(id); return !p || p.due <= todayStr(); }
+  function isUnseen(id){ var p = getProg(id); return !p; }
+  function boxOf(id){ var p = getProg(id); return p ? p.box : -1; }
+
+  /* ---------- standing decks ---------- */
+  function dueItems(){
+    return ALL_ITEMS.filter(function(it){ var p = getProg(it.id); return p && p.due <= todayStr(); });
+  }
+  function dueCount(){ return dueItems().length; }
+  function newCount(){ return ALL_ITEMS.filter(function(it){ return isUnseen(it.id); }).length; }
+
+  function missedItems(){
+    return ALL_ITEMS.filter(function(it){ var p = getProg(it.id); return p && p.incorrect > 0; })
+      .sort(function(a,b){
+        var pa = getProg(a.id), pb = getProg(b.id);
+        var ra = pa.correct/Math.max(pa.seen,1), rb = pb.correct/Math.max(pb.seen,1);
+        if(ra !== rb) return ra - rb;
+        return pb.incorrect - pa.incorrect;
+      });
+  }
+
+  // Answers of three words or more — mostly definitions and explanations,
+  // the only multi-word productions in this material.
+  function sentenceItems(){
+    return ALL_ITEMS.filter(function(it){
+      var a = (it.answer[0]||'').trim();
+      return a.split(/\s+/).length >= 3;
+    });
+  }
+
+  // Cards whose answer is short enough to read aloud meaningfully.
+  function listeningItems(){
+    return ALL_ITEMS.filter(function(it){
+      return (it.answer[0]||'').length <= 60;
+    });
+  }
+
+  function masteredItems(){ return ALL_ITEMS.filter(function(it){ return isMastered(it.id); }); }
+
+  function weakestTopics(n){
+    return TOPICS.map(function(t){ return {id:t.id, acc:topicAccuracy(t.id)}; })
+      .filter(function(x){ return x.acc !== null; })
+      .sort(function(a,b){ return a.acc - b.acc; })
+      .slice(0, n)
+      .map(function(x){ return x.id; });
+  }
+
+  function recommendedSession(n){
+    var out = [], used = {};
+    function add(list){
+      list.forEach(function(it){
+        if(out.length >= n || used[it.id]) return;
+        used[it.id] = 1; out.push(it);
+      });
+    }
+    add(shuffled(dueItems()));
+    weakestTopics(3).forEach(function(tid){ add(shuffled(ITEMS_BY_TOPIC[tid]||[])); });
+    add(shuffled(ALL_ITEMS.filter(function(it){ return isUnseen(it.id); })));
+    add(shuffled(ALL_ITEMS));
+    return shuffled(out);
+  }
+  function recommendReason(){
+    var d = dueCount();
+    if(d >= 5) return d + ' cards are ready to review — those come first.';
+    var weak = weakestTopics(1);
+    if(weak.length) return 'A few ready-to-review cards, then extra reps on your weakest topics (' + TOPIC_MAP[weak[0]].name + ' is lowest right now).';
+    return 'A mixed opening session across every topic, to find out where you stand.';
+  }
+
+  function badgeDefs(){
+    var streak = PROGRESS.streak.count||0;
+    var topicsMastered = TOPICS.filter(function(t){ return topicMastery(t.id) >= 80; }).length;
+    var sessions = (PROGRESS.history||[]).length;
+    var perfect = (PROGRESS.history||[]).filter(function(h){ return h.pct === 100 && h.total >= 8; }).length;
+    return [
+      {id:'first-session', icon:'🌱', name:'First Session', desc:'Completed your first session.', earned: sessions >= 1},
+      {id:'streak-3', icon:'🔥', name:'3-Day Streak', desc:'Studied three days running.', earned: streak >= 3},
+      {id:'streak-7', icon:'📅', name:'7-Day Streak', desc:'A full week without a gap.', earned: streak >= 7},
+      {id:'century', icon:'💯', name:'100 Cards Seen', desc:'Attempted 100 different cards.', earned: attemptedCount() >= 100},
+      {id:'topic-master', icon:'🏅', name:'Topic Mastered', desc:'Took a topic past 80% mastery.', earned: topicsMastered >= 1},
+      {id:'five-topics', icon:'🎖️', name:'Five Topics Mastered', desc:'Five topics past 80% mastery.', earned: topicsMastered >= 5},
+      {id:'flawless', icon:'⭐', name:'Flawless Round', desc:'A perfect score on a session of 8+ questions.', earned: perfect >= 1},
+      {id:'clean-slate', icon:'🧹', name:'Clean Slate', desc:'Cleared the Missed-Cards deck to nothing.', earned: sessions >= 3 && attemptedCount() > 0 && missedItems().length === 0}
+    ];
+  }
+
+  function topicMastery(topicId){
+    var items = ITEMS_BY_TOPIC[topicId] || [];
+    if(!items.length) return 0;
+    var m = items.filter(function(it){ return isMastered(it.id); }).length;
+    return Math.round(100*m/items.length);
+  }
+  function overallMastery(){
+    var m = ALL_ITEMS.filter(function(it){ return isMastered(it.id); }).length;
+    return Math.round(100*m/ALL_ITEMS.length);
+  }
+  function masteredCount(){ return ALL_ITEMS.filter(function(it){ return isMastered(it.id); }).length; }
+  function categoryMastery(cat){
+    var items = ALL_ITEMS.filter(function(it){ return TOPIC_MAP[it.topic].cat === cat; });
+    if(!items.length) return 0;
+    var m = items.filter(function(it){ return isMastered(it.id); }).length;
+    return Math.round(100*m/items.length);
+  }
+
+  function accuracyOf(items){
+    var progs = items.map(function(it){ return getProg(it.id); }).filter(Boolean);
+    var seen = progs.reduce(function(s,p){ return s+p.seen; }, 0);
+    var correct = progs.reduce(function(s,p){ return s+p.correct; }, 0);
+    return { pct: seen ? Math.round(100*correct/seen) : null, seen: seen, correct: correct };
+  }
+  function topicAccuracy(topicId){ return accuracyOf(ITEMS_BY_TOPIC[topicId] || []).pct; }
+  function categoryAccuracy(cat){
+    return accuracyOf(ALL_ITEMS.filter(function(it){ return TOPIC_MAP[it.topic].cat === cat; })).pct;
+  }
+  function typeAccuracy(types){
+    return accuracyOf(ALL_ITEMS.filter(function(it){ return types.indexOf(it.type) !== -1; }));
+  }
+  function lifetimeAccuracy(){ return accuracyOf(ALL_ITEMS).pct || 0; }
+  function attemptedCount(){ return ALL_ITEMS.filter(function(it){ return !!getProg(it.id); }).length; }
+  function coveragePct(){ return ALL_ITEMS.length ? Math.round(100*attemptedCount()/ALL_ITEMS.length) : 0; }
+  function totalQuestionsAnswered(){ return accuracyOf(ALL_ITEMS).seen; }
+
+  function modeStats(){
+    var byMode = {};
+    (PROGRESS.history||[]).forEach(function(h){
+      if(!byMode[h.mode]) byMode[h.mode] = {count:0, sum:0};
+      byMode[h.mode].count++;
+      byMode[h.mode].sum += h.pct;
+    });
+    return byMode;
+  }
+  var MODE_LABELS = {
+    quiz:'Quiz', test:'Test', guided:'Guided Exercises',
+    'typed-drill':'Fill-in-the-Blank Drill', 'mc-drill':'Multiple Choice Drill', review:'Mistake Review',
+    recommended:'Recommended Session', missed:'Missed-Cards Deck', sentence:'Long-Answer Drill',
+    listening:'Listening Drill', speed:'Timed Speed Round', final:'Comprehensive Final Exam'
+  };
+
+  function recentTrend(){
+    var hist = PROGRESS.history || [];
+    var n = Math.min(5, Math.floor(hist.length/2));
+    if(n < 2) return null;
+    var avg = function(arr){ return arr.reduce(function(s,h){ return s+h.pct; },0) / arr.length; };
+    var recent = hist.slice(-n);
+    var prior = hist.slice(-2*n, -n);
+    var recentAvg = avg(recent), priorAvg = avg(prior);
+    return { n:n, recentAvg: Math.round(recentAvg), priorAvg: Math.round(priorAvg), delta: Math.round(recentAvg-priorAvg) };
+  }
+
+  function dueForecast(days){
+    var out = [];
+    for(var i=0; i<days; i++){
+      var key = daysFromToday(i);
+      var n = ALL_ITEMS.filter(function(it){
+        var p = getProg(it.id);
+        if(!p) return false;
+        return i === 0 ? p.due <= key : p.due === key;
+      }).length;
+      out.push({date:key, count:n, offset:i});
+    }
+    return out;
+  }
+
+  function forecastSection(){
+    var wrap = el('div','');
+    var fc = dueForecast(7);
+    var max = fc.reduce(function(m,d){ return Math.max(m, d.count); }, 0);
+    var list = el('div','breakdown-list');
+    var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    fc.forEach(function(d){
+      var when = d.offset === 0 ? 'Today' : (d.offset === 1 ? 'Tomorrow'
+        : dayNames[new Date(d.date + 'T12:00:00').getDay()] + ' ' + d.date.slice(5));
+      var row = el('div','breakdown-row');
+      row.appendChild(el('div','breakdown-name', when));
+      var track = el('div','breakdown-track');
+      var fill = el('div','breakdown-fill'+(d.offset===0?' ok':''));
+      fill.style.width = (max ? Math.round(100*d.count/max) : 0)+'%';
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el('div','breakdown-num mono', String(d.count)));
+      list.appendChild(row);
+    });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function compositeGrade(){
+    var mastery = overallMastery(), accuracy = lifetimeAccuracy(), coverage = coveragePct();
+    var score = Math.round(mastery*0.4 + accuracy*0.35 + coverage*0.25);
+    var letter = score>=90?'A':score>=80?'B':score>=70?'C':score>=60?'D':'F';
+    return { score:score, letter:letter, mastery:mastery, accuracy:accuracy, coverage:coverage };
+  }
+
+  function mcCapablePool(pool){
+    return pool.filter(function(it){ return !!(it.choices || it.pool); });
+  }
+
+  /* ============================= SESSION SELECTION ============================= */
+  function pickWeighted(pool, n, preferSeen){
+    var scored = pool.map(function(it){
+      var due = isDue(it.id) ? 1 : 0;
+      var unseen = isUnseen(it.id);
+      var unseenScore = preferSeen ? (unseen ? -1 : 0) : (unseen ? 1 : 0);
+      return {it:it, score: due*2 + unseenScore + Math.random()*0.6};
+    });
+    scored.sort(function(a,b){ return b.score-a.score; });
+    var top = scored.slice(0, Math.max(n*3, Math.min(20,pool.length)));
+    return shuffled(top).slice(0,n).map(function(x){ return x.it; });
+  }
+
+  function pickTopicSession(topicId, n){
+    return pickWeighted(ITEMS_BY_TOPIC[topicId]||[], n);
+  }
+
+  function pickMixedSession(n, preferSeen){
+    var pools = TOPICS.map(function(t){ return ITEMS_BY_TOPIC[t.id]||[]; });
+    var quota = Math.floor(n/pools.length);
+    var remainder = n - quota*pools.length;
+    var out = [];
+    pools.forEach(function(p, i){
+      var take = quota + (i<remainder?1:0);
+      out = out.concat(pickWeighted(p, take, preferSeen));
+    });
+    return shuffled(out);
+  }
+
+  /* ============================= QUESTION RENDERING LOGIC ============================= */
+  function renderMode(item, forceMode){
+    if(forceMode) return forceMode;
+    if(item.forceTyped) return 'typed';
+    if(item.type === 'typed') return 'typed';
+    if(item.type === 'mc') return 'mc';
+    var box = boxOf(item.id);
+    return box >= settings().typedFrom ? 'typed' : 'mc';
+  }
+
+  function distractorsFor(item){
+    if(item.choices) return item.choices;
+    if(item.pool){
+      var others = item.pool.filter(function(v){ return v !== item.answer[0]; });
+      return sample(others, Math.min(3, others.length)).concat(item.answer);
+    }
+    return item.answer;
+  }
+
+  function prepQuestion(item, forceMode){
+    var mode = renderMode(item, forceMode);
+    var opts = null;
+    if(mode === 'mc'){
+      opts = shuffled(distractorsFor(item)).slice(0,4);
+      if(opts.indexOf(item.answer[0]) === -1) opts[0] = item.answer[0];
+      opts = shuffled(opts);
+    }
+    return {mode:mode, opts:opts};
+  }
+
+  /* ============================= DISPLAY SETTINGS ============================= */
+  function applyDisplaySettings(){
+    var root = (typeof document !== 'undefined') && document.documentElement;
+    if(!root || !root.style) return;
+    var st = settings();
+    if(st.theme === 'system'){ if(root.removeAttribute) root.removeAttribute('data-theme'); }
+    else if(root.setAttribute){ root.setAttribute('data-theme', st.theme); }
+    root.style.fontSize = (st.textScale||100) + '%';
+  }
+
+  function downloadFile(filename, text, mime){
+    try{
+      var blob = new Blob([text], {type: mime || 'text/plain'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 0);
+      return true;
+    }catch(e){ return false; }
+  }
+  function exportJSON(){
+    downloadFile('aphg-progress.json', JSON.stringify(PROGRESS, null, 2), 'application/json');
+  }
+  function exportCSV(){
+    var rows = [['date','mode','label','correct','total','pct']];
+    (PROGRESS.history||[]).forEach(function(h){
+      rows.push([h.date, h.mode, '"'+String(h.label||'').replace(/"/g,'""')+'"', h.correct, h.total, h.pct]);
+    });
+    downloadFile('aphg-sessions.csv', rows.map(function(r){ return r.join(','); }).join('\n'), 'text/csv');
+  }
+
+  /* ---------- speech (listening drill) ---------- */
+  function speechAvailable(){
+    return typeof window !== 'undefined' && !!window.speechSynthesis && typeof window.SpeechSynthesisUtterance === 'function';
+  }
+  function speak(text){
+    if(!speechAvailable()) return false;
+    try{
+      window.speechSynthesis.cancel();
+      var u = new window.SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+      return true;
+    }catch(e){ return false; }
+  }
+
+  /* ============================= APP STATE / ROUTER ============================= */
+  var state = { view:'home', infoOpen:false };
+  var app = $('#app');
+
+  var speedTimer = null;
+  function clearSpeedTimer(){
+    if(speedTimer !== null){ clearInterval(speedTimer); speedTimer = null; }
+  }
+  function speedRemaining(){
+    if(!state.speedDeadline) return 0;
+    return Math.max(0, state.speedDeadline - Date.now());
+  }
+  function speedExpire(item){
+    if(state.sessionAnswered) return false;
+    submitAnswer(item, '', false);
+    return true;
+  }
+
+  function go(view, extra){
+    clearSpeedTimer();
+    state.view = view;
+    Object.assign(state, extra||{});
+    render();
+    window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+  }
+
+  var HUB_VIEWS = {home:1, study:1, quiz:1, test:1, guided:1, guidedIntro:1, methods:1, methodPicker:1, results:1, history:1, grades:1, settings:1, reference:1, referenceSheet:1};
+
+  function render(){
+    app.innerHTML = '';
+    app.appendChild(topbar());
+    if(HUB_VIEWS[state.view]) app.appendChild(navBar());
+    if(state.infoOpen) app.appendChild(infoPanel());
+    if(state.view === 'home') app.appendChild(homeView());
+    else if(state.view === 'study') app.appendChild(studyView());
+    else if(state.view === 'quiz') app.appendChild(quizView());
+    else if(state.view === 'test') app.appendChild(testView());
+    else if(state.view === 'guided') app.appendChild(guidedView());
+    else if(state.view === 'guidedIntro') app.appendChild(guidedIntroView());
+    else if(state.view === 'methods') app.appendChild(methodsView());
+    else if(state.view === 'methodPicker') app.appendChild(methodPickerView());
+    else if(state.view === 'learn') app.appendChild(learnView());
+    else if(state.view === 'session') app.appendChild(sessionView());
+    else if(state.view === 'results') app.appendChild(resultsView());
+    else if(state.view === 'matching') app.appendChild(matchingView());
+    else if(state.view === 'history') app.appendChild(historyView());
+    else if(state.view === 'grades') app.appendChild(gradesView());
+    else if(state.view === 'settings') app.appendChild(settingsView());
+    else if(state.view === 'reference') app.appendChild(referenceView());
+    else if(state.view === 'referenceSheet') app.appendChild(referenceSheetView());
+  }
+
+  function ringSvg(pct, size){
+    size = size||44;
+    var r = (size-6)/2, c = size/2, circ = 2*Math.PI*r;
+    var off = circ*(1-pct/100);
+    var color = 'var(--accent-pine)';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'
+      + '<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke="var(--surface-2)" stroke-width="4"/>'
+      + '<circle cx="'+c+'" cy="'+c+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="4" stroke-linecap="round" '
+      + 'stroke-dasharray="'+circ+'" stroke-dashoffset="'+off+'"/></svg>';
+  }
+
+  function topbar(){
+    var bar = el('div','topbar');
+    var hubBtn = el('button','chip hub-btn');
+    hubBtn.textContent = '← Hub';
+    hubBtn.title = 'Back to all subjects';
+    hubBtn.onclick = function(){ window.location.href = '/'; };
+    bar.appendChild(hubBtn);
+    var brand = el('button','brand');
+    brand.innerHTML = '<h1>AP Human Geography Study Hub</h1><div class="sub">Unit 2 · Population Geography</div>';
+    brand.onclick = function(){ go('home'); };
+    bar.appendChild(brand);
+
+    var stats = el('div','top-stats');
+    var streakChip = el('div','chip');
+    var streakCount = PROGRESS.streak.count||0;
+    streakChip.innerHTML = '🔥 <span class="num">'+streakCount+'</span> day'+(streakCount===1?'':'s');
+    stats.appendChild(streakChip);
+
+    var ringWrap = el('div','ring-wrap');
+    var pct = overallMastery();
+    ringWrap.innerHTML = ringSvg(pct)+'<div class="pct mono">'+pct+'%</div>';
+    ringWrap.title = 'Overall mastery';
+    stats.appendChild(ringWrap);
+
+    var infoBtn = el('button','info-btn','i');
+    infoBtn.title = 'How this works';
+    infoBtn.onclick = function(){ state.infoOpen = !state.infoOpen; render(); };
+    stats.appendChild(infoBtn);
+
+    stats.appendChild(authArea());
+
+    bar.appendChild(stats);
+    return bar;
+  }
+
+  function authArea(){
+    var wrap = el('div','auth-area');
+    if(!GOOGLE_CLIENT_ID) return wrap;
+    if(AUTH.user){
+      var chip = el('button','chip auth-chip');
+      var firstName = (AUTH.user.name||AUTH.user.email||'').split(' ')[0];
+      chip.innerHTML = (AUTH.user.picture ? '<img class="avatar" src="'+escapeHtml(AUTH.user.picture)+'" alt="">' : '') + '<span>'+escapeHtml(firstName)+'</span>';
+      chip.title = 'Signed in as '+AUTH.user.email+' — click to sign out';
+      chip.onclick = function(){
+        if(confirm('Sign out of '+AUTH.user.email+'? Your progress stays saved to that account.')) signOut();
+      };
+      wrap.appendChild(chip);
+    } else {
+      var holder = el('div','gsi-btn-holder');
+      wrap.appendChild(holder);
+      setTimeout(function(){
+        try{
+          if(window.google && google.accounts && google.accounts.id){
+            google.accounts.id.renderButton(holder, {theme:'outline', size:'medium', shape:'pill', text:'signin'});
+          }
+        }catch(e){}
+      }, 0);
+    }
+    return wrap;
+  }
+
+  function activeNavGroup(){
+    return NAV_GROUPS.filter(function(g){ return g.views.indexOf(state.view) !== -1; })[0] || NAV_GROUPS[0];
+  }
+
+  function navBar(){
+    var wrap = el('div','nav-wrap');
+    var current = activeNavGroup();
+
+    var bar = el('div','nav-bar');
+    NAV_GROUPS.forEach(function(g){
+      var active = g.id === current.id;
+      var b = el('button','nav-btn'+(active?' active':''));
+      b.innerHTML = '<span class="nav-icon">'+g.icon+'</span><span>'+escapeHtml(g.label)+'</span>';
+      b.onclick = function(){
+        if(active) return;
+        go(g.items ? g.items[0].views ? g.items[0].views[0] : g.items[0].id : g.views[0]);
+      };
+      bar.appendChild(b);
+    });
+    wrap.appendChild(bar);
+
+    if(current.items){
+      var sub = el('div','nav-subbar');
+      current.items.forEach(function(it){
+        var itViews = it.views || [it.id];
+        var active = itViews.indexOf(state.view) !== -1;
+        var b = el('button','nav-subbtn'+(active?' active':''), it.label);
+        b.onclick = function(){ go(it.id); };
+        sub.appendChild(b);
+      });
+      wrap.appendChild(sub);
+    }
+
+    return wrap;
+  }
+
+  function infoPanel(){
+    var p = el('div','info-panel');
+    p.innerHTML = '<h3>How This App Works</h3><ul>'
+      + '<li><b>Spaced Repetition:</b> a card comes back right around when you\'re about to forget it — not before, not after.</li>'
+      + '<li><b>Active Recall:</b> you answer before you see the answer. Pulling something out of memory yourself cements it better than re-reading it.</li>'
+      + '<li><b>Interleaving:</b> Quiz and Test mix formulas, models, and case studies on purpose — mixed practice sticks better than one topic at a time.</li>'
+      + '<li><b>Progressive Difficulty:</b> new material starts as multiple choice; once you\'ve got it, you start typing it from memory.</li>'
+      + '<li><b>Worked Examples:</b> Guided Exercises show you the explanation and a solved example before asking you to do it yourself — support that fades as you improve.</li>'
+      + '<li><b>Elaborative Encoding:</b> actively matching a term to its definition (Matching Pairs) builds a stronger memory link than just seeing them side by side.</li>'
+      + '</ul>';
+    return p;
+  }
+
+  function statTile(value, label){
+    var t = el('div','stat-tile');
+    t.appendChild(el('div','stat-value mono', value));
+    t.appendChild(el('div','stat-label', label));
+    return t;
+  }
+
+  function categoryBar(catId, catLabel){
+    var pct = categoryMastery(catId);
+    var row = el('div','cat-bar-row');
+    row.appendChild(el('div','cat-bar-name', catLabel));
+    var track = el('div','mastery-bar');
+    var fill = el('div','mastery-fill cat-'+catId); fill.style.width = pct+'%';
+    track.appendChild(fill);
+    row.appendChild(track);
+    row.appendChild(el('div','mastery-pct mono', pct+'%'));
+    return row;
+  }
+
+  function scoreClass(pct){ return pct>=80?'good':(pct>=50?'ok':'low'); }
+
+  function historyRow(entry){
+    var row = el('div','history-row');
+    var left = el('div','history-left');
+    left.appendChild(el('div','history-label', escapeHtml(entry.label||'Session')));
+    left.appendChild(el('div','history-date mono', entry.date));
+    row.appendChild(left);
+    var score = el('div','history-score '+scoreClass(entry.pct));
+    score.innerHTML = '<span class="mono">'+entry.correct+'/'+entry.total+'</span><span class="history-pct mono">'+entry.pct+'%</span>';
+    row.appendChild(score);
+    return row;
+  }
+
+  function recentActivitySection(limit){
+    var wrap = el('div','');
+    wrap.appendChild(el('div','section-label','Recent Activity'));
+    var history = (PROGRESS.history||[]).slice().reverse();
+    if(!history.length){
+      var empty = el('div','sync-note','No sessions yet — take a Quiz or Test to see your scores show up here.');
+      wrap.appendChild(empty);
+      return wrap;
+    }
+    var list = el('div','history-list');
+    history.slice(0, limit).forEach(function(entry){ list.appendChild(historyRow(entry)); });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  var RANGE_OPTIONS = [
+    {id:'all', label:'All time', days:null},
+    {id:'7', label:'Last 7 days', days:7},
+    {id:'30', label:'Last 30 days', days:30}
+  ];
+  function filteredHistory(){
+    var hist = (PROGRESS.history||[]).slice();
+    var mode = state.histMode || 'all';
+    var range = state.histRange || 'all';
+    if(mode !== 'all') hist = hist.filter(function(h){ return h.mode === mode; });
+    var days = (RANGE_OPTIONS.filter(function(r){ return r.id === range; })[0]||{}).days;
+    if(days){
+      var cutoff = daysFromToday(-days);
+      hist = hist.filter(function(h){ return (h.date||'') >= cutoff; });
+    }
+    return hist;
+  }
+
+  function sparklineCard(hist){
+    var wrap = el('div','sparkline');
+    var pts = hist.map(function(h){ return h.pct; });
+    var w = 600, h = 96, pad = 6;
+    var n = pts.length;
+    var x = function(i){ return n === 1 ? w/2 : pad + i*(w-2*pad)/(n-1); };
+    var y = function(v){ return h - pad - (v/100)*(h-2*pad); };
+    var d = pts.map(function(v,i){ return (i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1); }).join(' ');
+    var dots = pts.map(function(v,i){
+      return '<circle cx="'+x(i).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="2.5" fill="var(--accent-navy)"/>';
+    }).join('');
+    wrap.innerHTML = '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-label="Score trend">'
+      + '<line x1="0" y1="'+y(50).toFixed(1)+'" x2="'+w+'" y2="'+y(50).toFixed(1)+'" stroke="var(--rule)" stroke-width="1" stroke-dasharray="4 4"/>'
+      + '<path d="'+d+'" fill="none" stroke="var(--accent-navy)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+      + dots + '</svg>'
+      + '<div class="heat-legend">Oldest to newest, left to right. Dashed line is 50%.</div>';
+    return wrap;
+  }
+
+  function personalCallout(hist){
+    if(hist.length < 3) return null;
+    var last = hist[hist.length-1];
+    var sameMode = hist.filter(function(h){ return h.mode === last.mode; });
+    var better = sameMode.filter(function(h){ return h.pct > last.pct; }).length;
+    var rank = better + 1;
+    var name = MODE_LABELS[last.mode] || last.mode;
+    if(sameMode.length < 2) return null;
+    var suffix = rank === 1 ? 'best' : (rank === 2 ? '2nd-best' : (rank === 3 ? '3rd-best' : rank+'th-best'));
+    if(rank > 3 && rank > sameMode.length/2) return null;
+    return 'Your most recent ' + name + ' (' + last.pct + '%) is your ' + suffix + ' out of ' + sameMode.length + '.';
+  }
+
+  function filterButtons(wrap){
+    var row = el('div','filter-row');
+
+    var modeGroup = el('div','filter-group');
+    modeGroup.appendChild(el('span','filter-label','Method'));
+    var modes = [{id:'all', label:'All'}];
+    Object.keys(modeStats()).forEach(function(m){ modes.push({id:m, label:MODE_LABELS[m]||m}); });
+    modes.forEach(function(m){
+      var b = el('button','filter-btn'+((state.histMode||'all')===m.id?' active':''), m.label);
+      b.onclick = function(){ state.histMode = m.id; render(); };
+      modeGroup.appendChild(b);
+    });
+    row.appendChild(modeGroup);
+
+    var rangeGroup = el('div','filter-group');
+    rangeGroup.appendChild(el('span','filter-label','When'));
+    RANGE_OPTIONS.forEach(function(r){
+      var b = el('button','filter-btn'+((state.histRange||'all')===r.id?' active':''), r.label);
+      b.onclick = function(){ state.histRange = r.id; render(); };
+      rangeGroup.appendChild(b);
+    });
+    row.appendChild(rangeGroup);
+
+    wrap.appendChild(row);
+  }
+
+  function historyView(){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','History'));
+    wrap.appendChild(el('p','page-desc','Every completed session, most recent first — filterable by method and date, with your score trend on top.'));
+
+    if(!(PROGRESS.history||[]).length){
+      wrap.appendChild(el('div','sync-note','No sessions yet — take a Quiz or Test to see your scores show up here.'));
+      return wrap;
+    }
+
+    filterButtons(wrap);
+
+    var hist = filteredHistory();
+    if(!hist.length){
+      wrap.appendChild(el('div','sync-note','No sessions match that filter. Widen the date range or pick a different method.'));
+      return wrap;
+    }
+
+    var avgPct = Math.round(hist.reduce(function(s,h){return s+h.pct;},0) / hist.length);
+    var best = hist.reduce(function(a,h){ return h.pct > a.pct ? h : a; }, hist[0]);
+    var statGrid = el('div','stat-grid');
+    statGrid.appendChild(statTile(String(hist.length), hist.length===1?'Session Shown':'Sessions Shown'));
+    statGrid.appendChild(statTile(avgPct+'%', 'Average Score'));
+    statGrid.appendChild(statTile(best.pct+'%', 'Personal Best'));
+    wrap.appendChild(statGrid);
+
+    if(hist.length >= 2) wrap.appendChild(sparklineCard(hist));
+
+    var callout = personalCallout(PROGRESS.history||[]);
+    if(callout) wrap.appendChild(el('div','trend-note up', '★ ' + callout));
+
+    var list = el('div','history-list');
+    hist.slice().reverse().forEach(function(entry){ list.appendChild(historyRow(entry)); });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  function gradeBreakdownRow(name, pct, clickFn){
+    var attempted = pct !== null;
+    var row = el('div','breakdown-row'+(clickFn?' topic-row':'')+(attempted?'':' unattempted'));
+    row.appendChild(el('div','breakdown-name', name));
+    var track = el('div','breakdown-track');
+    var fill = el('div','breakdown-fill '+(attempted?scoreClass(pct):'')); fill.style.width = (attempted?pct:0)+'%';
+    track.appendChild(fill);
+    row.appendChild(track);
+    row.appendChild(el('div','breakdown-num mono', attempted ? pct+'%' : '—'));
+    if(clickFn){ row.onclick = clickFn; }
+    return row;
+  }
+
+  function gradesView(){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','Report Card'));
+    wrap.appendChild(el('p','page-desc','A deeper breakdown than Home: mastery, raw accuracy, and coverage — each pulled apart by topic, study method, and recall direction — plus one overall grade combining all three.'));
+
+    if(coveragePct() === 0){
+      wrap.appendChild(el('div','sync-note','No practice recorded yet — take a Quiz, Test, or Guided Exercise and this page fills in automatically.'));
+      return wrap;
+    }
+
+    var grade = compositeGrade();
+    var hero = el('div','grade-hero '+scoreClass(grade.score));
+    var letter = el('div','grade-letter', grade.letter);
+    var info = el('div','grade-info');
+    info.appendChild(el('div','grade-score mono', grade.score+'%  Overall Grade'));
+    info.appendChild(el('div','grade-formula','40% Mastery ('+grade.mastery+'%) + 35% Lifetime Accuracy ('+grade.accuracy+'%) + 25% Curriculum Coverage ('+grade.coverage+'%), across all '+ALL_ITEMS.length+' cards in the app.'));
+    hero.appendChild(letter);
+    hero.appendChild(info);
+    wrap.appendChild(hero);
+
+    var statGrid = el('div','stat-grid');
+    statGrid.appendChild(statTile(grade.mastery+'%','Mastery'));
+    statGrid.appendChild(statTile(grade.accuracy+'%','Lifetime Accuracy'));
+    statGrid.appendChild(statTile(grade.coverage+'%','Curriculum Coverage'));
+    statGrid.appendChild(statTile(String((PROGRESS.history||[]).length),'Sessions Completed'));
+    wrap.appendChild(statGrid);
+    wrap.appendChild(el('div','sync-note', attemptedCount()+' of '+ALL_ITEMS.length+' cards attempted at least once · '+totalQuestionsAnswered()+' questions answered all-time.'));
+
+    var trend = recentTrend();
+    if(trend){
+      var dir = trend.delta > 2 ? 'up' : (trend.delta < -2 ? 'down' : 'flat');
+      var arrow = dir==='up' ? '↑' : (dir==='down' ? '↓' : '→');
+      var msg = dir==='flat'
+        ? ('Holding steady — last '+trend.n+' sessions averaged '+trend.recentAvg+'%, about the same as the '+trend.n+' before that.')
+        : ('Last '+trend.n+' sessions averaged '+trend.recentAvg+'%, '+(dir==='up'?'up from ':'down from ')+trend.priorAvg+'% before — '+(trend.delta>=0?'+':'')+trend.delta+' points.');
+      wrap.appendChild(el('div','trend-note '+dir, arrow+' '+msg));
+    }
+
+    wrap.appendChild(el('div','section-label','Coming Due — Next 7 Days'));
+    wrap.appendChild(el('p','page-desc','Cards the schedule will bring back on each day. Spikes are worth planning around; an empty stretch is the schedule working, not a gap.'));
+    wrap.appendChild(forecastSection());
+
+    wrap.appendChild(el('div','section-label','Accuracy by Category'));
+    var catList = el('div','breakdown-list');
+    CATEGORIES.forEach(function(c){
+      catList.appendChild(gradeBreakdownRow(c.label, categoryAccuracy(c.id)));
+    });
+    wrap.appendChild(catList);
+
+    wrap.appendChild(el('div','section-label','By Study Method'));
+    var stats = modeStats();
+    var modeKeys = Object.keys(stats);
+    if(!modeKeys.length){
+      wrap.appendChild(el('div','sync-note','Complete a Quiz, Test, or Guided Exercise to see method-by-method scores here.'));
+    } else {
+      var modeList = el('div','breakdown-list');
+      modeKeys.sort(function(a,b){ return stats[b].count - stats[a].count; }).forEach(function(m){
+        var s = stats[m];
+        var avg = Math.round(s.sum/s.count);
+        var name = (MODE_LABELS[m]||m) + ' ('+s.count+(s.count===1?' session)':' sessions)');
+        modeList.appendChild(gradeBreakdownRow(name, avg));
+      });
+      wrap.appendChild(modeList);
+    }
+
+    wrap.appendChild(el('div','section-label','By Skill Type'));
+    var skillList = el('div','breakdown-list');
+    var calc = typeAccuracy(['calc']);
+    var t2d = typeAccuracy(['term2def']);
+    var d2t = typeAccuracy(['def2term']);
+    skillList.appendChild(gradeBreakdownRow('Formula & Number Recall', calc.pct));
+    skillList.appendChild(gradeBreakdownRow('Term → Definition', t2d.pct));
+    skillList.appendChild(gradeBreakdownRow('Definition → Term', d2t.pct));
+    wrap.appendChild(skillList);
+    if(t2d.pct !== null && d2t.pct !== null && Math.abs(t2d.pct - d2t.pct) >= 12){
+      var harder = t2d.pct < d2t.pct ? 'recognizing the term and recalling its definition' : 'recalling the term from its definition';
+      wrap.appendChild(el('div','sync-note','Noticeably weaker at '+harder+' — worth extra reps in that direction.'));
+    }
+
+    wrap.appendChild(el('div','section-label','Every Topic — Weakest First'));
+    wrap.appendChild(el('p','page-desc','Tap any topic to jump straight into an 8-question quiz on it.'));
+    var topicList = el('div','breakdown-list');
+    TOPICS.map(function(t){ return {t:t, acc:topicAccuracy(t.id)}; })
+      .sort(function(a,b){
+        if(a.acc===null && b.acc===null) return 0;
+        if(a.acc===null) return 1;
+        if(b.acc===null) return -1;
+        return a.acc - b.acc;
+      })
+      .forEach(function(x){
+        var row = gradeBreakdownRow(x.t.name, x.acc, function(){
+          startSession('quiz', pickTopicSession(x.t.id, 8), 'Quiz — '+x.t.name);
+        });
+        topicList.appendChild(row);
+      });
+    wrap.appendChild(topicList);
+
+    return wrap;
+  }
+
+  function recommendCard(){
+    var box = el('div','recommend');
+    var body = el('div','recommend-body');
+    body.appendChild(el('h3','','Recommended Session'));
+    body.appendChild(el('p','', recommendReason()));
+    box.appendChild(body);
+    var btn = el('button','btn btn-primary btn-lg','Start →');
+    btn.onclick = function(){
+      startSession('recommended', recommendedSession(settings().quizSize), 'Recommended Session');
+    };
+    box.appendChild(btn);
+    return box;
+  }
+
+  function heatmapCard(){
+    var wrap = el('div','heatmap');
+    var grid = el('div','heat-grid');
+    var days = PROGRESS.days || {};
+    var today = new Date();
+    var start = new Date(today); start.setDate(start.getDate() - 83);
+    start.setDate(start.getDate() - start.getDay());
+    var cells = 0, studied = 0;
+    for(var d = new Date(start); d <= today; d.setDate(d.getDate()+1)){
+      var key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      var n = days[key] || 0;
+      if(n) studied++;
+      var lvl = n === 0 ? '' : (n < 10 ? ' l1' : (n < 30 ? ' l2' : ' l3'));
+      var cell = el('div','heat-cell'+lvl+(key===todayStr()?' today':''));
+      cell.title = key + ' — ' + n + ' card' + (n===1?'':'s');
+      grid.appendChild(cell);
+      cells++;
+    }
+    wrap.appendChild(grid);
+    wrap.appendChild(el('div','heat-legend', studied+' of the last '+cells+' days studied — today is outlined.'));
+    return wrap;
+  }
+
+  function badgeGrid(){
+    var grid = el('div','badge-grid');
+    badgeDefs().forEach(function(b){
+      var card = el('div','badge'+(b.earned?'':' locked'));
+      card.appendChild(el('div','bicon', b.icon));
+      var txt = el('div','');
+      txt.appendChild(el('div','bname', b.name));
+      txt.appendChild(el('div','bdesc', b.desc));
+      card.appendChild(txt);
+      grid.appendChild(card);
+    });
+    return grid;
+  }
+
+  function homeView(){
+    var wrap = el('div','');
+
+    wrap.appendChild(recommendCard());
+
+    wrap.appendChild(el('div','section-label','Your Progress'));
+    var statGrid = el('div','stat-grid');
+    statGrid.appendChild(statTile(String(dueCount()), 'Ready to Review'));
+    statGrid.appendChild(statTile(overallMastery()+'%', 'Overall Mastery'));
+    statGrid.appendChild(statTile(masteredCount()+' / '+ALL_ITEMS.length, 'Cards Mastered'));
+    statGrid.appendChild(statTile(String(PROGRESS.streak.count||0), 'Day Streak'));
+    wrap.appendChild(statGrid);
+
+    if(GOOGLE_CLIENT_ID){
+      var syncNote = el('div','sync-note');
+      syncNote.textContent = AUTH.user
+        ? ('✓ Saved to your Google account (' + AUTH.user.email + ') — pick up where you left off on any device.')
+        : 'Signed out — progress is only saved on this device. Sign in with Google (top right) to save it to your account.';
+      wrap.appendChild(syncNote);
+    }
+
+    var catBars = el('div','cat-bars');
+    CATEGORIES.forEach(function(c){ catBars.appendChild(categoryBar(c.id, c.label)); });
+    wrap.appendChild(catBars);
+
+    wrap.appendChild(el('div','section-label','Study Days'));
+    wrap.appendChild(heatmapCard());
+
+    wrap.appendChild(el('div','section-label','Milestones'));
+    wrap.appendChild(badgeGrid());
+
+    wrap.appendChild(recentActivitySection(5));
+
+    wrap.appendChild(el('div','section-label','Jump In'));
+    var jumpGrid = el('div','jump-grid');
+    var jumpItems = [
+      {title:'Study', desc:'Flip through flashcards at your own pace.', view:'study'},
+      {title:'Quiz', desc:'A short, mixed check with instant feedback.', view:'quiz'},
+      {title:'Test', desc:'A longer, harder check — closer to the real exam.', view:'test'},
+      {title:'Guided Exercises', desc:'See the concept explained, then practice it.', view:'guided'},
+      {title:'Study Methods', desc:'Fill-in-the-blank, multiple choice, matching, and more.', view:'methods'},
+      {title:'History', desc:'Every past session and score, in full.', view:'history'},
+      {title:'Reference Sheets', desc:'Printable tables for when you\'re doing homework, not quizzing.', view:'reference'},
+      {title:'Settings', desc:'Session sizes, difficulty, theme, and your data.', view:'settings'}
+    ];
+    jumpItems.forEach(function(j){
+      var card = el('div','global-card');
+      card.innerHTML = '<h3>'+j.title+'</h3><p>'+j.desc+'</p>';
+      var btn = el('button','btn btn-primary btn-block','Open →');
+      btn.onclick = function(){ go(j.view); };
+      card.appendChild(btn);
+      jumpGrid.appendChild(card);
+    });
+    wrap.appendChild(jumpGrid);
+
+    wrap.appendChild(el('div','section-label','Topics'));
+    var grid = el('div','dash-grid');
+    TOPICS.forEach(function(t){
+      var items = ITEMS_BY_TOPIC[t.id]||[];
+      var mastery = topicMastery(t.id);
+      var card = el('div','topic-card');
+      card.appendChild(el('div','topic-tab cat-'+t.cat));
+      var body = el('div','topic-body cat-'+t.cat);
+      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
+      var mrow = el('div','mastery-row');
+      var track = el('div','mastery-bar');
+      var fill = el('div','mastery-fill cat-'+t.cat); fill.style.width = mastery+'%';
+      track.appendChild(fill);
+      mrow.appendChild(track);
+      mrow.appendChild(el('span','mono',mastery+'%'));
+      body.appendChild(mrow);
+      body.appendChild(el('div','', '<span class="gloss">'+items.length+' cards</span>'));
+      var practiceBtn = el('button','btn btn-sm btn-ghost btn-block', 'Practice →');
+      practiceBtn.onclick = function(){ startSession('quiz', pickTopicSession(t.id, 8), 'Quiz — '+t.name); };
+      body.appendChild(practiceBtn);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+
+    var footer = el('div','footer-links');
+    var resetBtn = el('button','','Reset Progress');
+    resetBtn.onclick = function(){
+      var msg = AUTH.user
+        ? 'Delete all progress, including the copy saved to '+AUTH.user.email+'? This cannot be undone.'
+        : 'Delete all progress saved in this browser?';
+      if(confirm(msg)){
+        PROGRESS = migrateProgress({items:{}, streak:{count:0,last:null}, history:[], days:{}, settings:PROGRESS.settings||{}});
+        try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROGRESS)); }catch(e){}
+        replaceProgressOnServer();
+        render();
+      }
+    };
+    footer.appendChild(resetBtn);
+    wrap.appendChild(footer);
+
+    return wrap;
+  }
+
+  /* ---------- reusable "all topics + pick a topic" page ---------- */
+  function pickerView(cfg){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title', cfg.title));
+    wrap.appendChild(el('p','page-desc', cfg.description));
+    var primaryBtn = el('button','btn btn-primary btn-lg', cfg.primaryLabel);
+    primaryBtn.onclick = cfg.onPrimary;
+    wrap.appendChild(primaryBtn);
+
+    wrap.appendChild(el('div','section-label','By Topic'));
+    var grid = el('div','dash-grid');
+    TOPICS.forEach(function(t){
+      var mastery = topicMastery(t.id);
+      var card = el('div','topic-card');
+      card.appendChild(el('div','topic-tab cat-'+t.cat));
+      var body = el('div','topic-body cat-'+t.cat);
+      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
+      var mrow = el('div','mastery-row');
+      var track = el('div','mastery-bar');
+      var fill = el('div','mastery-fill cat-'+t.cat); fill.style.width = mastery+'%';
+      track.appendChild(fill);
+      mrow.appendChild(track);
+      mrow.appendChild(el('span','mono',mastery+'%'));
+      body.appendChild(mrow);
+      var btn = el('button','btn btn-sm btn-block', cfg.topicButtonLabel);
+      btn.onclick = function(){ cfg.onTopic(t.id); };
+      body.appendChild(btn);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function studyView(){
+    return pickerView({
+      title:'Study (Flashcards)',
+      description:'Flip through notecards for a topic. Try to recall the answer before you flip, then rate yourself — that honest self-check is what schedules when the card comes back to you (spaced repetition).',
+      primaryLabel:'Study — All Topics',
+      onPrimary:function(){ go('learn', {topicId:null, learnIdx:0, learnItems: pickWeighted(ALL_ITEMS, 25), scopeLabel:'All Topics'}); },
+      topicButtonLabel:'Study',
+      onTopic:function(tid){ go('learn', {topicId:tid, learnIdx:0, learnItems: shuffled(ITEMS_BY_TOPIC[tid]), scopeLabel:TOPIC_MAP[tid].name}); }
+    });
+  }
+
+  function quizView(){
+    return pickerView({
+      title:'Quiz',
+      description:'A short, interleaved check that mixes formulas, models, and case studies together, weighted toward what you\'re close to forgetting. Mixed practice sticks better than drilling one topic in a block.',
+      primaryLabel:'Quiz — All Topics ('+settings().quizSize+' questions)',
+      onPrimary:function(){ startSession('quiz', pickMixedSession(settings().quizSize,false), 'Quiz — All Topics'); },
+      topicButtonLabel:'Quiz This Topic',
+      onTopic:function(tid){ startSession('quiz', pickTopicSession(tid,8), 'Quiz — '+TOPIC_MAP[tid].name); }
+    });
+  }
+
+  function testView(){
+    var view = pickerView({
+      title:'Test',
+      description:'A longer, more demanding check with more type-it-yourself questions — closer to what an actual exam asks of you.',
+      primaryLabel:'Test — All Topics ('+settings().testSize+' questions)',
+      onPrimary:function(){ startSession('test', pickMixedSession(settings().testSize,true), 'Test — All Topics'); },
+      topicButtonLabel:'Test This Topic',
+      onTopic:function(tid){ startSession('test', pickTopicSession(tid,15), 'Test — '+TOPIC_MAP[tid].name); }
+    });
+
+    var finalCard = el('div','recommend');
+    var fb = el('div','recommend-body');
+    fb.appendChild(el('h3','','Comprehensive Final Exam'));
+    fb.appendChild(el('p','','50 questions across every topic, weighted toward your weakest ones, typed wherever the card allows it. The full-unit version of a Test.'));
+    finalCard.appendChild(fb);
+    var fbtn = el('button','btn btn-primary btn-lg','Begin Final →');
+    fbtn.onclick = function(){ startSession('final', pickFinalExam(50), 'Comprehensive Final Exam'); };
+    finalCard.appendChild(fbtn);
+    view.insertBefore ? view.insertBefore(finalCard, view.children[3] || null) : view.appendChild(finalCard);
+    return view;
+  }
+
+  function pickFinalExam(n){
+    var weak = weakestTopics(5);
+    var half = Math.floor(n/2);
+    var out = pickMixedSession(n-half, true);
+    var used = {}; out.forEach(function(it){ used[it.id]=1; });
+    var weakPool = [];
+    weak.forEach(function(tid){ weakPool = weakPool.concat(ITEMS_BY_TOPIC[tid]||[]); });
+    if(!weakPool.length) weakPool = ALL_ITEMS;
+    shuffled(weakPool).forEach(function(it){
+      if(out.length >= n || used[it.id]) return;
+      used[it.id]=1; out.push(it);
+    });
+    shuffled(ALL_ITEMS).forEach(function(it){
+      if(out.length >= n || used[it.id]) return;
+      used[it.id]=1; out.push(it);
+    });
+    return shuffled(out);
+  }
+
+  function guidedView(){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','Guided Exercises'));
+    wrap.appendChild(el('p','page-desc','Pick a topic to see the concept explained first, with a worked example, then practice it with hints available. Worked examples cut down on guesswork while material is still new — the support fades as you get comfortable.'));
+    wrap.appendChild(el('div','section-label','By Topic'));
+    var grid = el('div','dash-grid');
+    TOPICS.forEach(function(t){
+      var mastery = topicMastery(t.id);
+      var card = el('div','topic-card');
+      card.appendChild(el('div','topic-tab cat-'+t.cat));
+      var body = el('div','topic-body cat-'+t.cat);
+      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
+      var mrow = el('div','mastery-row');
+      var track = el('div','mastery-bar');
+      var fill = el('div','mastery-fill cat-'+t.cat); fill.style.width = mastery+'%';
+      track.appendChild(fill);
+      mrow.appendChild(track);
+      mrow.appendChild(el('span','mono',mastery+'%'));
+      body.appendChild(mrow);
+      var btn = el('button','btn btn-sm btn-block', 'Start');
+      btn.onclick = function(){ go('guidedIntro', {topicId:t.id}); };
+      body.appendChild(btn);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function guidedIntroView(){
+    var t = TOPIC_MAP[state.topicId];
+    var rule = RULES[t.id] || {title:t.name, explanation:t.blurb};
+    var wrap = el('div','');
+    var back = el('button','back-btn','← Back to Guided Exercises');
+    back.onclick = function(){ go('guided'); };
+    wrap.appendChild(back);
+
+    var card = el('div','session-card rule-card');
+    card.appendChild(el('h2','page-title', rule.title || t.name));
+    card.appendChild(el('p','rule-text', rule.explanation));
+    if(rule.example){
+      var ex = el('div','rule-example');
+      ex.innerHTML = '<div class="rule-example-main">'+escapeHtml(rule.example.main)+'</div><div class="gloss">'+escapeHtml(rule.example.note)+'</div>';
+      card.appendChild(ex);
+    }
+    var startBtn = el('button','btn btn-primary btn-lg btn-block','Begin Practice');
+    startBtn.onclick = function(){ startSession('guided', pickWeighted(ITEMS_BY_TOPIC[t.id], 8), 'Guided — '+t.name); };
+    card.appendChild(startBtn);
+    wrap.appendChild(card);
+    return wrap;
+  }
+
+  function methodsView(){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','Study Methods'));
+    wrap.appendChild(el('p','page-desc','Different ways to practice the same material. Switching how you practice, not just what, is its own kind of desirable difficulty.'));
+    var grid = el('div','dash-grid');
+    METHODS.forEach(function(m){
+      var card = el('div','topic-card');
+      var body = el('div','topic-body');
+      body.appendChild(el('div','method-icon', m.icon));
+      body.appendChild(el('div','topic-title', m.title));
+      body.appendChild(el('div','topic-blurb', m.blurb));
+      var avail = methodAvailability(m.id);
+      if(avail.note) body.appendChild(el('div','gloss', avail.note));
+      var btn = el('button','btn btn-primary btn-block', avail.ready ? (STANDING_DECKS[m.id] ? 'Start →' : 'Choose Topic →') : 'Not available yet');
+      btn.disabled = !avail.ready;
+      btn.onclick = function(){
+        if(!avail.ready) return;
+        if(STANDING_DECKS[m.id]) startMethod(m.id, null);
+        else go('methodPicker', {methodId:m.id});
+      };
+      body.appendChild(btn);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  var STANDING_DECKS = {missed:1, speed:1};
+
+  function methodAvailability(id){
+    if(id === 'missed'){
+      var n = missedItems().length;
+      return n >= 2 ? {ready:true, note:n+' card'+(n===1?'':'s')+' in the deck right now.'}
+                    : {ready:false, note:'Nothing missed yet — this fills up as you get things wrong.'};
+    }
+    if(id === 'speed'){
+      var m = masteredItems().length;
+      return m >= 5 ? {ready:true, note:m+' mastered card'+(m===1?'':'s')+' eligible.'}
+                    : {ready:false, note:'Unlocks at 5 mastered cards ('+m+' so far) — speed only helps once material is solid.'};
+    }
+    if(id === 'listening'){
+      return speechAvailable()
+        ? {ready:true, note:'Uses your device\'s voice synthesis.'}
+        : {ready:false, note:'This browser has no speech synthesis available.'};
+    }
+    if(id === 'sentence'){
+      var t = sentenceItems().length;
+      return t >= 2 ? {ready:true, note:t+' long-answer cards available.'} : {ready:false, note:'No long-answer cards available.'};
+    }
+    return {ready:true, note:''};
+  }
+
+  function methodPickerView(){
+    var m = METHODS.filter(function(x){ return x.id === state.methodId; })[0];
+    return pickerView({
+      title: m.title,
+      description: m.blurb,
+      primaryLabel: m.title+' — All Topics',
+      onPrimary:function(){ startMethod(m.id, null); },
+      topicButtonLabel:'Start',
+      onTopic:function(tid){ startMethod(m.id, tid); }
+    });
+  }
+
+  function startMethod(methodId, topicId){
+    var pool = topicId ? (ITEMS_BY_TOPIC[topicId]||[]) : ALL_ITEMS;
+    var label = topicId ? TOPIC_MAP[topicId].name : 'All Topics';
+    if(methodId === 'flashcards'){
+      var items = topicId ? shuffled(pool) : pickWeighted(pool, 25);
+      go('learn', {topicId:topicId, learnIdx:0, learnItems:items, scopeLabel:label});
+    } else if(methodId === 'typed-drill'){
+      startSession('typed-drill', pickWeighted(pool, topicId?10:15), 'Fill-in-the-Blank — '+label, 'typed');
+    } else if(methodId === 'mc-drill'){
+      startSession('mc-drill', pickWeighted(mcCapablePool(pool), topicId?10:15), 'Multiple Choice Drill — '+label, 'mc');
+    } else if(methodId === 'matching'){
+      startMatching(pickWeighted(pool, 6), 'Matching Pairs — '+label, pool);
+    } else if(methodId === 'missed'){
+      var missed = missedItems().slice(0, 15);
+      if(missed.length < 1) return;
+      startSession('missed', shuffled(missed), 'Missed-Cards Deck');
+    } else if(methodId === 'sentence'){
+      var sPool = sentenceItems().filter(function(it){ return !topicId || it.topic === topicId; });
+      if(!sPool.length) return;
+      startSession('sentence', pickWeighted(sPool, Math.min(10, sPool.length)), 'Long-Answer Drill — '+label, 'typed');
+    } else if(methodId === 'listening'){
+      var lPool = listeningItems().filter(function(it){ return !topicId || it.topic === topicId; });
+      if(!lPool.length) return;
+      startSession('listening', pickWeighted(lPool, Math.min(12, lPool.length)), 'Listening Drill — '+label, 'typed', {listen:true});
+    } else if(methodId === 'speed'){
+      var mPool = masteredItems();
+      if(mPool.length < 2) return;
+      startSession('speed', pickWeighted(mPool, Math.min(20, mPool.length)), 'Timed Speed Round', null, {speedMs:12000});
+    }
+  }
+
+  /* ---------- MATCHING PAIRS ---------- */
+  function startMatching(items, label, scopePool){
+    if(items.length < 2) return;
+    var cards = [];
+    items.forEach(function(it){
+      cards.push({cardId:it.id+'-p', itemId:it.id, side:'p', html:escapeHtml(stripHtml(it.prompt)), matched:false});
+      cards.push({cardId:it.id+'-a', itemId:it.id, side:'a', html:escapeHtml(it.answer[0]), matched:false});
+    });
+    go('matching', {matchLabel:label, matchItems:items, matchCards:shuffled(cards), matchSelected:[], matchWrong:[], matchMistakes:{}, matchDone:false, matchScopePool:scopePool||ALL_ITEMS});
+  }
+
+  function matchingView(){
+    var wrap = el('div','');
+    var back = el('button','back-btn','← Exit');
+    back.onclick = function(){ go('methods'); };
+    wrap.appendChild(back);
+
+    var card = el('div','session-card');
+    card.appendChild(el('div','q-prompt', state.matchLabel||'Matching Pairs'));
+
+    var matchedCount = state.matchCards.filter(function(c){return c.matched;}).length;
+    card.appendChild(el('div','progress-text mono', (matchedCount/2)+' / '+(state.matchCards.length/2)+' matched'));
+
+    if(state.matchDone){
+      var allCorrect = state.matchItems.every(function(it){ return !state.matchMistakes[it.id]; });
+      var fb = el('div','feedback '+(allCorrect?'correct':'incorrect'));
+      fb.appendChild(el('span','fmark', allCorrect?'✓':'★'));
+      fb.appendChild(el('div','', allCorrect ? '<b>Perfect round — no mismatches!</b>' : '<b>All matched.</b> A few took more than one try — those are now scheduled to come back sooner.'));
+      card.appendChild(fb);
+      var footer = el('div','session-footer');
+      var again = el('button','btn btn-primary','Play Again');
+      again.onclick = function(){ startMatching(pickWeighted(state.matchScopePool||ALL_ITEMS, 6), state.matchLabel, state.matchScopePool); };
+      var exit = el('button','btn btn-ghost','Back to Home');
+      exit.onclick = function(){ go('home'); };
+      footer.appendChild(exit);
+      footer.appendChild(again);
+      card.appendChild(footer);
+    } else {
+      var grid = el('div','match-grid');
+      state.matchCards.forEach(function(c){
+        var tile = el('button','match-tile', c.html);
+        if(c.matched) tile.classList.add('matched');
+        if(state.matchSelected.indexOf(c.cardId) !== -1) tile.classList.add('selected');
+        if(state.matchWrong.indexOf(c.cardId) !== -1) tile.classList.add('wrong');
+        tile.disabled = c.matched || state.matchWrong.length>0;
+        tile.onclick = function(){ handleMatchClick(c.cardId); };
+        grid.appendChild(tile);
+      });
+      card.appendChild(grid);
+    }
+    wrap.appendChild(card);
+    return wrap;
+  }
+
+  function handleMatchClick(cardId){
+    var cards = state.matchCards;
+    var clicked = cards.filter(function(c){return c.cardId===cardId;})[0];
+    if(!clicked || clicked.matched || state.matchSelected.indexOf(cardId)!==-1) return;
+    state.matchSelected.push(cardId);
+    if(state.matchSelected.length < 2){ render(); return; }
+
+    var aId = state.matchSelected[0], bId = state.matchSelected[1];
+    var a = cards.filter(function(c){return c.cardId===aId;})[0];
+    var b = cards.filter(function(c){return c.cardId===bId;})[0];
+    var isMatch = a.itemId === b.itemId && a.side !== b.side;
+
+    if(isMatch){
+      a.matched = true; b.matched = true;
+      state.matchSelected = [];
+      var allDone = cards.every(function(c){return c.matched;});
+      if(allDone){
+        state.matchItems.forEach(function(it){
+          recordAnswer(it.id, !state.matchMistakes[it.id]);
+        });
+        state.matchDone = true;
+      }
+      render();
+    } else {
+      state.matchMistakes[a.itemId] = (state.matchMistakes[a.itemId]||0)+1;
+      state.matchMistakes[b.itemId] = (state.matchMistakes[b.itemId]||0)+1;
+      state.matchWrong = [aId,bId];
+      render();
+      setTimeout(function(){
+        state.matchWrong = [];
+        state.matchSelected = [];
+        render();
+      }, 650);
+    }
+  }
+
+  /* ---------- LEARN VIEW ---------- */
+  function learnView(){
+    var wrap = el('div','');
+    var items = state.learnItems;
+    var idx = state.learnIdx;
+    var label = state.scopeLabel || (TOPIC_MAP[state.topicId] && TOPIC_MAP[state.topicId].name) || 'this deck';
+
+    var header = el('div','view-header');
+    var back = el('button','back-btn','← Back');
+    back.onclick = function(){ go('home'); };
+    header.appendChild(back);
+    var track = el('div','progress-track');
+    var fill = el('div','progress-fill'); fill.style.width = (100*idx/items.length)+'%';
+    track.appendChild(fill);
+    header.appendChild(track);
+    header.appendChild(el('div','progress-text mono', (idx+1)+' / '+items.length));
+    wrap.appendChild(header);
+
+    if(idx >= items.length){
+      var done = el('div','session-card');
+      done.innerHTML = '<div class="results-top"><div class="score-big">✓</div><div class="score-sub">You finished "'+escapeHtml(label)+'"</div></div>';
+      var back2 = el('button','btn btn-primary btn-block btn-lg','Back to Home');
+      back2.onclick = function(){ go('home'); };
+      done.appendChild(back2);
+      wrap.appendChild(done);
+      return wrap;
+    }
+
+    var item = items[idx];
+    var outer = el('div','flip-outer');
+    var card = el('div','flip-card');
+    var inner = el('div','flip-inner');
+
+    var front = el('div','flip-face front');
+    front.innerHTML = (item.icon?('<div class="card-icon">'+item.icon+'</div>'):'') + '<div class="card-prompt">'+item.prompt+'</div><div class="card-hint">Tap to reveal the answer</div>';
+
+    var back_ = el('div','flip-face back');
+    var ans = item.answer[0];
+    back_.innerHTML = '<div class="card-answer">'+escapeHtml(ans)+'</div>' + (item.note?('<div class="card-note">'+escapeHtml(item.note)+'</div>'):'');
+
+    inner.appendChild(front);
+    inner.appendChild(back_);
+    card.appendChild(inner);
+    card.onclick = function(){ card.classList.toggle('flipped'); };
+    outer.appendChild(card);
+    wrap.appendChild(outer);
+
+    var actions = el('div','learn-actions');
+    var shaky = el('button','btn btn-ghost','Still Shaky');
+    shaky.onclick = function(){ seedLearn(item.id, false); go('learn', {topicId:state.topicId, learnItems:items, learnIdx:idx+1, scopeLabel:label}); };
+    var gotIt = el('button','btn btn-pine','Got It');
+    gotIt.onclick = function(){ seedLearn(item.id, true); go('learn', {topicId:state.topicId, learnItems:items, learnIdx:idx+1, scopeLabel:label}); };
+    actions.appendChild(shaky);
+    actions.appendChild(gotIt);
+    wrap.appendChild(actions);
+    wrap.appendChild(el('div','tap-hint','Flip the card before you rate yourself'));
+
+    return wrap;
+  }
+
+  /* ---------- SESSION (quiz/test/guided/drills) ---------- */
+  function startSession(mode, items, label, forceMode, opts){
+    if(!items.length){ return; }
+    opts = opts || {};
+    go('session', {sessionMode:mode, sessionLabel:label, sessionItems:items, sessionIdx:0, sessionAnswered:false, sessionResults:[], q:prepQuestion(items[0], forceMode), lastChoice:null, lastTypedVal:'', forceMode:forceMode, hintShown:false, historyLogged:false,
+      listen: !!opts.listen, speedMs: opts.speedMs || 0, speedDeadline: null});
+  }
+
+  function sessionView(){
+    var wrap = el('div','');
+    var items = state.sessionItems;
+    var idx = state.sessionIdx;
+
+    var header = el('div','view-header');
+    var back = el('button','back-btn','← Exit');
+    back.onclick = function(){ go('home'); };
+    header.appendChild(back);
+    var track = el('div','progress-track');
+    var fill = el('div','progress-fill'); fill.style.width = (100*idx/items.length)+'%';
+    track.appendChild(fill);
+    header.appendChild(track);
+    header.appendChild(el('div','progress-text mono', (idx+1)+' / '+items.length));
+    wrap.appendChild(header);
+
+    if(idx >= items.length){
+      go('results', {});
+      return wrap;
+    }
+
+    var item = items[idx];
+    var topic = TOPIC_MAP[item.topic];
+    var card = el('div','session-card');
+    card.appendChild(el('div','qchip cat-'+topic.cat, topic.name));
+
+    if(state.listen){
+      card.appendChild(el('div','q-prompt','🎧 Type what you hear'));
+      var replay = el('button','btn btn-ghost btn-sm','🔊 Play again');
+      replay.onclick = function(){ speak(item.answer[0]); };
+      var replayRow = el('div','hint-row');
+      replayRow.appendChild(replay);
+      card.appendChild(replayRow);
+      if(!state.sessionAnswered) speak(item.answer[0]);
+    } else {
+      card.appendChild(el('div','q-prompt', item.prompt));
+    }
+
+    if(!state.q) state.q = prepQuestion(item, state.forceMode);
+    var mode = state.listen ? 'typed' : state.q.mode;
+    var answered = state.sessionAnswered;
+
+    if(state.speedMs && !answered){
+      if(!state.speedDeadline) state.speedDeadline = Date.now() + state.speedMs;
+      var timerRow = el('div','timer-row');
+      var timerTrack = el('div','timer-track');
+      var timerFill = el('div','timer-fill');
+      timerTrack.appendChild(timerFill);
+      var timerText = el('div','timer-text mono','');
+      timerRow.appendChild(timerTrack);
+      timerRow.appendChild(timerText);
+      card.appendChild(timerRow);
+      var paint = function(){
+        var left = speedRemaining();
+        timerFill.style.width = Math.round(100*left/state.speedMs)+'%';
+        if(left < state.speedMs*0.25) timerFill.classList.add('urgent');
+        timerText.innerHTML = (left/1000).toFixed(1)+'s';
+      };
+      paint();
+      if(typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function'){
+        clearSpeedTimer();
+        speedTimer = setInterval(function(){
+          if(state.view !== 'session' || state.sessionAnswered){ clearSpeedTimer(); return; }
+          paint();
+          if(speedRemaining() <= 0){
+            clearSpeedTimer();
+            if(speedExpire(item)) render();
+          }
+        }, 100);
+      }
+    }
+
+    var hintRow = null;
+    if(state.sessionMode === 'guided' && !answered){
+      hintRow = el('div','hint-row');
+      if(!state.hintShown){
+        var hintBtn = el('button','btn btn-ghost btn-sm','💡 Show a hint');
+        hintBtn.onclick = function(){ state.hintShown = true; render(); };
+        hintRow.appendChild(hintBtn);
+      } else {
+        var hintText = item.note || ('Starts with "'+item.answer[0].charAt(0).toUpperCase()+'..."');
+        hintRow.appendChild(el('div','hint-text','💡 '+escapeHtml(hintText)));
+      }
+      card.appendChild(hintRow);
+    }
+
+    function afterAnswer(){
+      if(hintRow && hintRow.parentNode) hintRow.parentNode.removeChild(hintRow);
+      appendFeedback(card, item, mode, idx, items);
+    }
+
+    if(mode === 'mc'){
+      var choicesWrap = el('div','choices');
+      var opts = state.q.opts;
+      var choiceButtons = [];
+      opts.forEach(function(opt, oi){
+        var b = el('button','choice-btn', '<span class="choice-key mono">'+(oi+1)+'</span>'+escapeHtml(opt));
+        b.disabled = !!answered;
+        if(answered){
+          if(normalize(opt) === normalize(item.answer[0])) b.classList.add('correct');
+          else if(opt === state.lastChoice) b.classList.add('incorrect');
+        }
+        b.onclick = function(){
+          if(state.sessionAnswered) return;
+          state.lastChoice = opt;
+          var correct = normalize(opt) === normalize(item.answer[0]);
+          submitAnswer(item, opt, correct);
+          choiceButtons.forEach(function(cb){
+            cb.disabled = true;
+            if(normalize(cb.__opt) === normalize(item.answer[0])) cb.classList.add('correct');
+            else if(cb.__opt === opt) cb.classList.add('incorrect');
+          });
+          afterAnswer();
+        };
+        b.__opt = opt;
+        choiceButtons.push(b);
+        choicesWrap.appendChild(b);
+      });
+      card.appendChild(choicesWrap);
+    } else {
+      var row = el('div','text-row');
+      var input = el('input','text-input');
+      input.type = 'text';
+      input.placeholder = 'Type your answer...';
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+      if(answered){ input.disabled = true; input.value = state.lastTypedVal || ''; }
+      var submitBtn = el('button','btn btn-primary','Check');
+      submitBtn.disabled = !!answered;
+      function doSubmit(){
+        if(state.sessionAnswered) return;
+        var val = input.value;
+        var correct = isCorrectTyped(item, val);
+        state.lastTypedVal = val;
+        submitAnswer(item, val, correct);
+        input.disabled = true;
+        submitBtn.disabled = true;
+        afterAnswer();
+      }
+      input.addEventListener('keydown', function(ev){ if(ev.key === 'Enter') doSubmit(); });
+      submitBtn.onclick = doSubmit;
+      row.appendChild(input);
+      row.appendChild(submitBtn);
+      card.appendChild(row);
+      setTimeout(function(){ input.focus(); }, 0);
+    }
+
+    if(answered){
+      appendFeedback(card, item, mode, idx, items);
+    }
+
+    wrap.appendChild(card);
+    return wrap;
+  }
+
+  function appendFeedback(card, item, mode, idx, items){
+    var last = state.sessionResults[state.sessionResults.length-1];
+    var fb = el('div','feedback '+(last.correct?'correct':'incorrect'));
+    if(fb.setAttribute){ fb.setAttribute('role','status'); fb.setAttribute('aria-live','polite'); }
+    var mark = el('span','fmark', last.correct?'✓':'✕');
+    var body = el('div','');
+    if(last.correct){
+      body.innerHTML = '<b>Correct!</b>' + (item.note?(' — '+escapeHtml(item.note)):'');
+    } else {
+      var youWrote = (mode === 'typed' && last.userVal) ? ('Your answer: <b>'+escapeHtml(last.userVal)+'</b><br>') : '';
+      body.innerHTML = youWrote + 'Correct answer: <b>'+escapeHtml(item.answer[0])+'</b>' + (item.note?('<br>'+escapeHtml(item.note)):'');
+    }
+    fb.appendChild(mark);
+    fb.appendChild(body);
+    card.appendChild(fb);
+
+    var footer = el('div','session-footer');
+    var nextBtn = el('button','btn btn-primary','Next →');
+    nextBtn.onclick = function(){
+      var nextIdx = idx+1;
+      var nextQ = nextIdx < items.length ? prepQuestion(items[nextIdx], state.forceMode) : null;
+      go('session', {sessionMode:state.sessionMode, sessionLabel:state.sessionLabel, sessionItems:items, sessionIdx:nextIdx, sessionAnswered:false, sessionResults:state.sessionResults, q:nextQ, lastChoice:null, lastTypedVal:'', hintShown:false, speedDeadline:null});
+    };
+    footer.appendChild(nextBtn);
+    card.appendChild(footer);
+  }
+
+  function submitAnswer(item, userVal, correct){
+    recordAnswer(item.id, correct);
+    state.sessionAnswered = true;
+    state.sessionResults.push({item:item, userVal:userVal, correct:correct});
+  }
+
+  /* ---------- RESULTS ---------- */
+  function resultsView(){
+    var wrap = el('div','');
+    var results = state.sessionResults;
+    var total = results.length;
+    var correctCount = results.filter(function(r){return r.correct;}).length;
+    var pct = total ? Math.round(100*correctCount/total) : 0;
+
+    if(!state.historyLogged && total){
+      if(!PROGRESS.history) PROGRESS.history = [];
+      var entry = {date:todayStr(), ts:Date.now(), mode:state.sessionMode, label:state.sessionLabel||'', correct:correctCount, total:total, pct:pct};
+      PROGRESS.history.push(entry);
+      if(PROGRESS.history.length > 50) PROGRESS.history = PROGRESS.history.slice(-50);
+      state.historyLogged = true;
+      saveProgress();
+      if(AUTH.user){
+        apiFetch('/api/session-complete', {method:'POST', body: JSON.stringify(Object.assign({subject:SUBJECT}, entry))}).catch(function(){});
+      }
+    }
+
+    var top = el('div','results-top');
+    top.innerHTML = '<div class="score-big mono">'+pct+'%</div><div class="score-sub">'+correctCount+' of '+total+' correct — '+escapeHtml(state.sessionLabel||'')+'</div>';
+    wrap.appendChild(top);
+
+    var byTopic = {};
+    results.forEach(function(r){
+      var tid = r.item.topic;
+      if(!byTopic[tid]) byTopic[tid] = {correct:0,total:0};
+      byTopic[tid].total++;
+      if(r.correct) byTopic[tid].correct++;
+    });
+    var label = el('div','section-label','By Topic');
+    wrap.appendChild(label);
+    var bd = el('div','breakdown-list');
+    Object.keys(byTopic).forEach(function(tid){
+      var t = TOPIC_MAP[tid];
+      var s = byTopic[tid];
+      var p = Math.round(100*s.correct/s.total);
+      var row = el('div','breakdown-row');
+      row.appendChild(el('div','breakdown-name', t.name));
+      var track = el('div','breakdown-track');
+      var fill = el('div','breakdown-fill'); fill.style.width = p+'%';
+      fill.style.background = 'var(--accent-'+CAT_ACCENT[t.cat]+')';
+      track.appendChild(fill);
+      row.appendChild(track);
+      row.appendChild(el('div','breakdown-num mono', s.correct+'/'+s.total));
+      bd.appendChild(row);
+    });
+    wrap.appendChild(bd);
+
+    var missed = results.filter(function(r){return !r.correct;});
+    if(missed.length){
+      wrap.appendChild(el('div','section-label','To Review'));
+      var ml = el('div','missed-list');
+      missed.forEach(function(r){
+        var mi = el('div','missed-item');
+        mi.innerHTML = '<div class="mp">'+r.item.prompt+'</div><div class="ma">'+escapeHtml(r.item.answer[0])+'</div>';
+        ml.appendChild(mi);
+      });
+      wrap.appendChild(ml);
+    }
+
+    var actions = el('div','results-actions');
+    if(missed.length){
+      var reviewBtn = el('button','btn btn-primary','Review Mistakes ('+missed.length+')');
+      reviewBtn.onclick = function(){ startSession('review', missed.map(function(r){return r.item;}), 'Reviewing Mistakes'); };
+      actions.appendChild(reviewBtn);
+    }
+    var backBtn = el('button','btn btn-ghost','Back to Home');
+    backBtn.onclick = function(){ go('home'); };
+    actions.appendChild(backBtn);
+    wrap.appendChild(actions);
+
+    return wrap;
+  }
+
+  /* ============================= SETTINGS VIEW ============================= */
+  function settingRow(cfg){
+    var card = el('div','setting-card');
+    card.appendChild(el('h3','', cfg.title));
+    card.appendChild(el('p','', cfg.desc));
+    var control = el('div','setting-control');
+    cfg.controls.forEach(function(c){ control.appendChild(c); });
+    card.appendChild(control);
+    if(cfg.why) card.appendChild(el('div','why-note', cfg.why));
+    return card;
+  }
+  function choiceButtons(values, current, onPick, fmt){
+    return values.map(function(v){
+      var b = el('button','filter-btn'+(String(current)===String(v)?' active':''), fmt ? fmt(v) : String(v));
+      b.onclick = function(){ onPick(v); };
+      return b;
+    });
+  }
+
+  function settingsView(){
+    var st = settings();
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','Settings'));
+    wrap.appendChild(el('p','page-desc','How hard and how long — plus what happens to your data. Nothing here sets a quota; it\'s just here whenever you want to tune it. Everything is saved with your progress and follows you to any signed-in device.'));
+
+    wrap.appendChild(el('div','section-label','Study'));
+
+    wrap.appendChild(settingRow({
+      title:'Quiz length',
+      desc:'Questions in an all-topics Quiz.',
+      controls: choiceButtons([8,12,20,30], st.quizSize, function(v){ setSetting('quizSize', v); render(); })
+    }));
+
+    wrap.appendChild(settingRow({
+      title:'Test length',
+      desc:'Questions in an all-topics Test.',
+      controls: choiceButtons([20,30,45,60], st.testSize, function(v){ setSetting('testSize', v); render(); })
+    }));
+
+    wrap.appendChild(settingRow({
+      title:'When cards switch to typing',
+      desc:'Cards start as multiple choice and become type-it-yourself once you\'ve got them right this many times in a row.',
+      controls: choiceButtons([1,2,3,4], st.typedFrom, function(v){ setSetting('typedFrom', v); render(); }, function(v){ return v+' correct'; }),
+      why:'Producing an answer is harder and sticks better than picking one; moving the threshold lets you tune that difficulty to where it is useful rather than discouraging (Bjork).'
+    }));
+
+    wrap.appendChild(el('div','section-label','Display'));
+    wrap.appendChild(settingRow({
+      title:'Theme',
+      desc:'Follow your device, or force one.',
+      controls: choiceButtons(['system','light','dark'], st.theme, function(v){ setSetting('theme', v); applyDisplaySettings(); render(); },
+        function(v){ return v.charAt(0).toUpperCase()+v.slice(1); })
+    }));
+    wrap.appendChild(settingRow({
+      title:'Text size',
+      desc:'Scales the whole interface.',
+      controls: choiceButtons([90,100,115,130], st.textScale, function(v){ setSetting('textScale', v); applyDisplaySettings(); render(); }, function(v){ return v+'%'; }),
+      why:'Effort spent squinting at the interface is effort not spent on the material (cognitive load theory, Sweller).'
+    }));
+
+    wrap.appendChild(el('div','section-label','Your Data'));
+    var syncState = !GOOGLE_CLIENT_ID
+      ? 'Sign-in is not configured on this server, so progress stays in this browser only.'
+      : (AUTH.user
+        ? 'Signed in as '+AUTH.user.email+'. Synced: card progress, session history, study days, streak, and these settings.'
+        : 'Signed out — progress is saved in this browser only. Sign in (top right) to sync it to your account.');
+    wrap.appendChild(el('div','sync-note', escapeHtml(syncState)));
+
+    var expJson = el('button','btn btn-sm','Export JSON');
+    expJson.onclick = exportJSON;
+    var expCsv = el('button','btn btn-sm','Export sessions (CSV)');
+    expCsv.onclick = exportCSV;
+    wrap.appendChild(settingRow({
+      title:'Export your progress',
+      desc:'A full JSON copy of everything, or a spreadsheet of your sessions.',
+      controls:[expJson, expCsv],
+      why:'It is your record of your own work; you should be able to take it with you.'
+    }));
+
+    var clearBtn = el('button','btn btn-sm','Clear local data');
+    clearBtn.onclick = function(){
+      if(confirm('Delete all progress stored in this browser? If you are signed in, the copy on your account is not touched — signing in again will pull it back.')){
+        PROGRESS = migrateProgress({items:{}, streak:{count:0,last:null}, history:[], days:{}, settings:PROGRESS.settings||{}});
+        try{ localStorage.setItem(STORE_KEY, JSON.stringify(PROGRESS)); }catch(e){}
+        render();
+      }
+    };
+    var signOutBtn = el('button','btn btn-sm','Sign out');
+    signOutBtn.disabled = !AUTH.user;
+    signOutBtn.onclick = function(){ signOut(); };
+    wrap.appendChild(settingRow({
+      title:'Account controls',
+      desc:'Clearing local data leaves any synced copy on your account alone.',
+      controls:[signOutBtn, clearBtn]
+    }));
+
+    return wrap;
+  }
+
+  /* ============================= REFERENCE SHEETS ============================= */
+  function referenceView(){
+    var wrap = el('div','');
+    wrap.appendChild(el('h2','page-title','Reference Sheets'));
+    wrap.appendChild(el('p','page-desc','Every topic as a plain table you can read or print — no quizzing, no scoring. For when you just need the facts in front of you.'));
+    var grid = el('div','dash-grid');
+    TOPICS.forEach(function(t){
+      var card = el('div','topic-card');
+      card.appendChild(el('div','topic-tab cat-'+t.cat));
+      var body = el('div','topic-body cat-'+t.cat);
+      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
+      body.appendChild(el('div','topic-blurb', t.blurb));
+      var btn = el('button','btn btn-sm btn-block','Open sheet');
+      btn.onclick = function(){ go('referenceSheet', {topicId:t.id}); };
+      body.appendChild(btn);
+      card.appendChild(body);
+      grid.appendChild(card);
+    });
+    wrap.appendChild(grid);
+    return wrap;
+  }
+
+  function referenceRows(topicId){
+    var seen = {}, rows = [];
+    (ITEMS_BY_TOPIC[topicId]||[]).forEach(function(it){
+      var q = stripHtml(it.prompt).replace(/\s+/g,' ').trim();
+      var a = it.answer.join(' / ');
+      var key = q+'␟'+a;
+      if(seen[key]) return;
+      seen[key] = 1;
+      rows.push({q:q, a:a, note:it.note||''});
+    });
+    return rows;
+  }
+
+  function referenceSheetView(){
+    var t = TOPIC_MAP[state.topicId];
+    var rule = RULES[t.id] || {title:t.name, explanation:t.blurb};
+    var wrap = el('div','');
+    var back = el('button','back-btn','← Back to Reference Sheets');
+    back.onclick = function(){ go('reference'); };
+    wrap.appendChild(back);
+
+    var sec = el('div','ref-section');
+    sec.appendChild(el('h3','', topicIcon(t.id)+' '+escapeHtml(rule.title || t.name)));
+    sec.appendChild(el('p','rule-text', rule.explanation));
+    if(rule.example){
+      var ex = el('div','rule-example');
+      ex.innerHTML = '<div class="rule-example-main">'+escapeHtml(rule.example.main)+'</div><div class="gloss">'+escapeHtml(rule.example.note)+'</div>';
+      sec.appendChild(ex);
+    }
+    var rows = referenceRows(t.id);
+    var table = el('table','ref-table');
+    var html = '<thead><tr><th>Prompt</th><th>Answer</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html += '<tr><td>'+escapeHtml(r.q)+'</td><td>'+escapeHtml(r.a)+(r.note?('<br><span class="gloss">'+escapeHtml(r.note)+'</span>'):'')+'</td></tr>';
+    });
+    table.innerHTML = html + '</tbody>';
+    sec.appendChild(table);
+    wrap.appendChild(sec);
+
+    var printBtn = el('button','btn btn-primary','🖨 Print this sheet');
+    printBtn.onclick = function(){ if(typeof window !== 'undefined' && window.print) window.print(); };
+    wrap.appendChild(printBtn);
+    return wrap;
+  }
+
+  /* ---------- keyboard ---------- */
+  function initKeyboard(){
+    if(typeof document === 'undefined' || typeof document.addEventListener !== 'function') return;
+    document.addEventListener('keydown', function(ev){
+      if(state.view !== 'session') return;
+      var tag = ev.target && ev.target.tagName;
+      if(tag === 'INPUT' || tag === 'TEXTAREA'){
+        return;
+      }
+      if(ev.key === 'Enter' || ev.key === ' '){
+        var next = document.querySelector('.session-footer .btn');
+        if(next){ ev.preventDefault(); next.click(); }
+        return;
+      }
+      if(state.sessionAnswered) return;
+      var n = parseInt(ev.key, 10);
+      if(!n || n < 1 || n > 4) return;
+      var buttons = document.querySelectorAll('.choice-btn');
+      if(buttons && buttons[n-1]){ ev.preventDefault(); buttons[n-1].click(); }
+    });
+  }
+
+  applyDisplaySettings();
+  render();
+  initKeyboard();
+  initAuth();
+})();
+</script>
+</body>
+</html>

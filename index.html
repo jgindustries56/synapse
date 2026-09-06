@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synapse — Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Piazzolla:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F2EFE4;
+    --surface:#FFFDF7;
+    --surface-2:#E7E1CE;
+    --ink:#20281F;
+    --ink-soft:#5B6152;
+    --rule:#D8D1B8;
+    --accent-navy:#2B4570;
+    --accent-navy-ink:#1E3255;
+    --accent-pine:#2F6355;
+    --accent-pine-ink:#204A40;
+    --accent-gold:#B87F1F;
+    --accent-gold-ink:#82590F;
+    --accent-clay:#A8531F;
+    --accent-clay-ink:#7A3B14;
+    --on-accent:#FBF8EF;
+    --shadow: 0 1px 2px rgba(32,40,31,.06), 0 6px 16px -8px rgba(32,40,31,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#181A15;
+      --surface:#21241C;
+      --surface-2:#2B2E23;
+      --ink:#EEE9D8;
+      --ink-soft:#A6A18C;
+      --rule:#3B3E31;
+      --accent-navy:#8AA3D6;
+      --accent-navy-ink:#C4D3EE;
+      --accent-pine:#6FBBA1;
+      --accent-pine-ink:#B3E4D2;
+      --accent-gold:#E3AC4E;
+      --accent-gold-ink:#F4D599;
+      --accent-clay:#E2915C;
+      --accent-clay-ink:#F5C39C;
+      --on-accent:#1B1D16;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#181A15;
+    --surface:#21241C;
+    --surface-2:#2B2E23;
+    --ink:#EEE9D8;
+    --ink-soft:#A6A18C;
+    --rule:#3B3E31;
+    --accent-navy:#8AA3D6;
+    --accent-navy-ink:#C4D3EE;
+    --accent-pine:#6FBBA1;
+    --accent-pine-ink:#B3E4D2;
+    --accent-gold:#E3AC4E;
+    --accent-gold-ink:#F4D599;
+    --accent-clay:#E2915C;
+    --accent-clay-ink:#F5C39C;
+    --on-accent:#1B1D16;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:'Work Sans',ui-sans-serif,system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,.display{
+    font-family:'Piazzolla',Georgia,'Times New Roman',serif;
+    text-wrap:balance;
+    font-weight:600;
+    margin:0;
+  }
+  .mono{font-family:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace; font-variant-numeric:tabular-nums;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--accent-navy); outline-offset:2px;}
+
+  .shell{max-width:1040px; margin:0 auto; padding:28px 20px 64px;}
+
+  .topbar{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding-bottom:20px; margin-bottom:8px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    background:linear-gradient(135deg, var(--accent-navy), var(--accent-pine));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Piazzolla',serif; font-weight:700; color:var(--on-accent); font-size:1.1rem;
+  }
+  .brand h1{font-size:1.5rem; letter-spacing:.2px;}
+  .brand .sub{color:var(--ink-soft); font-size:.82rem; margin-top:2px;}
+
+  .auth-area{display:flex; align-items:center;}
+  .chip{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--rule); border-radius:999px;
+    padding:7px 12px; font-size:.82rem; box-shadow:var(--shadow); cursor:pointer;
+  }
+  .chip .avatar{width:20px; height:20px; border-radius:50%;}
+
+  .hero{margin:28px 0 8px;}
+  .hero h2{font-size:1.7rem; margin-bottom:6px;}
+  .hero p{color:var(--ink-soft); font-size:.98rem; max-width:52ch; margin:0;}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+    gap:16px; margin-top:26px;
+  }
+  .card{
+    position:relative; overflow:hidden;
+    background:var(--surface); border:1px solid var(--rule); border-radius:16px;
+    padding:20px; text-align:left; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:10px; min-height:168px;
+    text-decoration:none; color:inherit;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .card.live:hover, .card.live:focus-visible{ transform:translateY(-2px); }
+  .card::before{
+    content:''; position:absolute; inset:0 0 auto 0; height:5px;
+    background:var(--accent-card, var(--accent-navy));
+  }
+  .card .icon{font-size:1.7rem; line-height:1;}
+  .card h3{font-family:'Piazzolla',serif; font-size:1.15rem; font-weight:600;}
+  .card p{color:var(--ink-soft); font-size:.86rem; margin:0; line-height:1.4;}
+  .card .cta{
+    margin-top:auto; font-size:.78rem; font-weight:600; letter-spacing:.02em;
+    color:var(--accent-card, var(--accent-navy));
+  }
+  .card.soon{opacity:.62; cursor:default;}
+  .card.soon .cta{color:var(--ink-soft);}
+
+  .footer-note{
+    margin-top:40px; padding-top:16px; border-top:1px solid var(--rule);
+    color:var(--ink-soft); font-size:.78rem;
+  }
+
+  @media (max-width:520px){
+    .shell{padding:20px 14px 48px;}
+    .hero h2{font-size:1.4rem;}
+  }
+</style>
+</head>
+<body>
+<script>window.__GOOGLE_CLIENT_ID__ = "%%GOOGLE_CLIENT_ID%%";</script>
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">S</div>
+      <div>
+        <h1>Synapse</h1>
+        <div class="sub">Spaced-repetition study, all in one place</div>
+      </div>
+    </div>
+    <div class="auth-area" id="authArea"></div>
+  </div>
+
+  <div class="hero">
+    <h2>Pick a subject.</h2>
+    <p>Every section shares one account and syncs your progress independently — study AP Human Geography and Spanish side by side, with more subjects on the way.</p>
+  </div>
+
+  <div class="grid">
+    <a class="card live" href="/aphg" style="--accent-card:var(--accent-navy)">
+      <div class="icon">🌍</div>
+      <h3>AP Human Geography</h3>
+      <p>Unit 2 · Population Geography — terms, formulas, models, and case studies.</p>
+      <div class="cta">Open section →</div>
+    </a>
+    <a class="card live" href="/spanish" style="--accent-card:var(--accent-clay)">
+      <div class="icon">🗣️</div>
+      <h3>Spanish</h3>
+      <p>Senderos 2 — vocabulary, grammar, and verb conjugation practice.</p>
+      <div class="cta">Open section →</div>
+    </a>
+    <div class="card soon" style="--accent-card:var(--accent-gold)">
+      <div class="icon">📐</div>
+      <h3>Math</h3>
+      <p>Not built yet — on the roadmap.</p>
+      <div class="cta">Coming soon</div>
+    </div>
+    <div class="card soon" style="--accent-card:var(--accent-pine)">
+      <div class="icon">🧪</div>
+      <h3>Science</h3>
+      <p>Not built yet — on the roadmap.</p>
+      <div class="cta">Coming soon</div>
+    </div>
+  </div>
+
+  <div class="footer-note">Signing in syncs your progress in each section to your account, across devices.</div>
+</div>
+
+<script>
+(function(){
+  var GOOGLE_CLIENT_ID = (function(){
+    var v = (typeof window !== 'undefined') ? window.__GOOGLE_CLIENT_ID__ : null;
+    return (v && v.indexOf('.apps.googleusercontent.com') !== -1) ? v : null;
+  })();
+  var AUTH = { user:null };
+
+  function apiFetch(url, opts){
+    opts = opts || {};
+    var headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+    return fetch(url, Object.assign({credentials:'same-origin'}, opts, {headers:headers}))
+      .then(function(r){
+        return r.json().catch(function(){ return {}; }).then(function(data){
+          return {ok:r.ok, status:r.status, data:data};
+        });
+      });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function renderAuth(){
+    var wrap = document.getElementById('authArea');
+    wrap.innerHTML = '';
+    if(!GOOGLE_CLIENT_ID) return;
+    if(AUTH.user){
+      var chip = document.createElement('button');
+      chip.className = 'chip';
+      var firstName = (AUTH.user.name||AUTH.user.email||'').split(' ')[0];
+      chip.innerHTML = (AUTH.user.picture ? '<img class="avatar" src="'+escapeHtml(AUTH.user.picture)+'" alt="">' : '') + '<span>'+escapeHtml(firstName)+'</span>';
+      chip.title = 'Signed in as '+AUTH.user.email+' — click to sign out';
+      chip.onclick = function(){
+        if(confirm('Sign out of '+AUTH.user.email+'? Your progress stays saved to that account.')) signOut();
+      };
+      wrap.appendChild(chip);
+    } else {
+      var holder = document.createElement('div');
+      wrap.appendChild(holder);
+      setTimeout(function(){
+        try{
+          if(window.google && google.accounts && google.accounts.id){
+            google.accounts.id.renderButton(holder, {theme:'outline', size:'medium', shape:'pill', text:'signin'});
+          }
+        }catch(e){}
+      }, 0);
+    }
+  }
+
+  function handleGoogleCredential(response){
+    apiFetch('/api/auth/google', {method:'POST', body: JSON.stringify({credential: response.credential})})
+      .then(function(res){
+        if(res.ok && res.data.user) AUTH.user = res.data.user;
+        renderAuth();
+      }).catch(function(){});
+  }
+
+  function signOut(){
+    apiFetch('/api/auth/logout', {method:'POST'}).catch(function(){});
+    AUTH.user = null;
+    renderAuth();
+  }
+
+  function initAuth(){
+    if(!GOOGLE_CLIENT_ID) return;
+    apiFetch('/api/me').then(function(res){
+      if(res.ok && res.data.user) AUTH.user = res.data.user;
+      renderAuth();
+    }).catch(function(){ renderAuth(); });
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true; s.defer = true;
+    s.onload = function(){
+      try{
+        google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID, callback:handleGoogleCredential});
+      }catch(e){}
+      renderAuth();
+    };
+    document.head.appendChild(s);
+  }
+
+  initAuth();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,440 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const https = require('https');
+
+const PORT = process.env.PORT || 3000;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+// Optional: mirrors each completed session to a Google Sheet, purely as a
+// human-readable window into activity. Railway's volume-backed JSON store
+// (below) stays the real, load-bearing data — this is best-effort and never
+// blocks or fails a user's save if it's unset or Google is unreachable.
+const SHEETS_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || '';
+const SHEETS_KEY = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+const SHEETS_ID = process.env.GOOGLE_SHEET_ID || '';
+const SHEETS_CONFIGURED = !!(SHEETS_EMAIL && SHEETS_KEY && SHEETS_ID);
+// DATA_DIR should point at a mounted Railway volume in production so saved
+// progress survives redeploys; falls back to a local folder for dev.
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+const PROGRESS_DIR = path.join(DATA_DIR, 'progress');
+fs.mkdirSync(PROGRESS_DIR, { recursive: true });
+
+// Every section the hub serves. Adding a new one (Math, Science, ...) is:
+// drop its self-contained app at subjects/<id>.html and add a line here —
+// nothing else in this file needs to change.
+const SUBJECTS = {
+  aphg: { label: 'AP Human Geography', file: 'aphg.html' },
+  spanish: { label: 'Spanish', file: 'spanish.html' }
+};
+
+function loadTemplate(file) {
+  const raw = fs.readFileSync(path.join(__dirname, file), 'utf8');
+  // Escaped defensively even though this only ever comes from our own env
+  // var, not user input — a stray quote in a misconfigured value must not
+  // be able to break out of the JS string literal it's substituted into.
+  const safeClientId = GOOGLE_CLIENT_ID.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  return raw.replace('%%GOOGLE_CLIENT_ID%%', safeClientId);
+}
+const hubHtml = loadTemplate('index.html');
+const subjectHtml = {};
+Object.keys(SUBJECTS).forEach(id => {
+  subjectHtml[id] = loadTemplate(path.join('subjects', SUBJECTS[id].file));
+});
+
+/* ============================= cookies (no dependency) ============================= */
+function parseCookies(req) {
+  const header = req.headers.cookie;
+  const out = {};
+  if (!header) return out;
+  header.split(';').forEach(pair => {
+    const idx = pair.indexOf('=');
+    if (idx === -1) return;
+    out[pair.slice(0, idx).trim()] = decodeURIComponent(pair.slice(idx + 1).trim());
+  });
+  return out;
+}
+function setSessionCookie(res, sessionId) {
+  const maxAge = 60 * 60 * 24 * 180; // 180 days
+  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `hub_session=${sessionId}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`);
+}
+function clearSessionCookie(res) {
+  res.setHeader('Set-Cookie', 'hub_session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax');
+}
+
+/* ============================= sessions (in-memory) =============================
+   Sessions live only for the process lifetime — a restart just signs everyone
+   out (they sign back in with one click). The durable thing is progress on
+   disk, keyed by Google's stable "sub" id, not the session itself. One
+   session covers every subject: sign in once at the hub, stay signed in
+   across every section. */
+const sessions = new Map(); // sessionId -> {sub, email, name, picture, lastSeen}
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 180; // matches the cookie's Max-Age
+// The Map is never emptied by anything else, so a long-lived container would
+// otherwise accumulate one entry per sign-in for the life of the process.
+function sweepSessions(now) {
+  now = now || Date.now();
+  for (const [id, s] of sessions) {
+    if (now - (s.lastSeen || 0) > SESSION_TTL_MS) sessions.delete(id);
+  }
+}
+function touchSession(id) {
+  const s = sessions.get(id);
+  if (!s) return null;
+  if (Date.now() - (s.lastSeen || 0) > SESSION_TTL_MS) { sessions.delete(id); return null; }
+  s.lastSeen = Date.now();
+  return s;
+}
+
+/* ============================= auth rate limiting =============================
+   Verification is cheap but not free, and the endpoint is unauthenticated by
+   definition. A small per-IP bucket keeps a stranger from using it as a
+   crypto-work amplifier without ever getting in the way of a real person. */
+const AUTH_WINDOW_MS = 10 * 60 * 1000;
+const AUTH_MAX_ATTEMPTS = 20;
+const authAttempts = new Map(); // ip -> [timestamps]
+function authRateLimited(ip, now) {
+  now = now || Date.now();
+  const hits = (authAttempts.get(ip) || []).filter(t => now - t < AUTH_WINDOW_MS);
+  hits.push(now);
+  authAttempts.set(ip, hits);
+  if (authAttempts.size > 5000) authAttempts.clear();
+  return hits.length > AUTH_MAX_ATTEMPTS;
+}
+
+/* ============================= Google ID token verification =============================
+   Verified locally against Google's published RS256 keys (no dependency) —
+   this is the production-correct approach, not the tokeninfo debug endpoint. */
+let jwksCache = { keys: null, fetchedAt: 0 };
+function fetchJson(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, res => {
+      let data = '';
+      res.on('data', c => { data += c; });
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+      });
+    }).on('error', reject);
+  });
+}
+async function getGoogleKeys() {
+  if (jwksCache.keys && Date.now() - jwksCache.fetchedAt < 3600000) return jwksCache.keys;
+  const jwks = await fetchJson('https://www.googleapis.com/oauth2/v3/certs');
+  jwksCache = { keys: jwks.keys, fetchedAt: Date.now() };
+  return jwksCache.keys;
+}
+function b64urlDecode(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (str.length % 4) str += '=';
+  return Buffer.from(str, 'base64');
+}
+// Pure verification logic, independent of the network fetch, so it can be
+// unit-tested against a locally generated key pair.
+function verifyGoogleIdTokenWithKeys(idToken, keys, clientId, now) {
+  now = now || Date.now();
+  const parts = idToken.split('.');
+  if (parts.length !== 3) throw new Error('Malformed token');
+  const [headerB64, payloadB64, sigB64] = parts;
+  const header = JSON.parse(b64urlDecode(headerB64).toString('utf8'));
+  const payload = JSON.parse(b64urlDecode(payloadB64).toString('utf8'));
+  const signature = b64urlDecode(sigB64);
+
+  const jwk = keys.find(k => k.kid === header.kid);
+  if (!jwk) throw new Error('No matching signing key');
+  const publicKey = crypto.createPublicKey({ key: jwk, format: 'jwk' });
+  const ok = crypto.verify('RSA-SHA256', Buffer.from(headerB64 + '.' + payloadB64), publicKey, signature);
+  if (!ok) throw new Error('Bad signature');
+
+  if (payload.aud !== clientId) throw new Error('Wrong audience');
+  if (payload.iss !== 'accounts.google.com' && payload.iss !== 'https://accounts.google.com') throw new Error('Wrong issuer');
+  if (!payload.exp || payload.exp * 1000 < now) throw new Error('Expired token');
+  if (payload.email_verified === false) throw new Error('Email not verified');
+  return payload;
+}
+async function verifyGoogleIdToken(idToken) {
+  // Cheap structural check first so a garbage credential fails fast without
+  // ever calling out to Google's key endpoint.
+  if (typeof idToken !== 'string' || idToken.split('.').length !== 3) {
+    throw new Error('Malformed token');
+  }
+  const keys = await getGoogleKeys();
+  return verifyGoogleIdTokenWithKeys(idToken, keys, GOOGLE_CLIENT_ID);
+}
+
+/* ============================= Google Sheets mirror =============================
+   A service-account JWT-bearer flow, hand-rolled the same way ID-token
+   verification is above (no googleapis dependency): sign a short-lived JWT
+   with the service account's private key, trade it for an access token,
+   then call the Sheets API directly. */
+function b64url(buf) {
+  return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+// Pure — builds and signs the assertion JWT. Independent of the network call
+// so it can be unit-tested against a locally generated key pair.
+function buildServiceAccountJWT(email, privateKeyPem, scope, now) {
+  now = now || Math.floor(Date.now() / 1000);
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const claims = { iss: email, scope: scope, aud: 'https://oauth2.googleapis.com/token', exp: now + 3600, iat: now };
+  const signingInput = b64url(Buffer.from(JSON.stringify(header))) + '.' + b64url(Buffer.from(JSON.stringify(claims)));
+  const signature = crypto.sign('RSA-SHA256', Buffer.from(signingInput), privateKeyPem);
+  return signingInput + '.' + b64url(signature);
+}
+function postForm(url, formBody) {
+  return new Promise((resolve, reject) => {
+    const req = https.request(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }, res => {
+      let data = '';
+      res.on('data', c => { data += c; });
+      res.on('end', () => {
+        try { resolve({ status: res.statusCode, body: JSON.parse(data) }); } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(formBody);
+    req.end();
+  });
+}
+let sheetsTokenCache = { token: null, expiresAt: 0 };
+async function getSheetsAccessToken() {
+  if (sheetsTokenCache.token && Date.now() < sheetsTokenCache.expiresAt - 60000) return sheetsTokenCache.token;
+  const jwt = buildServiceAccountJWT(SHEETS_EMAIL, SHEETS_KEY, 'https://www.googleapis.com/auth/spreadsheets');
+  const body = 'grant_type=' + encodeURIComponent('urn:ietf:params:oauth:grant-type:jwt-bearer') + '&assertion=' + encodeURIComponent(jwt);
+  const res = await postForm('https://oauth2.googleapis.com/token', body);
+  if (res.status !== 200 || !res.body.access_token) throw new Error('token exchange failed: ' + JSON.stringify(res.body));
+  sheetsTokenCache = { token: res.body.access_token, expiresAt: Date.now() + (res.body.expires_in || 3600) * 1000 };
+  return sheetsTokenCache.token;
+}
+function sheetsAppend(accessToken, values) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({ values: [values] });
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEETS_ID}/values/Sheet1!A:I:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+    const req = https.request(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken, 'Content-Length': Buffer.byteLength(body) }
+    }, res => {
+      let data = '';
+      res.on('data', c => { data += c; });
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(data);
+        else reject(new Error('Sheets append failed (' + res.statusCode + '): ' + data));
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+// Best-effort by design: a Sheets outage or misconfiguration must never take
+// down the (already-succeeded) local/volume save that triggered this.
+async function mirrorSessionToSheet(user, entry) {
+  if (!SHEETS_CONFIGURED) return;
+  try {
+    const token = await getSheetsAccessToken();
+    await sheetsAppend(token, [
+      new Date().toISOString(), entry.subject || '', user.name || '', user.email || '',
+      entry.label || '', entry.mode || '', entry.correct, entry.total, entry.pct
+    ]);
+  } catch (e) {
+    console.error('Sheets mirror failed (non-fatal):', e.message);
+  }
+}
+
+/* ============================= progress merge =============================
+   Sync used to be last-write-wins, which quietly destroyed work: practise on
+   a signed-out phone, sign in, and the server's copy replaced it. Progress is
+   monotonic (a card's `seen` count only ever grows), so the two copies can be
+   reconciled instead of one winning. This is the single implementation —
+   the client posts its local copy and adopts whatever comes back merged. */
+function pickItem(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  const seenA = a.seen || 0, seenB = b.seen || 0;
+  if (seenA !== seenB) return seenA > seenB ? a : b;
+  const boxA = a.box === undefined ? -1 : a.box, boxB = b.box === undefined ? -1 : b.box;
+  if (boxA !== boxB) return boxA > boxB ? a : b;
+  return (a.due || '') >= (b.due || '') ? a : b;
+}
+function mergeProgress(base, incoming) {
+  if (!base) return incoming;
+  if (!incoming) return base;
+  // Unknown/future top-level keys follow the incoming copy; the fields below
+  // are then reconciled explicitly.
+  const out = Object.assign({}, base, incoming);
+
+  const items = Object.assign({}, base.items || {});
+  Object.keys(incoming.items || {}).forEach(id => { items[id] = pickItem(items[id], incoming.items[id]); });
+  if (base.items || incoming.items) out.items = items;
+
+  if (base.history || incoming.history) {
+    const seen = new Set();
+    const all = [].concat(base.history || [], incoming.history || []).filter(h => {
+      const key = [h.ts, h.date, h.mode, h.label, h.correct, h.total].join('|');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    all.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    out.history = all.slice(-50);
+  }
+
+  if (base.days || incoming.days) {
+    const days = Object.assign({}, base.days || {});
+    Object.keys(incoming.days || {}).forEach(d => {
+      days[d] = Math.max(days[d] || 0, incoming.days[d] || 0);
+    });
+    out.days = days;
+  }
+
+  const bs = base.streak, is = incoming.streak;
+  if (bs && is) {
+    out.streak = (is.count || 0) > (bs.count || 0) ? is
+      : ((bs.count || 0) > (is.count || 0) ? bs : ((is.last || '') >= (bs.last || '') ? is : bs));
+  }
+
+  return out;
+}
+
+// Progress is namespaced per subject (subjects/aphg.html's cards and
+// subjects/spanish.html's cards are unrelated decks, potentially even with
+// colliding ids) so each section gets its own file under its own subject
+// directory, never a shared one.
+function progressPath(sub, subject) {
+  if (!Object.prototype.hasOwnProperty.call(SUBJECTS, subject)) throw new Error('unknown subject');
+  const safeSub = String(sub).replace(/[^a-zA-Z0-9_-]/g, '');
+  if (!safeSub) throw new Error('bad subject id');
+  const dir = path.join(PROGRESS_DIR, subject);
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, safeSub + '.json');
+}
+
+function requireAuth(req, res, next) {
+  const cookies = parseCookies(req);
+  const session = cookies.hub_session && touchSession(cookies.hub_session);
+  if (!session) return res.status(401).json({ error: 'not signed in' });
+  req.user = session;
+  next();
+}
+
+/* ============================= app ============================= */
+const app = express();
+app.use(express.json({ limit: '1mb' }));
+
+app.get('/', (req, res) => {
+  res.type('html').send(hubHtml);
+});
+
+Object.keys(SUBJECTS).forEach(id => {
+  app.get('/' + id, (req, res) => {
+    res.type('html').send(subjectHtml[id]);
+  });
+});
+
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    if (!GOOGLE_CLIENT_ID) return res.status(500).json({ error: 'Google sign-in is not configured on this server yet.' });
+    if (authRateLimited(req.ip || (req.socket && req.socket.remoteAddress) || 'unknown')) {
+      return res.status(429).json({ error: 'too many sign-in attempts — try again in a few minutes' });
+    }
+    const credential = req.body && req.body.credential;
+    if (!credential) return res.status(400).json({ error: 'missing credential' });
+    const payload = await verifyGoogleIdToken(credential);
+    const sessionId = crypto.randomUUID();
+    const user = { sub: payload.sub, email: payload.email, name: payload.name || payload.email, picture: payload.picture || '', lastSeen: Date.now() };
+    sweepSessions();
+    sessions.set(sessionId, user);
+    setSessionCookie(res, sessionId);
+    res.json({ user });
+  } catch (e) {
+    res.status(401).json({ error: 'invalid Google credential: ' + e.message });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const cookies = parseCookies(req);
+  if (cookies.hub_session) sessions.delete(cookies.hub_session);
+  clearSessionCookie(res);
+  res.json({ ok: true });
+});
+
+app.get('/api/me', (req, res) => {
+  const cookies = parseCookies(req);
+  const session = cookies.hub_session && touchSession(cookies.hub_session);
+  res.json({ user: session || null, googleConfigured: !!GOOGLE_CLIENT_ID });
+});
+
+function requireValidSubject(req, res) {
+  const subject = req.query.subject;
+  if (!Object.prototype.hasOwnProperty.call(SUBJECTS, subject)) {
+    res.status(400).json({ error: 'missing or unknown subject' });
+    return null;
+  }
+  return subject;
+}
+
+app.get('/api/progress', requireAuth, (req, res) => {
+  const subject = requireValidSubject(req, res);
+  if (!subject) return;
+  const file = progressPath(req.user.sub, subject);
+  if (!fs.existsSync(file)) return res.json({ progress: null });
+  try {
+    res.json({ progress: JSON.parse(fs.readFileSync(file, 'utf8')) });
+  } catch (e) {
+    res.json({ progress: null });
+  }
+});
+
+app.put('/api/progress', requireAuth, (req, res) => {
+  const subject = requireValidSubject(req, res);
+  if (!subject) return;
+  const progress = req.body;
+  if (!progress || typeof progress !== 'object' || Array.isArray(progress)) {
+    return res.status(400).json({ error: 'bad progress payload' });
+  }
+  const file = progressPath(req.user.sub, subject);
+  // `mode=replace` is for one case only: the user deliberately wiping their
+  // progress, which a merge would otherwise undo by handing the old copy back.
+  let merged = progress;
+  if (req.query.mode !== 'replace' && fs.existsSync(file)) {
+    try { merged = mergeProgress(JSON.parse(fs.readFileSync(file, 'utf8')), progress); }
+    catch (e) { merged = progress; }
+  }
+  writeProgressFile(file, merged);
+  res.json({ ok: true, progress: merged });
+});
+
+// Write-then-rename: a crash partway through a plain writeFileSync leaves a
+// truncated JSON file, and the reader treats unparseable progress as none.
+function writeProgressFile(file, data) {
+  const tmp = file + '.' + process.pid + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(data));
+  fs.renameSync(tmp, file);
+}
+
+app.post('/api/session-complete', requireAuth, (req, res) => {
+  const entry = req.body || {};
+  if (typeof entry.total !== 'number' || typeof entry.correct !== 'number' || typeof entry.pct !== 'number') {
+    return res.status(400).json({ error: 'bad session-complete payload' });
+  }
+  // Respond immediately — mirroring is fire-and-forget from the client's
+  // point of view, same as the rest of the sync layer.
+  res.json({ ok: true, mirrored: SHEETS_CONFIGURED });
+  mirrorSessionToSheet(req.user, entry);
+});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log('Synapse study hub running on port ' + PORT);
+  });
+}
+
+module.exports = {
+  app, verifyGoogleIdTokenWithKeys, progressPath, buildServiceAccountJWT, SHEETS_CONFIGURED, SUBJECTS,
+  mergeProgress, pickItem, sweepSessions, authRateLimited,
+  // Test-only seam: inserts a session directly so authenticated routes can
+  // be exercised without a live Google token. Never reachable over HTTP.
+  __testCreateSession(user) {
+    const sessionId = crypto.randomUUID();
+    sessions.set(sessionId, Object.assign({ lastSeen: Date.now() }, user));
+    return sessionId;
+  }
+};
