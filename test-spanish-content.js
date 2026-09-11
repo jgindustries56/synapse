@@ -714,11 +714,13 @@ check('reference sheets render for every topic and contain real rows', ()=>{
   });
 });
 
-check('no new Spanish was introduced by this upgrade', ()=>{
+check('no new Spanish was introduced without the owner asking', ()=>{
   // Standing rule for this project: decks are re-cuts of existing cards, never
-  // new language content. 909 items was the count before the upgrade.
-  if(T.ALL_ITEMS.length !== 909) throw new Error('item count changed to '+T.ALL_ITEMS.length+' — content must not be added without the owner asking');
-  if(T.TOPICS.length !== 20) throw new Error('topic count changed to '+T.TOPICS.length);
+  // new language content, unless the owner explicitly asks for a lesson to be
+  // added. 909/20 was the count before Lección 2 · La comida was added per
+  // fichero_leccion2_la_comida_SPEC.md (12 new topics, 1328 items total).
+  if(T.ALL_ITEMS.length !== 1328) throw new Error('item count changed to '+T.ALL_ITEMS.length+' — content must not be added without the owner asking');
+  if(T.TOPICS.length !== 32) throw new Error('topic count changed to '+T.TOPICS.length);
 });
 
 
@@ -795,6 +797,12 @@ check('the 7-day forecast counts what the schedule will actually surface', ()=>{
 });
 
 check('report card renders the forecast alongside everything else', ()=>{
+  // Coverage is attempted/ALL_ITEMS rounded to a percent, and the report
+  // card only renders past its empty-state once that's above 0% — so the
+  // sample answered here must scale with the deck size, not be a fixed
+  // small count that a larger deck could round back down to 0%.
+  const sampleSize = Math.max(4, Math.ceil(T.ALL_ITEMS.length * 0.02));
+  T.ALL_ITEMS.slice(0, sampleSize).forEach(it => T.recordAnswer(it.id, true));
   driveByClicking(T.pickTopicSession('regular-verbs',4), 'quiz', 'Quiz — Regular Verbs');
   T.go('grades');
   const tree = T.gradesView();

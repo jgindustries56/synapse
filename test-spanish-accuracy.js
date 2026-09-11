@@ -3,7 +3,13 @@ const html = fs.readFileSync(__dirname + '/subjects/spanish.html', 'utf8');
 const blocks = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]);
 const scriptBody = blocks.find(b => b.includes('(function(){'));
 let code = scriptBody.replace(/\n  render\(\);[\s\S]*?\n\}\)\(\);\s*$/, `
-window.__T__={VERBS:VERBS,REFLEXIVE_VERBS:REFLEXIVE_VERBS,GUSTAR_VERBS:GUSTAR_VERBS,SER_FORMS:SER_FORMS,ESTAR_FORMS:ESTAR_FORMS,TENER_IDIOMS:TENER_IDIOMS,INDEF_WORDS:INDEF_WORDS,PRONOUNS:PRONOUNS,SER_ESTAR_ITEMS:SER_ESTAR_ITEMS,PERO_SINO_ITEMS:PERO_SINO_ITEMS,INDEF_TRANSFORM_ITEMS:INDEF_TRANSFORM_ITEMS,INDEF_PERSONAL_A_ITEMS:INDEF_PERSONAL_A_ITEMS,FUTURE_PLAN_ITEMS:FUTURE_PLAN_ITEMS};
+window.__T__={VERBS:VERBS,REFLEXIVE_VERBS:REFLEXIVE_VERBS,GUSTAR_VERBS:GUSTAR_VERBS,SER_FORMS:SER_FORMS,ESTAR_FORMS:ESTAR_FORMS,TENER_IDIOMS:TENER_IDIOMS,INDEF_WORDS:INDEF_WORDS,PRONOUNS:PRONOUNS,SER_ESTAR_ITEMS:SER_ESTAR_ITEMS,PERO_SINO_ITEMS:PERO_SINO_ITEMS,INDEF_TRANSFORM_ITEMS:INDEF_TRANSFORM_ITEMS,INDEF_PERSONAL_A_ITEMS:INDEF_PERSONAL_A_ITEMS,FUTURE_PLAN_ITEMS:FUTURE_PLAN_ITEMS,
+L2_RESTAURANT:L2_RESTAURANT,L2_DELICIOUS_SYN:L2_DELICIOUS_SYN,L2_HEALTHY_SYN:L2_HEALTHY_SYN,L2_FRUTAS_SYN:L2_FRUTAS_SYN,L2_VERDURAS_SYN:L2_VERDURAS_SYN,
+L2_VERDURAS:L2_VERDURAS,L2_VERBOS_PRESENTE:L2_VERBOS_PRESENTE,L2_VERB_USAGE:L2_VERB_USAGE,L2_VERBOS_PRETERITO:L2_VERBOS_PRETERITO,
+L2_PRETERITO_RULES:L2_PRETERITO_RULES,L2_CGZ_VERBS:L2_CGZ_VERBS,L2_CGZ_EXTRA_YO:L2_CGZ_EXTRA_YO,L2_CGZ_RULES:L2_CGZ_RULES,
+L2_PRONOMBRES_RULES:L2_PRONOMBRES_RULES,L2_PRONOMBRES_TRANSFORM:L2_PRONOMBRES_TRANSFORM,L2_PRONOMBRES_ATTACH:L2_PRONOMBRES_ATTACH,
+L2_COMPARACIONES_RULES:L2_COMPARACIONES_RULES,L2_SUPERLATIVOS_RULES:L2_SUPERLATIVOS_RULES,L2_ABSOLUTE_SUPERLATIVE:L2_ABSOLUTE_SUPERLATIVE,
+ALL_ITEMS:ALL_ITEMS};
 })();`);
 if (!code.includes('window.__T__')) throw new Error('hook injection mismatch');
 global.window = { scrollTo(){} };
@@ -135,6 +141,174 @@ console.log('--- future-plan translations: every answer must start with the righ
 T.FUTURE_PLAN_ITEMS.forEach((it,i) => check('future-plan #'+i, () => {
   if (!it.answers.length) throw new Error('no accepted answers');
 }));
+
+/* ============================= Lección 2 · La comida ============================= */
+console.log('--- Lección 2: present tense of the 8 lesson verbs (§2.1) ---');
+expectForms('escoger', findVerb(T.L2_VERBOS_PRESENTE,'escoger').forms, ['escojo','escoges','escoge','escogemos','escogéis','escogen']);
+expectForms('merendar', findVerb(T.L2_VERBOS_PRESENTE,'merendar').forms, ['meriendo','meriendas','merienda','merendamos','merendáis','meriendan']);
+expectForms('morir', findVerb(T.L2_VERBOS_PRESENTE,'morir').forms, ['muero','mueres','muere','morimos','morís','mueren']);
+expectForms('pedir', findVerb(T.L2_VERBOS_PRESENTE,'pedir').forms, ['pido','pides','pide','pedimos','pedís','piden']);
+expectForms('probar', findVerb(T.L2_VERBOS_PRESENTE,'probar').forms, ['pruebo','pruebas','prueba','probamos','probáis','prueban']);
+expectForms('recomendar', findVerb(T.L2_VERBOS_PRESENTE,'recomendar').forms, ['recomiendo','recomiendas','recomienda','recomendamos','recomendáis','recomiendan']);
+expectForms('saber (a)', findVerb(T.L2_VERBOS_PRESENTE,'saber (a)').forms, ['sé','sabes','sabe','sabemos','sabéis','saben']);
+expectForms('servir', findVerb(T.L2_VERBOS_PRESENTE,'servir').forms, ['sirvo','sirves','sirve','servimos','servís','sirven']);
+
+check('present-tense boot pattern: nosotros/vosotros never carry the stem change', () => {
+  T.L2_VERBOS_PRESENTE.forEach(v => {
+    const stem = v.inf.replace(/\s*\(.*\)$/, '').replace(/(ar|er|ir)$/, '');
+    // nosotros (index 3) and vosotros (index 4) must start with the plain
+    // infinitive stem — escoger's g→j and saber's irregular yo are the two
+    // exceptions the sheet itself calls out, so they're excluded here.
+    if (v.inf === 'escoger' || v.inf.indexOf('saber') === 0) return;
+    [3,4].forEach(i => {
+      if (v.forms[i].indexOf(stem) !== 0) throw new Error(v.inf+' form '+i+' ("'+v.forms[i]+'") should keep the unchanged stem "'+stem+'"');
+    });
+  });
+});
+
+console.log('--- Lección 2: preterite (§2.2/§2.3) — who changes and who does not ---');
+expectForms('servir (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'servir').forms, ['serví','serviste','sirvió','servimos','servisteis','sirvieron']);
+expectForms('dormir (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'dormir').forms, ['dormí','dormiste','durmió','dormimos','dormisteis','durmieron']);
+expectForms('pedir (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'pedir').forms, ['pedí','pediste','pidió','pedimos','pedisteis','pidieron']);
+expectForms('morir (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'morir').forms, ['morí','moriste','murió','morimos','moristeis','murieron']);
+expectForms('escoger (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'escoger').forms, ['escogí','escogiste','escogió','escogimos','escogisteis','escogieron']);
+expectForms('merendar (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'merendar').forms, ['merendé','merendaste','merendó','merendamos','merendasteis','merendaron']);
+expectForms('probar (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'probar').forms, ['probé','probaste','probó','probamos','probasteis','probaron']);
+expectForms('recomendar (pret.)', findVerb(T.L2_VERBOS_PRETERITO,'recomendar').forms, ['recomendé','recomendaste','recomendó','recomendamos','recomendasteis','recomendaron']);
+expectForms('saber (pret., EXTRA)', findVerb(T.L2_VERBOS_PRETERITO,'saber').forms, ['supe','supiste','supo','supimos','supisteis','supieron']);
+
+check('-ir stem-changing preterite: only the 3rd person (indices 2 and 5) differs from a fully regular verb', () => {
+  const IR_STEM_CHANGERS = ['servir','dormir','pedir','morir'];
+  T.L2_VERBOS_PRETERITO.filter(v => IR_STEM_CHANGERS.indexOf(v.inf) !== -1).forEach(v => {
+    const stem = v.inf.replace(/(ar|er|ir)$/, '');
+    [0,1,3,4].forEach(i => {
+      if (v.forms[i].indexOf(stem) !== 0) throw new Error(v.inf+' form '+i+' ("'+v.forms[i]+'") should be regular, built on "'+stem+'"');
+    });
+    [2,5].forEach(i => {
+      if (v.forms[i].indexOf(stem) === 0) throw new Error(v.inf+' form '+i+' ("'+v.forms[i]+'") should show the changed vowel, not the plain stem');
+    });
+  });
+});
+check('-ar/-er stem-changing preterite: no change anywhere (merendar, probar, recomendar)', () => {
+  ['merendar','probar','recomendar'].forEach(inf => {
+    const v = findVerb(T.L2_VERBOS_PRETERITO, inf);
+    const stem = inf.replace(/(ar|er|ir)$/, '');
+    v.forms.forEach((f,i) => { if (f.indexOf(stem) !== 0) throw new Error(inf+' form '+i+' ("'+f+'") lost the regular stem "'+stem+'"'); });
+  });
+});
+
+console.log('--- Lección 2: -car/-gar/-zar preterite spelling change (§3) — only yo changes ---');
+expectForms('sacar', findVerb(T.L2_CGZ_VERBS,'sacar').forms, ['saqué','sacaste','sacó','sacamos','sacasteis','sacaron']);
+expectForms('tocar', findVerb(T.L2_CGZ_VERBS,'tocar').forms, ['toqué','tocaste','tocó','tocamos','tocasteis','tocaron']);
+expectForms('empacar', findVerb(T.L2_CGZ_VERBS,'empacar').forms, ['empaqué','empacaste','empacó','empacamos','empacasteis','empacaron']);
+expectForms('jugar', findVerb(T.L2_CGZ_VERBS,'jugar').forms, ['jugué','jugaste','jugó','jugamos','jugasteis','jugaron']);
+expectForms('apagar', findVerb(T.L2_CGZ_VERBS,'apagar').forms, ['apagué','apagaste','apagó','apagamos','apagasteis','apagaron']);
+expectForms('llegar', findVerb(T.L2_CGZ_VERBS,'llegar').forms, ['llegué','llegaste','llegó','llegamos','llegasteis','llegaron']);
+expectForms('empezar', findVerb(T.L2_CGZ_VERBS,'empezar').forms, ['empecé','empezaste','empezó','empezamos','empezasteis','empezaron']);
+expectForms('comenzar', findVerb(T.L2_CGZ_VERBS,'comenzar').forms, ['comencé','comenzaste','comenzó','comenzamos','comenzasteis','comenzaron']);
+expectForms('rezar', findVerb(T.L2_CGZ_VERBS,'rezar').forms, ['recé','rezaste','rezó','rezamos','rezasteis','rezaron']);
+
+check('c→qu, g→gu, z→c spelling change appears only in the yo form (index 0)', () => {
+  const RULE = {car:['c','qu'], gar:['g','gu'], zar:['z','c']};
+  T.L2_CGZ_VERBS.forEach(v => {
+    const rawStem = v.inf.slice(0, -2); // drop the -ar ending only
+    const trigger = rawStem.slice(-1); // c, g, or z
+    const rule = RULE[trigger + 'ar'];
+    if (!rule) throw new Error('unexpected ending on '+v.inf);
+    const changedStem = rawStem.slice(0, -1) + rule[1];
+    if (v.forms[0].indexOf(changedStem) !== 0) throw new Error(v.inf+' yo form "'+v.forms[0]+'" should start with the changed stem "'+changedStem+'"');
+    for (let i=1;i<6;i++){
+      if (v.forms[i].indexOf(rawStem) !== 0) throw new Error(v.inf+' form '+i+' ("'+v.forms[i]+'") should be built on the unchanged stem "'+rawStem+'"');
+    }
+  });
+});
+check('every -car/-gar/-zar yo form carries the required accent', () => {
+  T.L2_CGZ_VERBS.forEach(v => { if (!/[éí]/.test(v.forms[0])) throw new Error(v.inf+' yo form "'+v.forms[0]+'" is missing its accent'); });
+});
+check('§3.7 EXTRA quick-check yo forms all carry the c→qu/g→gu/z→c spelling change and its accent', () => {
+  T.L2_CGZ_EXTRA_YO.forEach((it,i) => {
+    const a = it.answer[0];
+    const looksRight = /qué$/.test(a) || /gué$/.test(a) || /cé$/.test(a);
+    if (!looksRight) throw new Error('EXTRA item #'+i+' answer "'+a+'" does not look like a c/g/z-preterite yo form');
+  });
+});
+
+console.log('--- Lección 2: double object pronouns (§4) — le/les must never survive before lo/la/los/las ---');
+check('le/les→se: no transform answer contains "le lo/la" or "les lo/la"', () => {
+  const BAD = ['le lo','le la','le los','le las','les lo','les la','les los','les las'];
+  T.L2_PRONOMBRES_TRANSFORM.forEach((it,i) => it.answers.forEach(a => {
+    const lower = a.toLowerCase();
+    BAD.forEach(bad => { if (lower.indexOf(bad) !== -1) throw new Error('transform #'+i+' answer "'+a+'" still contains "'+bad+'"'); });
+  }));
+});
+check('attached-pronoun forms keep the original stressed syllable with a written accent', () => {
+  T.L2_PRONOMBRES_ATTACH.forEach((it,i) => {
+    if (!/[áéíóú]/.test(it.answer[0])) throw new Error('attach item #'+i+' answer "'+it.answer[0]+'" is missing its accent');
+  });
+});
+
+console.log('--- Lección 2: irregular comparatives/superlatives (§5.3/§6) ---');
+check('bueno/malo/grande/pequeño map to the correct irregular comparative', () => {
+  const MAP = [['bueno','mejor'],['malo','peor'],['grande','mayor'],['pequeño','menor']];
+  MAP.forEach(([base, comp]) => {
+    const hit = T.L2_COMPARACIONES_RULES.find(it => it.answer === comp);
+    if (!hit) throw new Error('no drill item found using the irregular comparative "'+comp+'" (for '+base+')');
+  });
+});
+
+console.log('--- Lección 2: every mc-style rule item includes its own answer among its choices ---');
+[].concat(T.L2_VERB_USAGE, T.L2_PRETERITO_RULES, T.L2_CGZ_RULES, T.L2_PRONOMBRES_RULES, T.L2_COMPARACIONES_RULES)
+  .concat(T.L2_SUPERLATIVOS_RULES.filter(it => it.choices))
+  .forEach((it,i) => check('L2 rule item choices #'+i+': '+it.prompt.slice(0,40), () => {
+    if (!it.choices.includes(it.answer)) throw new Error('answer "'+it.answer+'" not among its own choices: '+JSON.stringify(it.choices));
+  }));
+
+console.log('--- Lección 2: regional-synonym pairs accept every listed form ---');
+check('melocotón/durazno both accepted for peach', () => {
+  const es = T.L2_FRUTAS_SYN[0].es;
+  if (es.indexOf('el melocotón') === -1 || es.indexOf('el durazno') === -1) throw new Error('peach synonym set incomplete: '+JSON.stringify(es));
+});
+check('papas/patatas both accepted for potatoes', () => {
+  const es = T.L2_VERDURAS_SYN[0].es;
+  if (es.indexOf('las papas') === -1 || es.indexOf('las patatas') === -1) throw new Error('potato synonym set incomplete: '+JSON.stringify(es));
+});
+check('sano/saludable both accepted for healthy', () => {
+  const es = T.L2_HEALTHY_SYN[0].es;
+  if (es.indexOf('sano/a') === -1 || es.indexOf('saludable') === -1) throw new Error('healthy synonym set incomplete: '+JSON.stringify(es));
+});
+check('rico/sabroso/delicioso all accepted for delicious/tasty', () => {
+  const es = T.L2_DELICIOUS_SYN[0].es;
+  ['delicioso/a','rico/a','sabroso/a'].forEach(w => { if (es.indexOf(w) === -1) throw new Error('delicious synonym set missing "'+w+'": '+JSON.stringify(es)); });
+});
+
+console.log('--- Lección 2: handout typos are corrected, not reproduced ---');
+check('camarero is spelled correctly (sheet typo: "camerero")', () => {
+  const it = T.L2_RESTAURANT.find(w => /camarer/.test(w.es));
+  if (!it || /camerero/.test(it.es)) throw new Error('camarero typo was not corrected');
+});
+check('the English gloss reads "asparagus", not the sheet\'s "aparagus"', () => {
+  const it = T.L2_VERDURAS.find(w => /espárrago/.test(w.es));
+  if (!it || it.en.toLowerCase() !== 'asparagus') throw new Error('asparagus gloss typo was not corrected: '+(it&&it.en));
+});
+check('apagué is spelled correctly (handwritten typo: "apagé"/"apague")', () => {
+  const v = findVerb(T.L2_CGZ_VERBS, 'apagar');
+  if (v.forms[0] !== 'apagué') throw new Error('apagué typo was not corrected: got "'+v.forms[0]+'"');
+});
+
+console.log('--- Lección 2: content is reachable from ALL_ITEMS (wired into the app, not orphaned data) ---');
+check('every Lección 2 topic has items in ALL_ITEMS', () => {
+  const L2_TOPICS = ['l2-restaurant','l2-frutas','l2-verduras','l2-carne-pescado','l2-otras-comidas','l2-bebidas','l2-verbos','l2-preterito','l2-car-gar-zar','l2-pronombres','l2-comparaciones','l2-superlativos'];
+  L2_TOPICS.forEach(id => {
+    const n = T.ALL_ITEMS.filter(it => it.topic === id).length;
+    if (n < 4) throw new Error(id+' has only '+n+' items');
+  });
+});
+check('every Lección 2 item declares a tier (SHEET, RULE, or EXTRA)', () => {
+  const L2_TOPICS = ['l2-restaurant','l2-frutas','l2-verduras','l2-carne-pescado','l2-otras-comidas','l2-bebidas','l2-verbos','l2-preterito','l2-car-gar-zar','l2-pronombres','l2-comparaciones','l2-superlativos'];
+  T.ALL_ITEMS.filter(it => L2_TOPICS.indexOf(it.topic) !== -1).forEach(it => {
+    if (['SHEET','RULE','EXTRA'].indexOf(it.tier) === -1) throw new Error(it.id+' has no valid tier: '+it.tier);
+  });
+});
 
 console.log(failures===0 ? 'ALL ACCURACY CHECKS PASSED' : (failures+' FAILURES'));
 process.exit(failures===0 ? 0 : 1);

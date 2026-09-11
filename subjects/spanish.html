@@ -546,7 +546,20 @@
     {id:'vocab-activities', name:'Activities', cat:'vocab', blurb:'Everyday activity verbs'},
     {id:'vocab-places-2', name:'More Places', cat:'vocab', blurb:'Where you go'},
     {id:'vocab-bathroom', name:'In the Bathroom', cat:'vocab', blurb:'Bathroom vocabulary'},
-    {id:'vocab-routine', name:'Routine & Sequence Words', cat:'vocab', blurb:'Sequence words and daily routine'}
+    {id:'vocab-routine', name:'Routine & Sequence Words', cat:'vocab', blurb:'Sequence words and daily routine'},
+
+    {id:'l2-restaurant', name:'Meals & Restaurant', cat:'vocab', blurb:'Lección 2 · La comida — restaurant vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-frutas', name:'Fruits (Lección 2)', cat:'vocab', blurb:'Lección 2 · La comida — fruit vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-verduras', name:'Vegetables (Lección 2)', cat:'vocab', blurb:'Lección 2 · La comida — vegetable vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-carne-pescado', name:'Meat & Fish', cat:'vocab', blurb:'Lección 2 · La comida — meat and fish vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-otras-comidas', name:'Other Foods', cat:'vocab', blurb:'Lección 2 · La comida — pantry & table vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-bebidas', name:'Drinks (Lección 2)', cat:'vocab', blurb:'Lección 2 · La comida — drink vocabulary', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-verbos', name:'Food Verbs (Present)', cat:'verbs', blurb:'escoger, pedir, probar, servir & more — present tense + usage', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-preterito', name:'Preterite: Stem-Changers', cat:'verbs', blurb:'servir, dormir, pedir, morir — 3rd person only', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-car-gar-zar', name:'-car/-gar/-zar Preterite', cat:'verbs', blurb:'sacar, jugar, empezar & the yo-form spelling change', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-pronombres', name:'Double Object Pronouns', cat:'grammar', blurb:'me lo, te la, se lo — and when le/les become se', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-comparaciones', name:'Comparisons (Lección 2)', cat:'grammar', blurb:'más/menos que, tan como, tanto como + irregulars', lesson:'Senderos 2 · Lección 2 · La comida'},
+    {id:'l2-superlativos', name:'Superlatives (Lección 2)', cat:'grammar', blurb:'el/la más... de — the most, the best, the worst', lesson:'Senderos 2 · Lección 2 · La comida'}
   ];
   var TOPIC_MAP = {};
   TOPICS.forEach(function(t){ TOPIC_MAP[t.id] = t; });
@@ -558,7 +571,10 @@
     'pero-sino':'\u2194\ufe0f', 'regular-verbs':'\u2699\ufe0f', 'tener-venir':'\ud83e\udd32', 'ir-verb':'\ud83e\udded',
     'stem-changing':'\ud83c\udf31', 'vocab-places':'\ud83d\uddfa\ufe0f', 'vocab-food':'\ud83c\udf7d\ufe0f', 'vocab-feelings':'\ud83d\ude0a',
     'reflexive-verbs':'\ud83e\udea5', 'gustar-verbs':'\u2764\ufe0f', 'vocab-people':'\ud83d\udc65', 'vocab-personality':'\u2728',
-    'vocab-activities':'\ud83c\udfc3', 'vocab-places-2':'\ud83c\udfd9\ufe0f', 'vocab-bathroom':'\ud83d\udec1', 'vocab-routine':'\u23f0'
+    'vocab-activities':'\ud83c\udfc3', 'vocab-places-2':'\ud83c\udfd9\ufe0f', 'vocab-bathroom':'\ud83d\udec1', 'vocab-routine':'\u23f0',
+    'l2-restaurant':'\ud83c\udf7d\ufe0f', 'l2-frutas':'\ud83c\udf51', 'l2-verduras':'\ud83e\udd55', 'l2-carne-pescado':'\ud83e\udd69', 'l2-otras-comidas':'\ud83e\uddc2',
+    'l2-bebidas':'\ud83e\udd64', 'l2-verbos':'\ud83c\udf74', 'l2-preterito':'\u23ea', 'l2-car-gar-zar':'\u2712\ufe0f', 'l2-pronombres':'\ud83d\udd01',
+    'l2-comparaciones':'\u2696\ufe0f', 'l2-superlativos':'\ud83c\udfc6'
   };
   function topicIcon(id){ return TOPIC_ICONS[id] || '\ud83d\udcd6'; }
 
@@ -986,6 +1002,275 @@
     {es:'encender la luz', en:'to turn on the light'}
   ];
 
+  /* ============================= LECCIÓN 2 · LA COMIDA =============================
+     Senderos 2, vocab sheet p. 91. Added per the owner's content spec
+     (fichero_leccion2_la_comida_SPEC.md). Every entry below carries a
+     `tier` — 'SHEET' (on the handout, core/testable), 'RULE' (an
+     explanation of or direct consequence of a sheet item), or 'EXTRA' (a
+     closely related extension: regional synonyms, or other verbs that
+     follow the same rule) — stored as data so it can be filtered later.
+     Typo corrections already applied per the spec: camarero (not
+     "camerero"), the English gloss "asparagus" (not "aparagus"), apagué
+     (not "apagé"/"apague"). */
+
+  var L2_RESTAURANT = [
+    {es:'el camarero / la camarera', en:'waiter / waitress (server)', tier:'SHEET'},
+    {es:'la comida', en:'food; meal', tier:'SHEET'},
+    {es:'el dueño / la dueña', en:'owner; landlord', tier:'SHEET'},
+    {es:'el menú', en:'menu', note:'Plural: los menús.', tier:'SHEET'},
+    {es:'el almuerzo', en:'lunch', note:'Verb: almorzar (o:ue) — [EXTRA]', tier:'SHEET'},
+    {es:'la cena', en:'dinner', note:'Verb: cenar — [EXTRA]', tier:'SHEET'},
+    {es:'el desayuno', en:'breakfast', note:'Verb: desayunar — [EXTRA]', tier:'SHEET'},
+    {es:'los entremeses', en:"appetizers; hors d'oeuvres", tier:'SHEET'},
+    {es:'el plato principal', en:'main dish', tier:'SHEET'},
+    {es:'delicioso/a', en:'delicious; tasty', tier:'SHEET'},
+    {es:'rico/a', en:'tasty; delicious', tier:'SHEET'},
+    {es:'sabroso/a', en:'tasty; delicious', tier:'SHEET'},
+    {es:'la salud', en:'health', tier:'SHEET'}
+  ];
+  // rico/sabroso/delicioso are interchangeable per the spec; one en→es card
+  // that accepts any of the three, plus a separate es→en card for each.
+  var L2_DELICIOUS_SYN = [
+    {es:['delicioso/a','rico/a','sabroso/a'], en:'delicious; tasty', tier:'SHEET'}
+  ];
+  var L2_HEALTHY_SYN = [
+    {es:['sano/a','saludable'], en:'healthy', tier:'SHEET'}
+  ];
+
+  var L2_FRUTAS = [
+    {es:'la banana', en:'banana', note:'Also el plátano — [EXTRA]', tier:'SHEET'},
+    {es:'las frutas', en:'fruit', tier:'SHEET'},
+    {es:'el limón', en:'lemon', note:'Plural: limones (the accent drops).', tier:'SHEET'},
+    {es:'la manzana', en:'apple', tier:'SHEET'},
+    {es:'la naranja', en:'orange', tier:'SHEET'},
+    {es:'la pera', en:'pear', tier:'SHEET'},
+    {es:'la uva', en:'grape', tier:'SHEET'}
+  ];
+  var L2_FRUTAS_SYN = [
+    {es:['el melocotón','el durazno'], en:'peach', note:'melocotón (Spain), durazno (Latin America) — both accepted.', tier:'SHEET'}
+  ];
+
+  var L2_VERDURAS = [
+    {es:'las arvejas', en:'peas', note:'Spain: los guisantes — [EXTRA]', tier:'SHEET'},
+    {es:'la cebolla', en:'onion', tier:'SHEET'},
+    {es:'los champiñones', en:'mushrooms', tier:'SHEET'},
+    {es:'la ensalada', en:'salad', tier:'SHEET'},
+    {es:'los espárragos', en:'asparagus', tier:'SHEET'},
+    {es:'los frijoles', en:'beans', note:'Spain: las judías — [EXTRA]', tier:'SHEET'},
+    {es:'la lechuga', en:'lettuce', tier:'SHEET'},
+    {es:'el maíz', en:'corn', tier:'SHEET'},
+    {es:'el tomate', en:'tomato', tier:'SHEET'},
+    {es:'las verduras', en:'vegetables', tier:'SHEET'},
+    {es:'la zanahoria', en:'carrot', tier:'SHEET'}
+  ];
+  var L2_VERDURAS_SYN = [
+    {es:['las papas','las patatas'], en:'potatoes', note:'papas (Latin America), patatas (Spain) — both accepted. Also "(fritas)" for french fries.', tier:'SHEET'}
+  ];
+
+  var L2_CARNE_PESCADO = [
+    {es:'el atún', en:'tuna', tier:'SHEET'},
+    {es:'el bistec', en:'steak', tier:'SHEET'},
+    {es:'los camarones', en:'shrimp', note:'Spain: las gambas — [EXTRA]', tier:'SHEET'},
+    {es:'la carne', en:'meat', tier:'SHEET'},
+    {es:'la carne de res', en:'beef', tier:'SHEET'},
+    {es:'la chuleta (de cerdo)', en:'(pork) chop', tier:'SHEET'},
+    {es:'la hamburguesa', en:'hamburger', tier:'SHEET'},
+    {es:'el jamón', en:'ham', tier:'SHEET'},
+    {es:'la langosta', en:'lobster', tier:'SHEET'},
+    {es:'los mariscos', en:'shellfish; seafood', tier:'SHEET'},
+    {es:'el pavo', en:'turkey', tier:'SHEET'},
+    {es:'el pescado', en:'fish (as food)', note:'A live fish is el pez (pl. peces) — [RULE]', tier:'SHEET'},
+    {es:'el pollo (asado)', en:'(roast) chicken', tier:'SHEET'},
+    {es:'la salchicha', en:'sausage', tier:'SHEET'},
+    {es:'el salmón', en:'salmon', tier:'SHEET'},
+    {es:'el tocino', en:'bacon', tier:'SHEET'}
+  ];
+
+  var L2_OTRAS_COMIDAS = [
+    {es:'el aceite', en:'oil', tier:'SHEET'},
+    {es:'el ajo', en:'garlic', tier:'SHEET'},
+    {es:'el arroz', en:'rice', tier:'SHEET'},
+    {es:'el azúcar', en:'sugar', tier:'SHEET'},
+    {es:'los cereales', en:'grains; cereal', tier:'SHEET'},
+    {es:'el helado', en:'ice cream', tier:'SHEET'},
+    {es:'el huevo', en:'egg', tier:'SHEET'},
+    {es:'la mantequilla', en:'butter', tier:'SHEET'},
+    {es:'la margarina', en:'margarine', tier:'SHEET'},
+    {es:'la mayonesa', en:'mayonnaise', tier:'SHEET'},
+    {es:'el pan (tostado)', en:'bread (toast)', tier:'SHEET'},
+    {es:'la pimienta', en:'black pepper', tier:'SHEET'},
+    {es:'el postre', en:'dessert', tier:'SHEET'},
+    {es:'el queso', en:'cheese', tier:'SHEET'},
+    {es:'la sal', en:'salt', tier:'SHEET'},
+    {es:'el sándwich', en:'sandwich', note:'Plural: los sándwiches.', tier:'SHEET'},
+    {es:'la sopa', en:'soup', tier:'SHEET'},
+    {es:'el vinagre', en:'vinegar', tier:'SHEET'},
+    {es:'el yogur', en:'yogurt', tier:'SHEET'}
+  ];
+
+  var L2_BEBIDAS = [
+    {es:'el agua (mineral)', en:'(mineral) water', note:'Feminine, but takes el in the singular because it starts with a stressed "a": el agua fría, las aguas — [RULE]', tier:'SHEET'},
+    {es:'la bebida', en:'drink', tier:'SHEET'},
+    {es:'el café', en:'coffee', tier:'SHEET'},
+    {es:'el jugo (de fruta)', en:'(fruit) juice', note:'Spain: el zumo — [EXTRA]', tier:'SHEET'},
+    {es:'la leche', en:'milk', tier:'SHEET'},
+    {es:'el refresco', en:'soft drink; soda', tier:'SHEET'},
+    {es:'el té (helado)', en:'(iced) tea', note:'té (tea) has an accent; te (you/yourself) does not — [RULE]', tier:'SHEET'}
+  ];
+
+  // §1.7 — present tense of the lesson's 8 verbs. Stem changes shown apply
+  // to the present only (§2.2/§2.3 give the preterite separately).
+  var L2_VERBOS_PRESENTE = [
+    {inf:'escoger', en:'to choose', forms:['escojo','escoges','escoge','escogemos','escogéis','escogen'], tier:'SHEET'},
+    {inf:'merendar', en:'to snack', forms:['meriendo','meriendas','merienda','merendamos','merendáis','meriendan'], tier:'SHEET'},
+    {inf:'morir', en:'to die', forms:['muero','mueres','muere','morimos','morís','mueren'], tier:'SHEET'},
+    {inf:'pedir', en:'to order; to ask for', forms:['pido','pides','pide','pedimos','pedís','piden'], tier:'SHEET'},
+    {inf:'probar', en:'to taste; to try', forms:['pruebo','pruebas','prueba','probamos','probáis','prueban'], tier:'SHEET'},
+    {inf:'recomendar', en:'to recommend', forms:['recomiendo','recomiendas','recomienda','recomendamos','recomendáis','recomiendan'], tier:'SHEET'},
+    {inf:'saber (a)', en:'to taste (like); to know', forms:['sé','sabes','sabe','sabemos','sabéis','saben'], tier:'SHEET'},
+    {inf:'servir', en:'to serve', forms:['sirvo','sirves','sirve','servimos','servís','sirven'], tier:'SHEET'}
+  ];
+
+  var L2_VERB_USAGE = [
+    {prompt:'Esta sopa ___ a ajo. <span class="gloss">(tastes like garlic)</span>', answer:'sabe', choices:['sabe','conoce','prueba'], note:'saber a = to taste like: Esta sopa sabe a ajo.'},
+    {prompt:'¿Quieres ___ el flan? <span class="gloss">(to try/taste food)</span>', answer:'probar', choices:['probar','saber','conocer'], note:'probar = to taste or try food.'},
+    {prompt:'Le voy a ___ ayuda a mi amigo. <span class="gloss">(to ask for, not to ask a question)</span>', answer:'pedir', choices:['pedir','preguntar'], note:'pedir = to order/ask for something; preguntar = to ask a question.'},
+    {prompt:'Esta sopa ___ muy rica hoy. <span class="gloss">(tastes good — a perceived quality)</span>', answer:'está', choices:['está','es'], note:'estar rico = to taste good; ser rico = to be rich (wealthy).'},
+    {prompt:'yo ___ (escoger) el menú. <span class="gloss">(g→j keeps the soft sound before o)</span>', answer:'escojo', choices:['escojo','escogo'], note:'The g→j spelling change keeps the soft "H" sound; "escogo" would be a hard G.'}
+  ];
+
+  // §2.2/§2.3 — preterite. -ir stem-changers change only in the 3rd person
+  // (él/Ud., ellos/Uds.); -ar/-er stem-changers have no change at all.
+  var L2_VERBOS_PRETERITO = [
+    {inf:'servir', en:'to serve', forms:['serví','serviste','sirvió','servimos','servisteis','sirvieron'], tier:'SHEET'},
+    {inf:'dormir', en:'to sleep', forms:['dormí','dormiste','durmió','dormimos','dormisteis','durmieron'], tier:'SHEET'},
+    {inf:'pedir', en:'to order; to ask for', forms:['pedí','pediste','pidió','pedimos','pedisteis','pidieron'], tier:'SHEET'},
+    {inf:'morir', en:'to die', forms:['morí','moriste','murió','morimos','moristeis','murieron'], tier:'SHEET'},
+    {inf:'escoger', en:'to choose', forms:['escogí','escogiste','escogió','escogimos','escogisteis','escogieron'], tier:'SHEET'},
+    {inf:'merendar', en:'to snack', forms:['merendé','merendaste','merendó','merendamos','merendasteis','merendaron'], tier:'SHEET'},
+    {inf:'probar', en:'to taste; to try', forms:['probé','probaste','probó','probamos','probasteis','probaron'], tier:'SHEET'},
+    {inf:'recomendar', en:'to recommend', forms:['recomendé','recomendaste','recomendó','recomendamos','recomendasteis','recomendaron'], tier:'SHEET'},
+    {inf:'saber', en:"to know (pret. = 'found out')", forms:['supe','supiste','supo','supimos','supisteis','supieron'], tier:'EXTRA'}
+  ];
+
+  var L2_PRETERITO_RULES = [
+    {prompt:'Ana ___ (probar) el pastel anoche. <span class="gloss">(-ar/-er stem-changers: no change in the preterite)</span>', answer:'probó', choices:['probó','pruebó'], note:'-ar and -er stem-changing verbs have no stem change in the preterite.'},
+    {prompt:'Ellos ___ (dormir) diez horas. <span class="gloss">(-ir stem-changer: 3rd person only)</span>', answer:'durmieron', choices:['durmieron','dormieron'], note:'-ir stem-changing verbs change only in the 3rd person (él/Ud., ellos/Uds.) of the preterite.'},
+    {prompt:'Yo ___ (dormir) bien anoche. <span class="gloss">(yo stays regular)</span>', answer:'dormí', choices:['dormí','durmí'], note:'yo, tú, nosotros, and vosotros stay regular for -ir stem-changers in the preterite.'},
+    {prompt:'Nosotros ___ (pedir) la cuenta. <span class="gloss">(nosotros stays regular)</span>', answer:'pedimos', choices:['pedimos','pidimos'], note:'nosotros/vosotros never take the stem change, in the present or the preterite.'}
+  ];
+
+  // §3 — -car/-gar/-zar spelling changes: only the yo form changes, and only
+  // because only the yo ending (-é) begins with e.
+  var L2_CGZ_VERBS = [
+    {inf:'sacar', en:'to take out', forms:['saqué','sacaste','sacó','sacamos','sacasteis','sacaron'], tier:'SHEET'},
+    {inf:'tocar', en:'to touch; to play (an instrument)', forms:['toqué','tocaste','tocó','tocamos','tocasteis','tocaron'], tier:'SHEET'},
+    {inf:'empacar', en:'to pack', forms:['empaqué','empacaste','empacó','empacamos','empacasteis','empacaron'], tier:'SHEET'},
+    {inf:'jugar', en:'to play', forms:['jugué','jugaste','jugó','jugamos','jugasteis','jugaron'], tier:'SHEET'},
+    {inf:'apagar', en:'to turn off', forms:['apagué','apagaste','apagó','apagamos','apagasteis','apagaron'], tier:'SHEET'},
+    {inf:'llegar', en:'to arrive', forms:['llegué','llegaste','llegó','llegamos','llegasteis','llegaron'], tier:'SHEET'},
+    {inf:'empezar', en:'to begin', forms:['empecé','empezaste','empezó','empezamos','empezasteis','empezaron'], tier:'SHEET'},
+    {inf:'comenzar', en:'to begin', forms:['comencé','comenzaste','comenzó','comenzamos','comenzasteis','comenzaron'], tier:'SHEET'},
+    {inf:'rezar', en:'to pray', forms:['recé','rezaste','rezó','rezamos','rezasteis','rezaron'], tier:'SHEET'}
+  ];
+
+  // §3.7 — more common verbs that follow the same rule. Only the yo form is
+  // given on the sheet, so these are single quick-check items, not full
+  // conjugation tables.
+  var L2_CGZ_EXTRA_YO = [
+    {prompt:'yo / buscar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['busqué']},
+    {prompt:'yo / practicar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['practiqué']},
+    {prompt:'yo / explicar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['expliqué']},
+    {prompt:'yo / pagar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['pagué']},
+    {prompt:'yo / entregar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['entregué']},
+    {prompt:'yo / navegar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['navegué']},
+    {prompt:'yo / cargar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['cargué']},
+    {prompt:'yo / almorzar (pretérito) <span class="gloss">(EXTRA — no stem change even though the present is almuerzo)</span>', answer:['almorcé']},
+    {prompt:'yo / organizar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['organicé']},
+    {prompt:'yo / abrazar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['abracé']},
+    {prompt:'yo / cruzar (pretérito) <span class="gloss">(EXTRA)</span>', answer:['crucé']}
+  ];
+
+  var L2_CGZ_RULES = [
+    {prompt:'Él ___ (sacar) las fotos. <span class="gloss">(only yo changes)</span>', answer:'sacó', choices:['sacó','saquó'], note:'Only the yo form changes; "él saquó" is never correct.'},
+    {prompt:'yo ___ (jugar) al fútbol ayer. <span class="gloss">(present is juego)</span>', answer:'jugué', choices:['jugué','juegué'], note:'Present stem changes do not carry into the -ar preterite: jugué, not juegué.'},
+    {prompt:'yo ___ (empezar) la tarea. <span class="gloss">(present is empiezo)</span>', answer:'empecé', choices:['empecé','empiecé'], note:'Present stem changes do not carry into the -ar preterite: empecé, not empiecé.'},
+    {prompt:'el pez → los ___ <span class="gloss">(plural)</span>', answer:'peces', choices:['peces','pezes'], note:'Nouns ending in -z change z→c before the plural -es: pez→peces, vez→veces, lápiz→lápices, luz→luces.'}
+  ];
+
+  // §4 — double object pronouns (pp. 69–70): le/les always become se
+  // before lo/la/los/las, and the order is always indirect-then-direct.
+  var L2_PRONOMBRES_RULES = [
+    {prompt:'Le compré un regalo a mi hermana. → ___ compré.', answer:'Se lo', choices:['Se lo','Le lo','Se la','Le la'], note:'le/les always become se before lo/la/los/las — "le lo" is never correct.'}
+  ];
+  var L2_PRONOMBRES_TRANSFORM = [
+    {prompt:'El camarero me sirvió la sopa.', answers:['el camarero me la sirvió']},
+    {prompt:'Le recomendé los camarones a Ana.', answers:['se los recomendé a ana','se los recomendé']},
+    {prompt:'Te voy a pedir el postre.', answers:['te lo voy a pedir','voy a pedírtelo']},
+    {prompt:'Nos sirvieron las papas fritas.', answers:['nos las sirvieron']},
+    {prompt:'Les estoy preparando la cena.', answers:['se la estoy preparando','estoy preparándosela']},
+    {prompt:'Le escribí la carta.', answers:['se la escribí']}
+  ];
+  var L2_PRONOMBRES_ATTACH = [
+    {prompt:'Van a servir + nos + los, combinado y pegado al infinitivo:', answer:['servírnoslos']},
+    {prompt:'Estoy preparando + te + lo, combinado y pegado al gerundio:', answer:['preparándotelo']},
+    {prompt:'¡Da + me + lo! <span class="gloss">(mandato afirmativo, combinado)</span>', answer:['dámelo']}
+  ];
+
+  // §5 — comparisons (pp. 73–75).
+  var L2_COMPARACIONES_VOCAB = [
+    {es:'como', en:'like; as', tier:'SHEET'},
+    {es:'más de (+ número)', en:'more than #', tier:'SHEET'},
+    {es:'más… que', en:'more ___ than', tier:'SHEET'},
+    {es:'menos de (+ número)', en:'less than #', tier:'SHEET'},
+    {es:'menos… que', en:'less ___ than', tier:'SHEET'},
+    {es:'tan… como', en:'as ___ as', tier:'SHEET'},
+    {es:'tantos/as… como', en:'as many ___ as', tier:'SHEET'},
+    {es:'tanto/a… como', en:'as much ___ as', tier:'SHEET'},
+    {es:'el/la mayor', en:'the oldest', tier:'SHEET'},
+    {es:'el/la mejor', en:'the best', tier:'SHEET'},
+    {es:'el/la menor', en:'the youngest', tier:'SHEET'},
+    {es:'el/la peor', en:'the worst', tier:'SHEET'},
+    {es:'mejor', en:'better', tier:'SHEET'},
+    {es:'peor', en:'worse', tier:'SHEET'}
+  ];
+  var L2_COMPARACIONES_RULES = [
+    {prompt:'La sopa es ___ sabrosa que la ensalada. <span class="gloss">(more)</span>', answer:'más', choices:['más','menos','tan']},
+    {prompt:'Hay ___ diez platos en el menú. <span class="gloss">(with a number, use de, not que)</span>', answer:'más de', choices:['más de','más que'], note:'With numbers, use de, not que.'},
+    {prompt:'Las manzanas son ___ sanas como las fresas. <span class="gloss">(as ... as)</span>', answer:'tan', choices:['tan','tanto','tantas']},
+    {prompt:'Tengo ___ hambre como tú. <span class="gloss">(hambre is feminine singular)</span>', answer:'tanta', choices:['tanto','tanta','tantos','tantas'], note:'tanto agrees with the noun: hambre is feminine singular, so tanta.'},
+    {prompt:'Ana come ___ que yo. <span class="gloss">(right after a verb)</span>', answer:'tanto', choices:['tanto','tanta','tan'], note:'tanto never changes when it follows a verb directly (verb + tanto como).'},
+    {prompt:'Es más alto que ___. <span class="gloss">(after que/como)</span>', answer:'yo', choices:['yo','mí','me'], note:'After que/como, Spanish uses subject pronouns (yo, tú), not mí/ti.'},
+    {prompt:'Esta comida es ___ que esa. <span class="gloss">(bueno → better)</span>', answer:'mejor', choices:['mejor','más bueno'], note:'Never say "más bueno" for quality — use mejor.'},
+    {prompt:'Mi abuelo es ___ que mi padre. <span class="gloss">(age)</span>', answer:'mayor', choices:['mayor','más viejo'], note:'mayor/menor refer to age or importance.'},
+    {prompt:'Esta pizza es ___ que esa. <span class="gloss">(physical size, not age)</span>', answer:'más grande', choices:['más grande','mayor'], note:'For physical size, use más grande/más pequeño, not mayor/menor.'},
+    {prompt:'Cocinas ___ que yo. <span class="gloss">(bien → better)</span>', answer:'mejor', choices:['mejor','más bien']},
+    {prompt:'Este restaurante es ___ que ese. <span class="gloss">(malo → worse)</span>', answer:'peor', choices:['peor','más malo'], note:'Never say "más malo" for quality — use peor.'},
+    {prompt:'Mi hermanita es ___ que yo. <span class="gloss">(joven → younger)</span>', answer:'menor', choices:['menor','más joven'], note:'mayor/menor refer to age or importance.'}
+  ];
+  var L2_COMPARACIONES_TRANSLATE = [
+    {prompt:'as healthy as', answers:['tan sano como','tan sana como']},
+    {prompt:'as many apples as', answers:['tantas manzanas como']}
+  ];
+
+  // §6 — superlatives (p. 78).
+  var L2_SUPERLATIVOS_RULES = [
+    {prompt:"Translate: \"It's the most expensive restaurant in the city.\"", answers:['es el restaurante más caro de la ciudad']},
+    {prompt:'Translate: "They are the least sweet fruits in the market."', answers:['son las frutas menos dulces del mercado']},
+    {prompt:'"In" or "of" after a superlative is ___.', answer:'de', choices:['de','en'], note:'Never en after a superlative — always de.'},
+    {prompt:'de + el → ___', answer:'del', choices:['del','de el'], note:'de + el always contracts to del.'},
+    {prompt:'Es ___ plato del menú. <span class="gloss">(the best — irregular, before the noun)</span>', answer:'el mejor', choices:['el mejor','el más bueno']},
+    {prompt:'Mi hermana es ___ de la familia. <span class="gloss">(the oldest)</span>', answer:'la mayor', choices:['la mayor','la más grande']},
+    {prompt:'Soy ___ de mis primos. <span class="gloss">(the youngest)</span>', answer:'el menor', choices:['el menor','el más joven']}
+  ];
+  var L2_ABSOLUTE_SUPERLATIVE = [
+    {prompt:'rico → ___ <span class="gloss">(extremely tasty — EXTRA)</span>', answer:['riquísimo']},
+    {prompt:'largo → ___ <span class="gloss">(extremely long — EXTRA)</span>', answer:['larguísimo']},
+    {prompt:'feliz → ___ <span class="gloss">(extremely happy — EXTRA)</span>', answer:['felicísimo']},
+    {prompt:'delicioso → ___ <span class="gloss">(extremely delicious — EXTRA)</span>', answer:['deliciosísimo']},
+    {prompt:'sabroso → ___ <span class="gloss">(extremely tasty — EXTRA)</span>', answer:['sabrosísimo']}
+  ];
+
   var RULES = {
     'ser-estar': {title:'Ser vs. Estar', explanation:'Both verbs mean "to be," but they aren\'t interchangeable. Use ser for identity, characteristics, origin, profession, possession, material, and dates or time. Use estar for location, health, emotional state, and conditions that can change.', example:{es:'Juan es delgado, pero hoy está más delgado.', en:'Juan is thin (a lasting trait), but today he looks thinner (a change you notice).'}},
     'articles': {title:'Articles', explanation:'Every Spanish noun has a gender (masculine or feminine) and a number (singular or plural), and its article has to match both. Definite articles (el/la/los/las) mean "the"; indefinite articles (un/una/unos/unas) mean "a/an" or "some."', example:{es:'el gimnasio → los gimnasios; una tienda → unas tiendas', en:'the gym → the gyms; a store → some stores'}},
@@ -1006,7 +1291,20 @@
     'vocab-activities': {title:'Activities', explanation:'Common verbs and phrases for everyday activities.'},
     'vocab-places-2': {title:'More Places', explanation:'More vocabulary for places you go in daily life.'},
     'vocab-bathroom': {title:'In the Bathroom', explanation:'Vocabulary for talking about your morning routine.'},
-    'vocab-routine': {title:'Routine & Sequence Words', explanation:'Words that put your daily routine in order. A verb that follows "de" (antes de, después de) always stays in the infinitive.'}
+    'vocab-routine': {title:'Routine & Sequence Words', explanation:'Words that put your daily routine in order. A verb that follows "de" (antes de, después de) always stays in the infinitive.'},
+
+    'l2-restaurant': {title:'Lección 2 · Meals & Restaurant', explanation:'Senderos 2, Lección 2 — "La comida," p. 91. Core vocabulary for talking about meals, a restaurant, and food in general.'},
+    'l2-frutas': {title:'Lección 2 · Fruits', explanation:'Senderos 2, Lección 2 — "La comida," p. 91.'},
+    'l2-verduras': {title:'Lección 2 · Vegetables', explanation:'Senderos 2, Lección 2 — "La comida," p. 91.'},
+    'l2-carne-pescado': {title:'Lección 2 · Meat & Fish', explanation:'Senderos 2, Lección 2 — "La comida," p. 91. A live fish is el pez (pl. peces); once it\'s food, it\'s el pescado.', example:{es:'El pez nada en el mar; el pescado está en el plato.', en:'The fish swims in the sea; the fish (food) is on the plate.'}},
+    'l2-otras-comidas': {title:'Lección 2 · Other Foods', explanation:'Senderos 2, Lección 2 — "La comida," p. 91.'},
+    'l2-bebidas': {title:'Lección 2 · Drinks', explanation:'Senderos 2, Lección 2 — "La comida," p. 91. el agua is feminine but takes el in the singular because it starts with a stressed "a."', example:{es:'el agua fría, las aguas', en:'the cold water, the waters (plural reverts to las)'}},
+    'l2-verbos': {title:'Lección 2 · Food Verbs (Present)', explanation:'Present tense of escoger, merendar, morir, pedir, probar, recomendar, saber, and servir, plus the usage distinctions the sheet calls out: saber a = to taste like, probar = to taste/try, pedir ≠ preguntar, and estar rico (tastes good) vs ser rico (wealthy).', example:{es:'Esta sopa sabe a ajo. ¿Quieres probarla?', en:'This soup tastes like garlic. Do you want to try it?'}},
+    'l2-preterito': {title:'Lección 2 · Preterite of Stem-Changing Verbs', explanation:'-ar/-er stem-changing verbs (merendar, probar, recomendar) have no stem change at all in the preterite. -ir stem-changing verbs (servir, dormir, pedir, morir) change only in the 3rd person, singular and plural — yo, tú, nosotros, and vosotros stay regular.', example:{es:'Ella sirvió la cena; yo serví el postre.', en:'She served dinner; I served dessert. (3rd person changes, yo does not.)'}},
+    'l2-car-gar-zar': {title:'Lección 2 · -car/-gar/-zar Preterite Spelling', explanation:'For verbs ending in -car, -gar, or -zar, the spelling changes only in the yo form of the preterite, because only the yo ending (-é) begins with e: c→qu, g→gu, z→c. This keeps the sound of the verb the same — writing "sacé" would be pronounced with an S, so it becomes saqué to keep the hard K sound. The other five forms are completely regular.', example:{es:'saqué, sacaste, sacó, sacamos, sacasteis, sacaron', en:'I took out, you took out, he took out... (only yo is spelled differently)'}},
+    'l2-pronombres': {title:'Lección 2 · Double Object Pronouns', explanation:'Indirect object before direct object (me lo, te la, nos los...), and le/les always become se before lo/la/los/las — "le lo" and "les la" are never correct. Attaching both pronouns to an infinitive or gerund pushes the stress back, so a written accent is added to keep the original stressed syllable.', example:{es:'Le escribí la carta. → Se la escribí. / Van a servírnoslos.', en:'I wrote her the letter. → I wrote it to her. / They\'re going to serve them to us.'}},
+    'l2-comparaciones': {title:'Lección 2 · Comparisons', explanation:'más/menos + que for inequality (but más/menos de before a number); tan + como for equality with an adjective/adverb (tan never changes); tanto/a/os/as + como for equality with a noun (tanto agrees with that noun, but never changes right after a verb). bueno/malo/grande/pequeño have irregular comparatives: mejor, peor, mayor, menor.', example:{es:'La sopa es más sabrosa que la ensalada, pero es tan cara como el bistec.', en:'The soup is tastier than the salad, but it\'s as expensive as the steak.'}},
+    'l2-superlativos': {title:'Lección 2 · Superlatives', explanation:'el/la/los/las + noun + más/menos + adjective + de (never en) singles something out from a group. The irregular comparatives (mejor, peor, mayor, menor) double as irregular superlatives and usually go before the noun.', example:{es:'Es el restaurante más caro de la ciudad. Es el mejor plato del menú.', en:"It's the most expensive restaurant in the city. It's the best dish on the menu."}}
   };
 
   var METHODS = [
@@ -1046,13 +1344,13 @@
   /* ============================= ITEM BUILDERS ============================= */
   function stripArticle(es){ return es.replace(/^(el|la|los|las)\s+/i,''); }
 
-  function conjItems(verbs, topic){
+  function conjItems(verbs, topic, tier){
     var out = [];
     verbs.forEach(function(v){
       PRONOUNS.forEach(function(p, i){
         out.push({
           id:'conj-'+topic+'-'+v.inf+'-'+i,
-          topic:topic, type:'conjugate',
+          topic:topic, type:'conjugate', tier: v.tier || tier,
           prompt: p+' — <b>'+v.inf+'</b> <span class="gloss">('+v.en+')</span>',
           answer:[v.forms[i]],
           choices: shuffled(v.forms)
@@ -1062,11 +1360,11 @@
     return out;
   }
 
-  function irregVerbVocab(verbs, topic){
+  function irregVerbVocab(verbs, topic, tier){
     var out = [];
     verbs.forEach(function(v, i){
-      out.push({id:'infen-'+topic+'-'+i, topic:topic, type:'vocab-es2en', prompt:v.inf, answer:[v.en], pool:verbs.map(function(x){return x.en;})});
-      out.push({id:'infes-'+topic+'-'+i, topic:topic, type:'vocab-en2es', prompt:v.en, answer:[v.inf], pool:verbs.map(function(x){return x.inf;})});
+      out.push({id:'infen-'+topic+'-'+i, topic:topic, type:'vocab-es2en', tier: v.tier || tier, prompt:v.inf, answer:[v.en], pool:verbs.map(function(x){return x.en;})});
+      out.push({id:'infes-'+topic+'-'+i, topic:topic, type:'vocab-en2es', tier: v.tier || tier, prompt:v.en, answer:[v.inf], pool:verbs.map(function(x){return x.inf;})});
     });
     return out;
   }
@@ -1076,8 +1374,26 @@
     var esPool = list.map(function(w){return w.es;});
     var enPool = list.map(function(w){return w.en;});
     list.forEach(function(w, i){
-      out.push({id:'v-e2n-'+topic+'-'+i, topic:topic, type:'vocab-es2en', prompt:w.es, answer:[w.en], icon:w.icon, note:w.note, pool:enPool});
-      out.push({id:'v-n2e-'+topic+'-'+i, topic:topic, type:'vocab-en2es', prompt:w.en, answer:[w.es], icon:w.icon, note:w.note, pool:esPool});
+      out.push({id:'v-e2n-'+topic+'-'+i, topic:topic, type:'vocab-es2en', prompt:w.es, answer:[w.en], icon:w.icon, note:w.note, tier:w.tier, pool:enPool});
+      out.push({id:'v-n2e-'+topic+'-'+i, topic:topic, type:'vocab-en2es', prompt:w.en, answer:[w.es], icon:w.icon, note:w.note, tier:w.tier, pool:esPool});
+    });
+    return out;
+  }
+
+  // Like vocabItems, but for a Spanish side with more than one accepted form
+  // (regional synonyms: melocotón/durazno, papas/patatas...). Every ES
+  // variant gets its own es→en flashcard; the one en→es card accepts any of
+  // them, since gradeAnswer already checks the full answer array.
+  function vocabItemsSyn(list, topic, key){
+    key = key || 'syn';
+    var out = [];
+    var enPool = list.map(function(w){return w.en;});
+    list.forEach(function(w, i){
+      var esForms = Array.isArray(w.es) ? w.es : [w.es];
+      esForms.forEach(function(esWord, j){
+        out.push({id:'vs-e2n-'+topic+'-'+key+'-'+i+'-'+j, topic:topic, type:'vocab-es2en', prompt:esWord, answer:[w.en], icon:w.icon, note:w.note, tier:w.tier, pool:enPool});
+      });
+      out.push({id:'vs-n2e-'+topic+'-'+key+'-'+i, topic:topic, type:'vocab-en2es', prompt:w.en, answer:esForms.slice(), icon:w.icon, note:w.note, tier:w.tier, pool:esForms});
     });
     return out;
   }
@@ -1195,6 +1511,80 @@
       .concat(conjItems(VERBS.irregularYo, 'stem-changing'));
   }
 
+  /* ---------- Lección 2 · La comida builders ---------- */
+  function buildL2RestaurantItems(){
+    return vocabItems(L2_RESTAURANT, 'l2-restaurant')
+      .concat(vocabItemsSyn(L2_DELICIOUS_SYN, 'l2-restaurant', 'delicious'))
+      .concat(vocabItemsSyn(L2_HEALTHY_SYN, 'l2-restaurant', 'healthy'));
+  }
+  function buildL2FrutasItems(){
+    return vocabItems(L2_FRUTAS, 'l2-frutas').concat(vocabItemsSyn(L2_FRUTAS_SYN, 'l2-frutas'));
+  }
+  function buildL2VerdurasItems(){
+    return vocabItems(L2_VERDURAS, 'l2-verduras').concat(vocabItemsSyn(L2_VERDURAS_SYN, 'l2-verduras'));
+  }
+  function buildL2VerbosItems(){
+    var out = conjItems(L2_VERBOS_PRESENTE, 'l2-verbos').concat(irregVerbVocab(L2_VERBOS_PRESENTE, 'l2-verbos'));
+    L2_VERB_USAGE.forEach(function(it, i){
+      out.push({id:'l2-verb-use-'+i, topic:'l2-verbos', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+    });
+    return out;
+  }
+  function buildL2PreteritoItems(){
+    var out = conjItems(L2_VERBOS_PRETERITO, 'l2-preterito');
+    L2_PRETERITO_RULES.forEach(function(it, i){
+      out.push({id:'l2-pret-rule-'+i, topic:'l2-preterito', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+    });
+    return out;
+  }
+  function buildL2CarGarZarItems(){
+    var out = conjItems(L2_CGZ_VERBS, 'l2-car-gar-zar');
+    L2_CGZ_EXTRA_YO.forEach(function(it, i){
+      out.push({id:'l2-cgz-extra-'+i, topic:'l2-car-gar-zar', type:'typed', tier:'EXTRA', prompt:it.prompt, answer:it.answer});
+    });
+    L2_CGZ_RULES.forEach(function(it, i){
+      out.push({id:'l2-cgz-rule-'+i, topic:'l2-car-gar-zar', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+    });
+    return out;
+  }
+  function buildL2PronombresItems(){
+    var out = [];
+    L2_PRONOMBRES_RULES.forEach(function(it, i){
+      out.push({id:'l2-pron-rule-'+i, topic:'l2-pronombres', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+    });
+    L2_PRONOMBRES_TRANSFORM.forEach(function(it, i){
+      out.push({id:'l2-pron-tx-'+i, topic:'l2-pronombres', type:'typed', tier:'SHEET', forceTyped:true, prompt:'Rewrite with double object pronouns: <br><i>"'+it.prompt+'"</i>', answer:it.answers});
+    });
+    L2_PRONOMBRES_ATTACH.forEach(function(it, i){
+      out.push({id:'l2-pron-attach-'+i, topic:'l2-pronombres', type:'typed', tier:'RULE', forceTyped:true, prompt:it.prompt, answer:it.answer});
+    });
+    return out;
+  }
+  function buildL2ComparacionesItems(){
+    var out = vocabItems(L2_COMPARACIONES_VOCAB, 'l2-comparaciones');
+    L2_COMPARACIONES_RULES.forEach(function(it, i){
+      out.push({id:'l2-comp-rule-'+i, topic:'l2-comparaciones', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+    });
+    L2_COMPARACIONES_TRANSLATE.forEach(function(it, i){
+      out.push({id:'l2-comp-tx-'+i, topic:'l2-comparaciones', type:'typed', tier:'SHEET', forceTyped:true, prompt:'Translate: <br><i>"'+it.prompt+'"</i>', answer:it.answers});
+    });
+    return out;
+  }
+  function buildL2SuperlativosItems(){
+    var out = [];
+    L2_SUPERLATIVOS_RULES.forEach(function(it, i){
+      if(it.answers){
+        out.push({id:'l2-sup-tx-'+i, topic:'l2-superlativos', type:'typed', tier:'SHEET', forceTyped:true, prompt:it.prompt, answer:it.answers});
+      } else {
+        out.push({id:'l2-sup-rule-'+i, topic:'l2-superlativos', type:'mc', tier:'RULE', prompt:it.prompt, answer:[it.answer], choices:it.choices, note:it.note});
+      }
+    });
+    L2_ABSOLUTE_SUPERLATIVE.forEach(function(it, i){
+      out.push({id:'l2-sup-abs-'+i, topic:'l2-superlativos', type:'typed', tier:'EXTRA', prompt:it.prompt, answer:it.answer});
+    });
+    return out;
+  }
+
   var ALL_ITEMS = []
     .concat(buildSerEstarItems())
     .concat(buildArticleItems())
@@ -1215,7 +1605,19 @@
     .concat(vocabItems(VOCAB_ACTIVITIES, 'vocab-activities'))
     .concat(vocabItems(VOCAB_PLACES2, 'vocab-places-2'))
     .concat(vocabItems(VOCAB_BATHROOM, 'vocab-bathroom'))
-    .concat(vocabItems(VOCAB_ROUTINE, 'vocab-routine'));
+    .concat(vocabItems(VOCAB_ROUTINE, 'vocab-routine'))
+    .concat(buildL2RestaurantItems())
+    .concat(buildL2FrutasItems())
+    .concat(buildL2VerdurasItems())
+    .concat(vocabItems(L2_CARNE_PESCADO, 'l2-carne-pescado'))
+    .concat(vocabItems(L2_OTRAS_COMIDAS, 'l2-otras-comidas'))
+    .concat(vocabItems(L2_BEBIDAS, 'l2-bebidas'))
+    .concat(buildL2VerbosItems())
+    .concat(buildL2PreteritoItems())
+    .concat(buildL2CarGarZarItems())
+    .concat(buildL2PronombresItems())
+    .concat(buildL2ComparacionesItems())
+    .concat(buildL2SuperlativosItems());
 
   var ITEMS_BY_TOPIC = {};
   ALL_ITEMS.forEach(function(it){
@@ -1749,8 +2151,11 @@
   function distractorsFor(item){
     if(item.choices) return item.choices;
     if(item.pool){
-      var others = item.pool.filter(function(v){ return v !== item.answer[0]; });
-      return sample(others, Math.min(3, others.length)).concat(item.answer);
+      // Excludes every accepted answer, not just answer[0] — an item with
+      // more than one correct form (regional synonyms) must never show two
+      // of its own correct answers as if one were a wrong-option distractor.
+      var others = item.pool.filter(function(v){ return item.answer.indexOf(v) === -1; });
+      return sample(others, Math.min(3, others.length)).concat([item.answer[0]]);
     }
     return item.answer;
   }
@@ -1903,7 +2308,7 @@
     hubBtn.onclick = function(){ window.location.href = '/'; };
     bar.appendChild(hubBtn);
     var brand = el('button','brand');
-    brand.innerHTML = '<h1>Fichero de Español</h1><div class="sub">Senderos 2 · Lección Preliminar, Lección 1 &amp; Unidad 1</div>';
+    brand.innerHTML = '<h1>Fichero de Español</h1><div class="sub">Senderos 2 · Lección Preliminar, Lección 1, Unidad 1 &amp; Lección 2</div>';
     brand.onclick = function(){ go('home'); };
     bar.appendChild(brand);
 
