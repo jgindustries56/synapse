@@ -9,63 +9,65 @@
 <link href="https://fonts.googleapis.com/css2?family=Piazzolla:ital,wght@0,500;0,600;0,700;1,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ground:#F2EFE4;
-    --surface:#FFFDF7;
-    --surface-2:#E7E1CE;
-    --ink:#20281F;
-    --ink-soft:#5B6152;
-    --rule:#D8D1B8;
-    --accent-navy:#2B4570;
-    --accent-navy-ink:#1E3255;
-    --accent-pine:#2F6355;
-    --accent-pine-ink:#204A40;
-    /* Fill only (bars, tabs, the speed clock): --on-accent text on this
-       measures 3.25:1, so it must not be used as a text background. */
-    --accent-gold:#B87F1F;
-    /* Darkened from #8C6015: as text on the tinted vocabulary chip it measured
-       4.40:1, just under the 4.5:1 floor for body-size text. Now 4.94:1. */
-    --accent-gold-ink:#82590F;
+    --ground:#EFF3F5;
+    --surface:#FFFFFF;
+    --surface-2:#DCE6EA;
+    --ink:#0F2430;
+    --ink-soft:#516773;
+    --rule:#C7D6DC;
+    --accent-navy:#1E5FA8;
+    --accent-navy-ink:#153F70;
+    --accent-pine:#2E9B7A;
+    --accent-pine-ink:#1D6852;
+    --accent-gold:#C98A2E;
+    --accent-gold-ink:#8A5E1D;
+    --accent-clay:#E0654A;
+    --accent-clay-ink:#A8432E;
     --accent-red:#AC3A2C;
     --accent-red-ink:#8A2D22;
-    --on-accent:#FBF8EF;
-    --shadow: 0 1px 2px rgba(32,40,31,.06), 0 6px 16px -8px rgba(32,40,31,.18);
+    --on-accent:#F5FAFC;
+    --shadow: 0 1px 2px rgba(15,36,48,.06), 0 6px 16px -8px rgba(15,36,48,.18);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --ground:#181A15;
-      --surface:#21241C;
-      --surface-2:#2B2E23;
-      --ink:#EEE9D8;
-      --ink-soft:#A6A18C;
-      --rule:#3B3E31;
-      --accent-navy:#8AA3D6;
-      --accent-navy-ink:#C4D3EE;
-      --accent-pine:#6FBBA1;
-      --accent-pine-ink:#B3E4D2;
-      --accent-gold:#E3AC4E;
-      --accent-gold-ink:#F4D599;
+      --ground:#0E1A22;
+      --surface:#16242E;
+      --surface-2:#1E323D;
+      --ink:#DCEAF0;
+      --ink-soft:#8FA8B4;
+      --rule:#2B3F4A;
+      --accent-navy:#7FB2E8;
+      --accent-navy-ink:#C7E0F7;
+      --accent-pine:#6FD6B4;
+      --accent-pine-ink:#BEF0DE;
+      --accent-gold:#E8B968;
+      --accent-gold-ink:#F7DCA8;
+      --accent-clay:#F0947C;
+      --accent-clay-ink:#FBCFC2;
       --accent-red:#E17A69;
       --accent-red-ink:#F3B4A8;
-      --on-accent:#1B1D16;
+      --on-accent:#0E1A22;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
     }
   }
   :root[data-theme="dark"]{
-    --ground:#181A15;
-    --surface:#21241C;
-    --surface-2:#2B2E23;
-    --ink:#EEE9D8;
-    --ink-soft:#A6A18C;
-    --rule:#3B3E31;
-    --accent-navy:#8AA3D6;
-    --accent-navy-ink:#C4D3EE;
-    --accent-pine:#6FBBA1;
-    --accent-pine-ink:#B3E4D2;
-    --accent-gold:#E3AC4E;
-    --accent-gold-ink:#F4D599;
+    --ground:#0E1A22;
+    --surface:#16242E;
+    --surface-2:#1E323D;
+    --ink:#DCEAF0;
+    --ink-soft:#8FA8B4;
+    --rule:#2B3F4A;
+    --accent-navy:#7FB2E8;
+    --accent-navy-ink:#C7E0F7;
+    --accent-pine:#6FD6B4;
+    --accent-pine-ink:#BEF0DE;
+    --accent-gold:#E8B968;
+    --accent-gold-ink:#F7DCA8;
+    --accent-clay:#F0947C;
+    --accent-clay-ink:#FBCFC2;
     --accent-red:#E17A69;
     --accent-red-ink:#F3B4A8;
-    --on-accent:#1B1D16;
+    --on-accent:#0E1A22;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.5);
   }
 
@@ -322,6 +324,52 @@
 
   .jump-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:14px; margin-bottom:8px;}
 
+  /* ---------- uniform tile grid ----------
+     One tile shape for every module on Home (stats, category mastery, the
+     heatmap, milestones) and for every topic picker (Home's Topics section,
+     Study/Quiz/Test/Guided, Sheets): same radius, border, shadow, padding
+     throughout. Only the grid span changes. */
+  .uniform-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+  .tile{background:var(--surface); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow); padding:16px;}
+  .tile-wide{grid-column:1 / -1;}
+
+  .tile-cat .cat-name{font-size:.82rem; font-weight:600;}
+  .tile-cat .cat-track{height:6px; border-radius:99px; background:var(--surface-2); margin-top:10px; overflow:hidden;}
+  .tile-cat .cat-fill{height:100%;}
+  .tile-cat .cat-pct{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--ink-soft); margin-top:6px; display:block;}
+
+  .tile-badge{display:flex; flex-direction:column; align-items:flex-start; gap:6px;}
+  .tile-badge.locked{opacity:.5;}
+  .tile-badge .bicon2{font-size:1.2rem;}
+  .tile-badge .bname2{font-size:.76rem; font-weight:600;}
+
+  /* chunked-unit tiles: a group of topics (a lesson, or a category), collapsed
+     to a header + progress bar until tapped, then a two-column topic list. */
+  .unit-tile{cursor:pointer;}
+  .unit-head{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+  .unit-title{font-family:'Piazzolla',serif; font-weight:600; font-size:1.02rem;}
+  .unit-meta{font-size:.76rem; color:var(--ink-soft); margin-top:3px;}
+  .unit-arrow{font-size:.9rem; color:var(--ink-soft); transition:transform .2s; flex-shrink:0;}
+  .unit-tile.open .unit-arrow{transform:rotate(90deg);}
+  .unit-track{height:6px; border-radius:99px; background:var(--surface-2); margin-top:12px; overflow:hidden;}
+  .unit-fill{height:100%;}
+  .unit-topics{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .unit-tile.open .unit-topics{max-height:3000px;}
+  .unit-topics-2col{margin-top:14px; column-count:2; column-gap:20px;}
+  .unit-topic-row{
+    display:flex; justify-content:space-between; align-items:center; width:100%; gap:10px;
+    padding:9px 4px; border:none; border-bottom:1px solid var(--rule);
+    background:none; font-family:inherit; text-align:left; cursor:pointer; color:var(--ink); break-inside:avoid;
+  }
+  .unit-topic-row:hover{background:var(--surface-2);}
+  .unit-topic-row .n{font-size:.84rem;}
+  .unit-topic-row .c{font-family:'IBM Plex Mono',monospace; font-size:.74rem; color:var(--ink-soft); flex-shrink:0; margin-left:8px;}
+
+  @media (max-width:640px){
+    .uniform-grid{grid-template-columns:repeat(2,1fr);}
+    .unit-topics-2col{column-count:1;}
+  }
+
   /* ---------- study methods ---------- */
   .method-icon{font-size:1.8rem; line-height:1;}
 
@@ -563,6 +611,25 @@
   ];
   var TOPIC_MAP = {};
   TOPICS.forEach(function(t){ TOPIC_MAP[t.id] = t; });
+
+  // Groups topics by lesson instead of grammar/verbs/vocab, so a topic
+  // picker shows ~3 units (a chunk count within working-memory span) instead
+  // of all 32 topics flat. Purely a display grouping — TOPICS/TOPIC_MAP and
+  // every id above stay exactly as they are.
+  var UNIT_GROUPS = [
+    {id:'leccion-prelim-1', name:'Lección Preliminar & 1', color:'var(--accent-navy)', topicIds:[
+      'ser-estar','articles','adjectives','indef-neg','pero-sino','regular-verbs','tener-venir','ir-verb',
+      'stem-changing','vocab-places','vocab-food','vocab-feelings'
+    ]},
+    {id:'unidad-1', name:'Unidad 1', color:'var(--accent-clay)', topicIds:[
+      'reflexive-verbs','gustar-verbs','vocab-people','vocab-personality','vocab-activities',
+      'vocab-places-2','vocab-bathroom','vocab-routine'
+    ]},
+    {id:'leccion-2', name:'Lección 2 · La comida', color:'var(--accent-gold)', topicIds:[
+      'l2-restaurant','l2-frutas','l2-verduras','l2-carne-pescado','l2-otras-comidas','l2-bebidas',
+      'l2-verbos','l2-preterito','l2-car-gar-zar','l2-pronombres','l2-comparaciones','l2-superlativos'
+    ]}
+  ];
 
   // A visual anchor per topic. Pairing a picture with the verbal label gives
   // the eye a second, faster route to the same card (dual coding).
@@ -2411,22 +2478,90 @@
   }
 
   function statTile(value, label){
-    var t = el('div','stat-tile');
+    var t = el('div','tile stat-tile');
     t.appendChild(el('div','stat-value mono', value));
     t.appendChild(el('div','stat-label', label));
     return t;
   }
 
-  function categoryBar(catId, catLabel){
+  function categoryTile(catId, catLabel, color){
     var pct = categoryMastery(catId);
-    var row = el('div','cat-bar-row');
-    row.appendChild(el('div','cat-bar-name', catLabel));
-    var track = el('div','mastery-bar');
-    var fill = el('div','mastery-fill cat-'+catId); fill.style.width = pct+'%';
+    var t = el('div','tile tile-cat');
+    t.appendChild(el('div','cat-name', catLabel));
+    var track = el('div','cat-track');
+    var fill = el('div','cat-fill'); fill.style.width = pct+'%'; fill.style.background = color;
     track.appendChild(fill);
-    row.appendChild(track);
-    row.appendChild(el('div','mastery-pct mono', pct+'%'));
-    return row;
+    t.appendChild(track);
+    t.appendChild(el('span','cat-pct', pct+'% mastered'));
+    return t;
+  }
+
+  // Longest run of consecutive studied days, ever — not just the current
+  // streak. A real computed stat, not a placeholder, so the tile grid fills
+  // out evenly without inventing a number.
+  function longestStreak(){
+    var days = Object.keys(PROGRESS.days||{}).filter(function(d){ return (PROGRESS.days[d]||0) > 0; }).sort();
+    var longest = 0, run = 0, prev = null;
+    days.forEach(function(d){
+      if(prev){
+        var diffDays = Math.round((new Date(d) - new Date(prev)) / 86400000);
+        run = diffDays === 1 ? run + 1 : 1;
+      } else run = 1;
+      if(run > longest) longest = run;
+      prev = d;
+    });
+    return longest;
+  }
+
+  /* ---------- chunked-unit topic picker ----------
+     Every topic grid in the app (Home's Topics section, Study, Quiz, Test,
+     Guided, Sheets) renders through this one function: topics grouped into
+     ~3 units instead of shown flat, each unit a uniform tile that expands
+     into a two-column list. cfg: { topics (default ALL_ITEMS' topics),
+     onTopic(topicId), rightLabel(topic) -> string, openFirst (default true) } */
+  function unitsFor(topics){
+    var byId = {};
+    topics.forEach(function(t){ byId[t.id] = t; });
+    return UNIT_GROUPS.map(function(g){
+      var ts = g.topicIds.map(function(id){ return byId[id]; }).filter(Boolean);
+      return {group:g, topics:ts};
+    }).filter(function(u){ return u.topics.length; });
+  }
+
+  function unitGrid(cfg){
+    var topics = cfg.topics || TOPICS;
+    var wrap = el('div','uniform-grid');
+    unitsFor(topics).forEach(function(u, idx){
+      var totalItems = u.topics.reduce(function(s,t){ return s + (ITEMS_BY_TOPIC[t.id]||[]).length; }, 0);
+      var avgMastery = Math.round(u.topics.reduce(function(s,t){ return s + topicMastery(t.id); }, 0) / u.topics.length);
+      var tile = el('div','tile tile-wide unit-tile'+((cfg.openFirst!==false && idx===0) ? ' open' : ''));
+      var head = el('div','unit-head');
+      head.innerHTML = '<div><div class="unit-title">'+escapeHtml(u.group.name)+'</div>'
+        + '<div class="unit-meta">'+u.topics.length+' topic'+(u.topics.length===1?'':'s')+' · '+totalItems+' cards'
+        + (cfg.showMastery===false ? '' : ' · '+avgMastery+'% mastered')+'</div></div>'
+        + '<span class="unit-arrow">▸</span>';
+      head.onclick = function(){ tile.classList.toggle('open'); };
+      tile.appendChild(head);
+      if(cfg.showMastery !== false){
+        var track = el('div','unit-track');
+        var fill = el('div','unit-fill'); fill.style.width = avgMastery+'%'; fill.style.background = u.group.color;
+        track.appendChild(fill);
+        tile.appendChild(track);
+      }
+      var list = el('div','unit-topics');
+      var cols = el('div','unit-topics-2col');
+      u.topics.forEach(function(t){
+        var row = el('button','unit-topic-row');
+        var right = cfg.rightLabel ? cfg.rightLabel(t) : (topicMastery(t.id)+'%');
+        row.innerHTML = '<span class="n">'+topicIcon(t.id)+' '+escapeHtml(t.name)+'</span><span class="c mono">'+escapeHtml(right)+'</span>';
+        row.onclick = function(){ cfg.onTopic(t.id); };
+        cols.appendChild(row);
+      });
+      list.appendChild(cols);
+      tile.appendChild(list);
+      wrap.appendChild(tile);
+    });
+    return wrap;
   }
 
   function scoreClass(pct){ return pct>=80?'good':(pct>=50?'ok':'low'); }
@@ -2708,7 +2843,7 @@
   // you can see reads as something you'd lose, and losses weigh heavier than
   // equivalent gains (Kahneman & Tversky).
   function heatmapCard(){
-    var wrap = el('div','heatmap');
+    var wrap = el('div','tile tile-wide heatmap');
     var grid = el('div','heat-grid');
     var days = PROGRESS.days || {};
     var today = new Date();
@@ -2730,32 +2865,23 @@
     return wrap;
   }
 
-  function badgeGrid(){
-    var grid = el('div','badge-grid');
+  // Appends one uniform tile per badge directly into an existing grid,
+  // rather than returning its own separately-shaped container — this is
+  // what lets Milestones share the same grid/tile as the stats above it.
+  function appendBadgeTiles(grid){
     badgeDefs().forEach(function(b){
-      var card = el('div','badge'+(b.earned?'':' locked'));
-      card.appendChild(el('div','bicon', b.icon));
-      var txt = el('div','');
-      txt.appendChild(el('div','bname', b.name));
-      txt.appendChild(el('div','bdesc', b.desc));
-      card.appendChild(txt);
-      grid.appendChild(card);
+      var t = el('div','tile tile-badge'+(b.earned?'':' locked'));
+      t.title = b.desc;
+      t.appendChild(el('div','bicon2', b.icon));
+      t.appendChild(el('div','bname2', b.name));
+      grid.appendChild(t);
     });
-    return grid;
   }
 
   function homeView(){
     var wrap = el('div','');
 
     wrap.appendChild(recommendCard());
-
-    wrap.appendChild(el('div','section-label','Your Progress'));
-    var statGrid = el('div','stat-grid');
-    statGrid.appendChild(statTile(String(dueCount()), 'Ready to Review'));
-    statGrid.appendChild(statTile(overallMastery()+'%', 'Overall Mastery'));
-    statGrid.appendChild(statTile(masteredCount()+' / '+ALL_ITEMS.length, 'Cards Mastered'));
-    statGrid.appendChild(statTile(String(PROGRESS.streak.count||0), 'Day Streak'));
-    wrap.appendChild(statGrid);
 
     if(GOOGLE_CLIENT_ID){
       var syncNote = el('div','sync-note');
@@ -2765,67 +2891,28 @@
       wrap.appendChild(syncNote);
     }
 
-    var catBars = el('div','cat-bars');
-    catBars.appendChild(categoryBar('grammar','Grammar'));
-    catBars.appendChild(categoryBar('verbs','Verbs'));
-    catBars.appendChild(categoryBar('vocab','Vocabulary'));
-    wrap.appendChild(catBars);
-
-    wrap.appendChild(el('div','section-label','Study Days'));
-    wrap.appendChild(heatmapCard());
-
-    wrap.appendChild(el('div','section-label','Milestones'));
-    wrap.appendChild(badgeGrid());
+    // Stats, category mastery, the heatmap, and milestones are one uniform
+    // grid of same-shaped tiles — nothing here changes shape section to
+    // section, only span.
+    var grid = el('div','uniform-grid');
+    grid.appendChild(statTile(String(dueCount()), 'Ready to Review'));
+    grid.appendChild(statTile(overallMastery()+'%', 'Overall Mastery'));
+    grid.appendChild(statTile(masteredCount()+' / '+ALL_ITEMS.length, 'Cards Mastered'));
+    grid.appendChild(statTile(String(PROGRESS.streak.count||0), 'Day Streak'));
+    grid.appendChild(categoryTile('grammar','Grammar','var(--accent-navy)'));
+    grid.appendChild(categoryTile('verbs','Verbs','var(--accent-clay)'));
+    grid.appendChild(categoryTile('vocab','Vocabulary','var(--accent-gold)'));
+    grid.appendChild(statTile(String(longestStreak()), 'Longest Streak'));
+    grid.appendChild(heatmapCard());
+    appendBadgeTiles(grid);
+    wrap.appendChild(grid);
 
     wrap.appendChild(recentActivitySection(5));
 
-    wrap.appendChild(el('div','section-label','Jump In'));
-    var jumpGrid = el('div','jump-grid');
-    var jumpItems = [
-      {title:'Study', desc:'Flip through flashcards at your own pace.', view:'study'},
-      {title:'Quiz', desc:'A short, mixed check with instant feedback.', view:'quiz'},
-      {title:'Test', desc:'A longer, harder check — closer to the real exam.', view:'test'},
-      {title:'Guided Exercises', desc:'See the rule explained, then practice it.', view:'guided'},
-      {title:'Study Methods', desc:'Fill-in-the-blank, multiple choice, matching, and more.', view:'methods'},
-      {title:'History', desc:'Every past session and score, in full.', view:'history'},
-      {title:'Reference Sheets', desc:'Printable tables for when you\'re doing the homework, not quizzing.', view:'reference'},
-      {title:'Settings', desc:'Session sizes, difficulty, theme, and your data.', view:'settings'}
-    ];
-    jumpItems.forEach(function(j){
-      var card = el('div','global-card');
-      card.innerHTML = '<h3>'+j.title+'</h3><p>'+j.desc+'</p>';
-      var btn = el('button','btn btn-primary btn-block','Open →');
-      btn.onclick = function(){ go(j.view); };
-      card.appendChild(btn);
-      jumpGrid.appendChild(card);
-    });
-    wrap.appendChild(jumpGrid);
-
-    wrap.appendChild(el('div','section-label','Topics'));
-    var grid = el('div','dash-grid');
-    TOPICS.forEach(function(t){
-      var items = ITEMS_BY_TOPIC[t.id]||[];
-      var mastery = topicMastery(t.id);
-      var card = el('div','topic-card');
-      card.appendChild(el('div','topic-tab cat-'+t.cat));
-      var body = el('div','topic-body cat-'+t.cat);
-      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
-      body.appendChild(el('div','topic-blurb', t.blurb));
-      var mrow = el('div','mastery-row');
-      var track = el('div','mastery-bar');
-      var fill = el('div','mastery-fill'); fill.style.width = mastery+'%';
-      track.appendChild(fill);
-      mrow.appendChild(track);
-      mrow.appendChild(el('span','mono',mastery+'%'));
-      body.appendChild(mrow);
-      body.appendChild(el('div','', '<span class="gloss">'+items.length+' cards</span>'));
-      var practiceBtn = el('button','btn btn-sm btn-ghost btn-block', 'Practice →');
-      practiceBtn.onclick = function(){ startSession('quiz', pickTopicSession(t.id, 8), 'Quiz — '+t.name); };
-      body.appendChild(practiceBtn);
-      card.appendChild(body);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
+    wrap.appendChild(el('div','section-label','Units'));
+    wrap.appendChild(unitGrid({
+      onTopic: function(tid){ startSession('quiz', pickTopicSession(tid, 8), 'Quiz — '+TOPIC_MAP[tid].name); }
+    }));
 
     var footer = el('div','footer-links');
     var resetBtn = el('button','','Reset Progress');
@@ -2855,28 +2942,8 @@
     primaryBtn.onclick = cfg.onPrimary;
     wrap.appendChild(primaryBtn);
 
-    wrap.appendChild(el('div','section-label','By Topic'));
-    var grid = el('div','dash-grid');
-    TOPICS.forEach(function(t){
-      var mastery = topicMastery(t.id);
-      var card = el('div','topic-card');
-      card.appendChild(el('div','topic-tab cat-'+t.cat));
-      var body = el('div','topic-body cat-'+t.cat);
-      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
-      var mrow = el('div','mastery-row');
-      var track = el('div','mastery-bar');
-      var fill = el('div','mastery-fill'); fill.style.width = mastery+'%';
-      track.appendChild(fill);
-      mrow.appendChild(track);
-      mrow.appendChild(el('span','mono',mastery+'%'));
-      body.appendChild(mrow);
-      var btn = el('button','btn btn-sm btn-block', cfg.topicButtonLabel);
-      btn.onclick = function(){ cfg.onTopic(t.id); };
-      body.appendChild(btn);
-      card.appendChild(body);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
+    wrap.appendChild(el('div','section-label','By Unit'));
+    wrap.appendChild(unitGrid({ onTopic: cfg.onTopic }));
     return wrap;
   }
 
@@ -2953,28 +3020,8 @@
     var wrap = el('div','');
     wrap.appendChild(el('h2','page-title','Guided Exercises'));
     wrap.appendChild(el('p','page-desc','Pick a topic to see the rule explained first, with a worked example, then practice it with hints available. Worked examples cut down on guesswork while a rule is still new — the support fades as you get comfortable.'));
-    wrap.appendChild(el('div','section-label','By Topic'));
-    var grid = el('div','dash-grid');
-    TOPICS.forEach(function(t){
-      var mastery = topicMastery(t.id);
-      var card = el('div','topic-card');
-      card.appendChild(el('div','topic-tab cat-'+t.cat));
-      var body = el('div','topic-body cat-'+t.cat);
-      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
-      var mrow = el('div','mastery-row');
-      var track = el('div','mastery-bar');
-      var fill = el('div','mastery-fill'); fill.style.width = mastery+'%';
-      track.appendChild(fill);
-      mrow.appendChild(track);
-      mrow.appendChild(el('span','mono',mastery+'%'));
-      body.appendChild(mrow);
-      var btn = el('button','btn btn-sm btn-block', 'Start');
-      btn.onclick = function(){ go('guidedIntro', {topicId:t.id}); };
-      body.appendChild(btn);
-      card.appendChild(body);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
+    wrap.appendChild(el('div','section-label','By Unit'));
+    wrap.appendChild(unitGrid({ onTopic: function(tid){ go('guidedIntro', {topicId:tid}); } }));
     return wrap;
   }
 
@@ -3651,20 +3698,11 @@
     var wrap = el('div','');
     wrap.appendChild(el('h2','page-title','Reference Sheets'));
     wrap.appendChild(el('p','page-desc','Every topic as a plain table you can read or print \u2014 no quizzing, no scoring. For when you just need the forms in front of you.'));
-    var grid = el('div','dash-grid');
-    TOPICS.forEach(function(t){
-      var card = el('div','topic-card');
-      card.appendChild(el('div','topic-tab cat-'+t.cat));
-      var body = el('div','topic-body cat-'+t.cat);
-      body.appendChild(el('div','topic-title', '<span class="topic-icon">'+topicIcon(t.id)+'</span><span>'+escapeHtml(t.name)+'</span>'));
-      body.appendChild(el('div','topic-blurb', t.blurb));
-      var btn = el('button','btn btn-sm btn-block','Open sheet');
-      btn.onclick = function(){ go('referenceSheet', {topicId:t.id}); };
-      body.appendChild(btn);
-      card.appendChild(body);
-      grid.appendChild(card);
-    });
-    wrap.appendChild(grid);
+    wrap.appendChild(unitGrid({
+      showMastery: false,
+      onTopic: function(tid){ go('referenceSheet', {topicId:tid}); },
+      rightLabel: function(t){ return 'open sheet →'; }
+    }));
     return wrap;
   }
 

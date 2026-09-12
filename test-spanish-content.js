@@ -690,7 +690,7 @@ check('home renders with all the new surfaces, and no forced daily goal or remin
   const tree = T.homeView();
   if(!findAll(tree, n => hasClass(n,'recommend')).length) throw new Error('no recommended-session card');
   if(!findAll(tree, n => hasClass(n,'heat-grid')).length) throw new Error('no streak heatmap');
-  if(!findAll(tree, n => hasClass(n,'badge')).length) throw new Error('no milestone badges');
+  if(!findAll(tree, n => hasClass(n,'tile-badge')).length) throw new Error('no milestone badges');
   if(findAll(tree, n => hasClass(n,'goal-fill')).length) throw new Error('the daily-goal bar should be gone — the app should not impose a quota');
   if(findAll(tree, n => hasClass(n,'reminder-banner')).length) throw new Error('the reminder-nag banner should be gone along with the goal it existed to enforce');
 });
