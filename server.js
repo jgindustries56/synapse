@@ -37,6 +37,9 @@ function loadTemplate(file) {
   return raw.replace('%%GOOGLE_CLIENT_ID%%', safeClientId);
 }
 const hubHtml = loadTemplate('index.html');
+// Served at /privacy. Google requires a reachable privacy policy on the app's
+// own domain before an external OAuth app can be published.
+const privacyHtml = fs.readFileSync(path.join(__dirname, 'privacy.html'), 'utf8');
 const subjectHtml = {};
 Object.keys(SUBJECTS).forEach(id => {
   subjectHtml[id] = loadTemplate(path.join('subjects', SUBJECTS[id].file));
@@ -321,6 +324,10 @@ app.use(express.json({ limit: '1mb' }));
 
 app.get('/', (req, res) => {
   res.type('html').send(hubHtml);
+});
+
+app.get('/privacy', (req, res) => {
+  res.type('html').send(privacyHtml);
 });
 
 Object.keys(SUBJECTS).forEach(id => {
