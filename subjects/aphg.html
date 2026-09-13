@@ -585,29 +585,33 @@
     {id:'census', name:'The U.S. Census', cat:'cases', blurb:'Frequency, purpose, apportionment, the ACS'},
     {id:'malthus', name:'Malthus & Neo-Malthusians', cat:'cases', blurb:'The original theory and its modern revival'},
     {id:'life-expectancy', name:'Life Expectancy', cat:'cases', blurb:'What shortens it, and the highest/lowest countries'},
-    {id:'pop-policy', name:'Population Policies', cat:'cases', blurb:'Pronatalist, anti-natalist, and eugenic policy'}
+    {id:'pop-policy', name:'Population Policies', cat:'cases', blurb:'Pronatalist, anti-natalist, and eugenic policy'},
+    {id:'migration-vocab', name:'Chapter 3 Vocabulary', cat:'concepts', blurb:'Migration types, push/pull factors, and refugee status — the term list'}
   ];
   var TOPIC_MAP = {};
   TOPICS.forEach(function(t){ TOPIC_MAP[t.id] = t; });
 
-  // Groups topics by category for the unit picker — with only one chapter
-  // covered so far, category is the only grouping that exists; once more
-  // chapters are added this can key on a chapter field the same way the
-  // Spanish app keys on lesson, with no change to the renderer itself.
+  // Groups topics by chapter for the unit picker. Chapter 2 is every topic
+  // that existed before Chapter 3 was added — listed explicitly rather than
+  // "everything not in Chapter 3" so a future Chapter 4 doesn't silently
+  // land inside Chapter 2's bucket.
   var CAT_COLOR = {concepts:'var(--accent-gold)', formulas:'var(--accent-navy)', models:'var(--accent-pine)', cases:'var(--accent-clay)'};
-  var UNIT_GROUPS = CATEGORIES.map(function(c){
-    return {
-      id:c.id, name:c.label, color:CAT_COLOR[c.id]||'var(--accent-navy)',
-      topicIds: TOPICS.filter(function(t){ return t.cat === c.id; }).map(function(t){ return t.id; })
-    };
-  });
+  var UNIT_GROUPS = [
+    {id:'chapter-2', name:'Chapter 2 · Population Geography', color:'var(--accent-navy)', topicIds:[
+      'vocab-core','chronic-disease','density-measures','rni-doubling','imr','youth-dependency',
+      'old-age-dependency','composite-formulas','dtm','epi-transition','pop-pyramids',
+      'pop-clusters','census','malthus','life-expectancy','pop-policy'
+    ]},
+    {id:'chapter-3', name:'Chapter 3 · Migration', color:'var(--accent-clay)', topicIds:['migration-vocab']}
+  ];
 
   var TOPIC_ICONS = {
     'vocab-core':'📚', 'chronic-disease':'🫀', 'density-measures':'🗺️',
     'rni-doubling':'📈', 'imr':'👶', 'youth-dependency':'🧒',
     'old-age-dependency':'🧓', 'composite-formulas':'🧮', 'dtm':'🔀',
     'epi-transition':'🦠', 'pop-pyramids':'🔺', 'pop-clusters':'🌏',
-    'census':'🗳️', 'malthus':'🌾', 'life-expectancy':'⎳', 'pop-policy':'📜'
+    'census':'🗳️', 'malthus':'🌾', 'life-expectancy':'⎳', 'pop-policy':'📜',
+    'migration-vocab':'🧳'
   };
   function topicIcon(id){ return TOPIC_ICONS[id] || '📖'; }
 
@@ -641,6 +645,37 @@
     {term:'Anti-natalist policy', def:'A government policy that discourages births.'},
     {term:'Zero population growth (ZPG)', def:'When CBR equals CDR, so there is no natural increase.'},
     {term:'Overpopulation', def:'When a population exceeds the resources available to support it.'}
+  ];
+
+  /* ---------- Chapter 3 vocabulary (23 terms) ----------
+     Drafted from standard AP Human Geography (migration unit) curriculum —
+     the class handout lists terms only, with directions to look definitions
+     up in the textbook and a dictionary, so no source text to quote from
+     verbatim exists. Confirmed with the owner before being added. */
+  var MIGRATION_VOCAB = [
+    {term:'Migration', def:'A permanent or semi-permanent move to a new location.'},
+    {term:'Chain migration', def:'Migration of people to a location because relatives or members of their community migrated there earlier.'},
+    {term:'Voluntary migration', def:'Movement undertaken by choice, not coercion.'},
+    {term:'Internal migration', def:'Permanent movement within the same country.'},
+    {term:'Step migration', def:'Migration to a distant destination happening in stages, such as farm to village to city.'},
+    {term:'Counter migration', def:'A migration flow that moves in the opposite direction of a larger, dominant flow.'},
+    {term:'Immigration', def:'Migration into a country or location to live there.'},
+    {term:'Emigration', def:'Migration away from a country or location.'},
+    {term:'Push factors', def:'Negative conditions that drive people to leave a location.'},
+    {term:'Pull factors', def:'Positive conditions that attract migrants to a location.'},
+    {term:'Gravity Model', def:'A model predicting migration or interaction between two places based on their population sizes and the distance between them.'},
+    {term:'Ethnic neighborhoods', def:'Clusters within a city where people of a shared ethnicity or culture concentrate, often near where they first arrived.'},
+    {term:'Asylum seekers', def:'People who have fled their home country seeking refugee protection elsewhere, whose claim has not yet been legally confirmed.'},
+    {term:'Refugees', def:'People who have crossed an international border fleeing persecution, war, or violence.'},
+    {term:'Internally Displaced Persons (IDP)', def:'People forced to flee for the same reasons as refugees, but who remain inside their own country’s borders.'},
+    {term:'Remittances', def:'Money migrants send back to family in their home country.'},
+    {term:'Intervening opportunity', def:'A nearer, more attractive destination that reduces migration to a farther one.'},
+    {term:'Intervening obstacle', def:'An environmental, cultural, or political barrier that hinders migration.'},
+    {term:'Brain Drain', def:'Large-scale emigration of educated or skilled people from a country, to its detriment.'},
+    {term:'Brain Gain', def:'Large-scale immigration of educated or skilled people into a country, to its benefit.'},
+    {term:'Guest workers', def:'Migrants with legal permission to work in a foreign country, usually temporarily.'},
+    {term:'Unauthorized immigrant', def:'Someone in a country without legal permission, or who has overstayed a visa.'},
+    {term:'Selective immigration', def:'A policy screening and admitting immigrants by specific criteria such as skills, health, or background.'}
   ];
 
   /* ---------- 14. Chronic / degenerative disease ---------- */
@@ -859,6 +894,7 @@
   /* ---------- Guided-exercise / reference-sheet explainer text per topic ---------- */
   var RULES = {
     'vocab-core': {title:'Chapter 2 Vocabulary', explanation:'These 28 terms are the vocabulary backbone of the whole population unit — nearly every other topic in this app uses them. Learn the term-to-definition direction first, then the reverse.'},
+    'migration-vocab': {title:'Chapter 3 Vocabulary', explanation:'These 23 terms cover why and how people move: types of migration, the push/pull factors behind them, and the legal categories — refugee, asylum seeker, IDP, guest worker — that determine someone’s status once they do.'},
     'chronic-disease': {title:'Chronic & Degenerative Disease', explanation:'Chronic diseases are long-lasting and non-communicable — they are not "caught" from someone else, and they usually develop from aging, genetics, or lifestyle rather than a single infection.', example:{main:'Cardiovascular disease and cancer', note:'The world’s leading causes of death, concentrated in countries at epidemiologic transition Stages 3 and 4.'}},
     'density-measures': {title:'Population Density', explanation:'Arithmetic density is the simplest measure (population ÷ total land) but treats all land as equally usable. Physiological density (population ÷ arable land) is preferred because it measures real pressure on food-producing land. Agricultural density (farmers ÷ arable land) shows how mechanized farming is.', example:{main:'Egypt: moderate arithmetic density, but extreme physiological density', note:'~95% of Egyptians live on ~4% of the country’s territory, along the Nile — the desert inflates the "total land" figure without anyone living there.'}},
     'rni-doubling': {title:'RNI & Doubling Time', explanation:'RNI = (CBR − CDR) ÷ 10, expressed as a percent, and excludes migration. Doubling time = 70 ÷ RNI%. Small changes in RNI produce huge changes in doubling time — that is the entire point of the Rule of 70.', example:{main:'CBR 22, CDR 8 → RNI 1.4% → doubling time 50 years', note:'Compare Niger’s RNI of 3.5%, which doubles its population in only 20 years.'}},
@@ -928,6 +964,7 @@
   }
 
   function buildVocabCoreItems(){ return defsItems(VOCAB_CORE, 'vocab-core'); }
+  function buildMigrationVocabItems(){ return defsItems(MIGRATION_VOCAB, 'migration-vocab'); }
 
   function buildChronicItems(){
     return defsItems(CHRONIC_FACTS, 'chronic-disease').concat(mcItems(CHRONIC_MC, 'chronic-disease', 'mc'));
@@ -1077,7 +1114,8 @@
     .concat(buildCensusItems())
     .concat(buildMalthusItems())
     .concat(buildLifeExpectancyItems())
-    .concat(buildPolicyItems());
+    .concat(buildPolicyItems())
+    .concat(buildMigrationVocabItems());
 
   var ITEMS_BY_TOPIC = {};
   ALL_ITEMS.forEach(function(it){
@@ -1689,7 +1727,7 @@
     hubBtn.onclick = function(){ window.location.href = '/'; };
     bar.appendChild(hubBtn);
     var brand = el('button','brand');
-    brand.innerHTML = '<h1>AP Human Geography</h1><div class="sub">Unit 2 · Population Geography</div>';
+    brand.innerHTML = '<h1>AP Human Geography</h1><div class="sub">Chapter 2 · Population Geography &amp; Chapter 3 · Migration</div>';
     brand.onclick = function(){ go('home'); };
     bar.appendChild(brand);
 
