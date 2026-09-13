@@ -746,10 +746,14 @@
     {es:'las verduras', en:'vegetables', icon:'🥦'}
   ];
   var VOCAB_FEELINGS = [
-    {es:'estar alegre', en:'to be happy'},
+    // alegre and contento/a both used to gloss as "to be happy", so the en→es
+    // prompt had two correct answers and accepted only one. Separated along
+    // the line Spanish actually draws: alegre is cheerful/lighthearted,
+    // contento/a is pleased/content.
+    {es:'estar alegre', en:'to be cheerful'},
     {es:'estar bien', en:'to be well'},
     {es:'estar cansado/a', en:'to be tired'},
-    {es:'estar contento/a', en:'to be happy'},
+    {es:'estar contento/a', en:'to be happy; pleased'},
     {es:'estar deprimido/a', en:'to be depressed'},
     {es:'estar emocionado/a', en:'to be excited'},
     {es:'estar enfermo/a', en:'to be sick'},
@@ -1090,11 +1094,14 @@
     {es:'el desayuno', en:'breakfast', note:'Verb: desayunar — [EXTRA]', tier:'SHEET'},
     {es:'los entremeses', en:"appetizers; hors d'oeuvres", tier:'SHEET'},
     {es:'el plato principal', en:'main dish', tier:'SHEET'},
-    {es:'delicioso/a', en:'delicious; tasty', tier:'SHEET'},
-    {es:'rico/a', en:'tasty; delicious', tier:'SHEET'},
-    {es:'sabroso/a', en:'tasty; delicious', tier:'SHEET'},
     {es:'la salud', en:'health', tier:'SHEET'}
   ];
+  // delicioso/rico/sabroso deliberately live only in L2_DELICIOUS_SYN below.
+  // They used to ALSO appear as three plain entries here, which produced two
+  // separate faults: "rico/a" had two es→en cards expecting "tasty; delicious"
+  // and "delicious; tasty" — the same meaning, different strings — and the
+  // en→es prompt "tasty; delicious" had two cards wanting different words,
+  // with both appearing among each other's options.
   // rico/sabroso/delicioso are interchangeable per the spec; one en→es card
   // that accepts any of the three, plus a separate es→en card for each.
   var L2_DELICIOUS_SYN = [
@@ -1480,10 +1487,17 @@
     var out = [];
     NOUNS.forEach(function(n, i){
       var noun = stripArticle(n.es);
+      // Both items used to carry the identical prompt "___ fiesta (party)".
+      // With the choices on screen you could tell which was wanted, but once a
+      // card graduates to typed answers the prompt is genuinely ambiguous —
+      // "la" and "una" are both correct Spanish and only one was accepted.
+      // The English gloss now names the article, which is also the pairing
+      // being taught: "the" → el/la, "a" → un/una.
       var defAns = n.g === 'm' ? (n.pl ? 'los' : 'el') : (n.pl ? 'las' : 'la');
-      out.push({id:'art-def-'+i, topic:'articles', type:'mc', prompt:'___ '+noun+' <span class="gloss">('+n.en+')</span>', answer:[defAns], choices:['el','la','los','las']});
+      out.push({id:'art-def-'+i, topic:'articles', type:'mc', prompt:'___ '+noun+' <span class="gloss">(the '+n.en+')</span>', answer:[defAns], choices:['el','la','los','las']});
       var indefAns = n.g === 'm' ? (n.pl ? 'unos' : 'un') : (n.pl ? 'unas' : 'una');
-      out.push({id:'art-indef-'+i, topic:'articles', type:'mc', prompt:'___ '+noun+' <span class="gloss">('+n.en+')</span>', answer:[indefAns], choices:['un','una','unos','unas']});
+      var indefEn = n.pl ? 'some ' : (/^[aeiou]/i.test(n.en) ? 'an ' : 'a ');
+      out.push({id:'art-indef-'+i, topic:'articles', type:'mc', prompt:'___ '+noun+' <span class="gloss">('+indefEn+n.en+')</span>', answer:[indefAns], choices:['un','una','unos','unas']});
     });
     return out;
   }
@@ -1720,12 +1734,18 @@
   // Loose: ignores case, accents, ñ, and punctuation.
   function normalize(s){
     return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-      .replace(/[¿?¡!.,]/g,'').replace(/\s+/g,' ').trim();
+      .replace(/(\d)\.(\d)/g, '$1$2')
+      .replace(/[¿?¡!.,]/g,'')
+      .replace(//g, '.')
+      .replace(/\s+/g,' ').trim();
   }
   // Strict: keeps accents and ñ, so á ≠ a and año ≠ ano.
   function normalizeStrict(s){
     return String(s).toLowerCase().normalize('NFC')
-      .replace(/[¿?¡!.,]/g,'').replace(/\s+/g,' ').trim();
+      .replace(/(\d)\.(\d)/g, '$1$2')
+      .replace(/[¿?¡!.,]/g,'')
+      .replace(//g, '.')
+      .replace(/\s+/g,' ').trim();
   }
   // Three outcomes, not two. An answer that is right apart from its accents
   // was previously marked simply "Correct", so the accent was never learned;
@@ -2169,8 +2189,20 @@
     return { score:score, letter:letter, mastery:mastery, accuracy:accuracy, coverage:coverage };
   }
 
+  // How many genuinely wrong options an item can field. A pool containing
+  // nothing but the answer cannot make a question at all.
+  function distractorCount(item){
+    if(item.choices) return item.choices.filter(function(c){
+      return item.answer.indexOf(c) === -1;
+    }).length;
+    if(item.pool) return item.pool.filter(function(v){
+      return item.answer.indexOf(v) === -1;
+    }).length;
+    return 0;
+  }
+
   function mcCapablePool(pool){
-    return pool.filter(function(it){ return !!(it.choices || it.pool); });
+    return pool.filter(function(it){ return distractorCount(it) >= 1; });
   }
 
   /* ============================= SESSION SELECTION ============================= */
@@ -2235,6 +2267,12 @@
     var mode = renderMode(item, forceMode);
     var opts = null;
     if(mode === 'mc'){
+      // A few pools contain nothing but the answer itself, which rendered as a
+      // "multiple choice" showing one button — a free point rather than a
+      // question. Ask for those typed. Two-option items are left alone: for a
+      // genuine either/or (ser vs estar, pronatalist vs anti-natalist) the
+      // binary IS the question being asked.
+      if(distractorCount(item) < 1) return {mode:'typed', opts:null};
       opts = shuffled(distractorsFor(item)).slice(0,4);
       if(opts.indexOf(item.answer[0]) === -1) opts[0] = item.answer[0];
       opts = shuffled(opts);

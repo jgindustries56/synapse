@@ -719,7 +719,17 @@ check('no new Spanish was introduced without the owner asking', ()=>{
   // new language content, unless the owner explicitly asks for a lesson to be
   // added. 909/20 was the count before Lección 2 · La comida was added per
   // fichero_leccion2_la_comida_SPEC.md (12 new topics, 1328 items total).
-  if(T.ALL_ITEMS.length !== 1328) throw new Error('item count changed to '+T.ALL_ITEMS.length+' — content must not be added without the owner asking');
+  //
+  // 1328 → 1322: the owner asked for an accuracy pass over every item and
+  // authorised fixing whatever it found. The audit showed delicioso/a, rico/a
+  // and sabroso/a each had BOTH a plain vocab entry and a place in
+  // L2_DELICIOUS_SYN. That produced two es→en cards per word — one wanting
+  // "tasty; delicious", the other "delicious; tasty" — and an en→es prompt
+  // with three different accepted answers that appeared among each other's
+  // options. The three plain entries were removed; the synonym entry already
+  // covers all three words correctly in both directions. No vocabulary was
+  // lost, six redundant and mutually contradictory cards were.
+  if(T.ALL_ITEMS.length !== 1322) throw new Error('item count changed to '+T.ALL_ITEMS.length+' — content must not be added without the owner asking');
   if(T.TOPICS.length !== 32) throw new Error('topic count changed to '+T.TOPICS.length);
 });
 

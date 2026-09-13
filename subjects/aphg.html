@@ -814,6 +814,14 @@
     {term:'Secondary cluster: eastern North America', def:'U.S. Northeast + Great Lakes, and southeastern Canada.'}
   ];
   var CLUSTER_FACTORS = ['Fertile alluvial soil', 'Reliable fresh water', 'Mild climate', 'Low elevation', 'Access to the sea for trade'];
+  // Conditions that keep land OUTSIDE the ecumene — the wrong options for
+  // "what explains a population cluster". Previously these questions drew
+  // their distractors from CLUSTER_FACTORS itself, so every option shown was
+  // correct and only one was accepted.
+  var CLUSTER_NON_FACTORS = [
+    'High-altitude plateaus', 'Permafrost and tundra', 'Arid desert interiors',
+    'Dense tropical rainforest', 'Steep mountainous terrain', 'Frequent seismic activity'
+  ];
 
   /* ---------- 5. The U.S. Census ---------- */
   var CENSUS_FACTS = [
@@ -845,6 +853,14 @@
     'War and armed conflict', 'Famine and chronic malnutrition', 'Unsafe water and lack of sanitation',
     'Poor or inaccessible health care', 'Poverty', 'Substance abuse, especially alcohol; smoking',
     'Pollution (indoor cooking smoke, industrial air pollution)', 'Violence and homicide rates'
+  ];
+  // Conditions that RAISE life expectancy — the wrong options for "what
+  // shortens it". These questions previously drew distractors from
+  // LIFE_EXP_FACTORS itself, so all four options were correct.
+  var LIFE_EXP_PROTECTIVE = [
+    'Widespread childhood vaccination', 'High rates of female literacy',
+    'Universal access to clean drinking water', 'Routine prenatal and maternal care',
+    'A well-funded public health system', 'A reliable year-round food supply'
   ];
   var LIFE_EXP_CASES = [
     {term:'Southern Africa (Lesotho, Eswatini, Botswana, South Africa)', def:'HIV/AIDS cut life expectancy by 15+ years at its peak in the 1990s–2000s; antiretroviral programs have partly reversed this.'},
@@ -1057,17 +1073,20 @@
       out.push({id:'pyr-ex-'+i, topic:'pop-pyramids', type:'mc', prompt:'Which country would you expect to have a "'+p.shape+'" pyramid?', answer:[p.examples[0]], choices:[p.examples[0]].concat(PYRAMID_SHAPES.filter(function(x){return x!==p;}).map(function(x){return x.examples[0];}))});
     });
     out = out.concat(defsItems(PYRAMID_ANOMALIES, 'pop-pyramids'));
-    out.push({id:'pyr-read-1', topic:'pop-pyramids', type:'mc', prompt:'Which of these can you reliably determine from a population pyramid?', answer:[PYRAMID_READS[0]], choices:[PYRAMID_READS[0], 'The country’s exact GDP per capita', 'The literacy rate', 'Average household income']});
-    out.push({id:'pyr-read-2', topic:'pop-pyramids', type:'mc', prompt:'Which of these can you reliably determine from a population pyramid?', answer:[PYRAMID_READS[4]], choices:[PYRAMID_READS[4], 'The country’s exact GDP per capita', 'The unemployment rate', 'The average commute time']});
+    // These two carried an identical prompt while accepting different answers.
+    // Each was answerable from its own options, but meeting the same question
+    // twice with two different "correct" answers is needless confusion, so
+    // each now asks its own question.
+    out.push({id:'pyr-read-1', topic:'pop-pyramids', type:'mc', prompt:'What does a population pyramid show most directly?', answer:[PYRAMID_READS[0]], choices:[PYRAMID_READS[0], 'The country’s exact GDP per capita', 'The literacy rate', 'Average household income']});
+    out.push({id:'pyr-read-2', topic:'pop-pyramids', type:'mc', prompt:'What does a population pyramid’s overall shape tell you about a country’s stage of development?', answer:[PYRAMID_READS[4]], choices:[PYRAMID_READS[4], 'The country’s exact GDP per capita', 'The unemployment rate', 'The average commute time']});
     out.push({id:'pyr-read-3', topic:'pop-pyramids', type:'mc', prompt:'A sudden notch (a missing age band) in a population pyramid usually reflects…', answer:[PYRAMID_READS[5]], choices:[PYRAMID_READS[5], 'A recent change in the tax code', 'A new trade agreement', 'A currency devaluation']});
     return out;
   }
 
   function buildClustersItems(){
     var out = defsItems(POP_CLUSTERS, 'pop-clusters');
-    var factorPool = CLUSTER_FACTORS.slice();
     CLUSTER_FACTORS.forEach(function(f, i){
-      out.push({id:'clus-factor-'+i, topic:'pop-clusters', type:'mc', prompt:'Which of these is a common factor behind the world’s major population clusters?', answer:[f], pool:factorPool});
+      out.push({id:'clus-factor-'+i, topic:'pop-clusters', type:'mc', prompt:'Which of these is a common factor behind the world’s major population clusters?', answer:[f], pool:[f].concat(CLUSTER_NON_FACTORS)});
     });
     out.push({id:'clus-which-not', topic:'pop-clusters', type:'mc', prompt:'Which of these is NOT one of the world’s four largest population clusters?', answer:['Sub-Saharan Africa'], choices:['Sub-Saharan Africa','East Asia','South Asia','Europe']});
     return out;
@@ -1078,22 +1097,23 @@
 
   function buildLifeExpectancyItems(){
     var out = mcItems(LIFE_EXP_EXTREMES, 'life-expectancy', 'mc').concat(defsItems(LIFE_EXP_CASES, 'life-expectancy'));
-    var factorPool = LIFE_EXP_FACTORS.slice();
     LIFE_EXP_FACTORS.forEach(function(f, i){
-      out.push({id:'life-factor-'+i, topic:'life-expectancy', type:'mc', prompt:'Which of these is a factor that reduces life expectancy?', answer:[f], pool:factorPool});
+      out.push({id:'life-factor-'+i, topic:'life-expectancy', type:'mc', prompt:'Which of these is a factor that reduces life expectancy?', answer:[f], pool:[f].concat(LIFE_EXP_PROTECTIVE)});
     });
     return out;
   }
 
   function buildPolicyItems(){
     var out = defsItems(POLICY_TYPES, 'pop-policy').concat(mcItems(POLICY_CASES, 'pop-policy', 'mc'));
-    var proPool = PRONATALIST_TOOLS.slice();
+    // These drew their wrong options from the same list as the answer, so all
+    // four choices were pronatalist tools and only one was accepted. Each list
+    // is the other's opposite, so the opposite list is the correct distractor
+    // pool — and telling the two apart is the actual learning objective.
     PRONATALIST_TOOLS.forEach(function(f, i){
-      out.push({id:'pro-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is a pronatalist policy tool (encourages births)?', answer:[f], pool:proPool});
+      out.push({id:'pro-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is a pronatalist policy tool (encourages births)?', answer:[f], pool:[f].concat(ANTINATALIST_TOOLS)});
     });
-    var antiPool = ANTINATALIST_TOOLS.slice();
     ANTINATALIST_TOOLS.forEach(function(f, i){
-      out.push({id:'anti-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is an anti-natalist policy tool (discourages births)?', answer:[f], pool:antiPool});
+      out.push({id:'anti-tool-'+i, topic:'pop-policy', type:'mc', prompt:'Which of these is an anti-natalist policy tool (discourages births)?', answer:[f], pool:[f].concat(PRONATALIST_TOOLS)});
     });
     return out;
   }
@@ -1151,7 +1171,16 @@
   // Loose matching: case, punctuation, and surrounding whitespace don't count.
   function normalize(s){
     return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-      .replace(/[’']/g, "'").replace(/[¿?¡!.,;:%]/g,'').replace(/\s+/g,' ').trim();
+      .replace(/[’']/g, "'")
+      // A decimal point is meaningful in this material: an RNI of 1.4% and a
+      // rate of 14% are different answers, and stripping the dot made them
+      // compare equal — so "14%" was being marked correct for "1.4%", both as
+      // a typed answer and as a multiple-choice option. Protect a dot that
+      // sits between two digits, strip punctuation, then put it back.
+      .replace(/(\d)\.(\d)/g, '$1$2')
+      .replace(/[¿?¡!.,;:%]/g,'')
+      .replace(//g, '.')
+      .replace(/\s+/g,' ').trim();
   }
   function isCorrectTyped(item, val){
     return item.answer.some(function(a){ return normalize(a) === normalize(val); });
@@ -1544,8 +1573,20 @@
     return { score:score, letter:letter, mastery:mastery, accuracy:accuracy, coverage:coverage };
   }
 
+  // How many genuinely wrong options an item can field. A pool containing
+  // nothing but the answer cannot make a question at all.
+  function distractorCount(item){
+    if(item.choices) return item.choices.filter(function(c){
+      return item.answer.indexOf(c) === -1;
+    }).length;
+    if(item.pool) return item.pool.filter(function(v){
+      return item.answer.indexOf(v) === -1;
+    }).length;
+    return 0;
+  }
+
   function mcCapablePool(pool){
-    return pool.filter(function(it){ return !!(it.choices || it.pool); });
+    return pool.filter(function(it){ return distractorCount(it) >= 1; });
   }
 
   /* ============================= SESSION SELECTION ============================= */
@@ -1600,6 +1641,12 @@
     var mode = renderMode(item, forceMode);
     var opts = null;
     if(mode === 'mc'){
+      // A few pools contain nothing but the answer itself, which rendered as a
+      // "multiple choice" showing one button — a free point rather than a
+      // question. Ask for those typed. Two-option items are left alone: for a
+      // genuine either/or (ser vs estar, pronatalist vs anti-natalist) the
+      // binary IS the question being asked.
+      if(distractorCount(item) < 1) return {mode:'typed', opts:null};
       opts = shuffled(distractorsFor(item)).slice(0,4);
       if(opts.indexOf(item.answer[0]) === -1) opts[0] = item.answer[0];
       opts = shuffled(opts);

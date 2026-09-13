@@ -9,7 +9,7 @@ L2_VERDURAS:L2_VERDURAS,L2_VERBOS_PRESENTE:L2_VERBOS_PRESENTE,L2_VERB_USAGE:L2_V
 L2_PRETERITO_RULES:L2_PRETERITO_RULES,L2_CGZ_VERBS:L2_CGZ_VERBS,L2_CGZ_EXTRA_YO:L2_CGZ_EXTRA_YO,L2_CGZ_RULES:L2_CGZ_RULES,
 L2_PRONOMBRES_RULES:L2_PRONOMBRES_RULES,L2_PRONOMBRES_TRANSFORM:L2_PRONOMBRES_TRANSFORM,L2_PRONOMBRES_ATTACH:L2_PRONOMBRES_ATTACH,
 L2_COMPARACIONES_RULES:L2_COMPARACIONES_RULES,L2_SUPERLATIVOS_RULES:L2_SUPERLATIVOS_RULES,L2_ABSOLUTE_SUPERLATIVE:L2_ABSOLUTE_SUPERLATIVE,
-ALL_ITEMS:ALL_ITEMS};
+ALL_ITEMS:ALL_ITEMS,normalize:normalize,distractorCount:distractorCount,prepQuestion:prepQuestion};
 })();`);
 if (!code.includes('window.__T__')) throw new Error('hook injection mismatch');
 global.window = { scrollTo(){} };
@@ -307,6 +307,74 @@ check('every Lección 2 item declares a tier (SHEET, RULE, or EXTRA)', () => {
   const L2_TOPICS = ['l2-restaurant','l2-frutas','l2-verduras','l2-carne-pescado','l2-otras-comidas','l2-bebidas','l2-verbos','l2-preterito','l2-car-gar-zar','l2-pronombres','l2-comparaciones','l2-superlativos'];
   T.ALL_ITEMS.filter(it => L2_TOPICS.indexOf(it.topic) !== -1).forEach(it => {
     if (['SHEET','RULE','EXTRA'].indexOf(it.tier) === -1) throw new Error(it.id+' has no valid tier: '+it.tier);
+  });
+});
+
+console.log('--- Fairness of the questions themselves ---');
+
+check('no question shows an option that is also a correct answer to it', ()=>{
+  // delicioso/a, rico/a and sabroso/a each had a plain vocab entry as well as a
+  // place in L2_DELICIOUS_SYN, so "rico/a" had two cards wanting the same
+  // meaning spelled two ways, and each appeared among the other's options.
+  const byPrompt = {};
+  T.ALL_ITEMS.forEach(i => {
+    if (!i.pool) return;
+    const k = i.topic + '||' + String(i.prompt).replace(/<[^>]*>/g,'').trim();
+    (byPrompt[k] = byPrompt[k] || []).push(i);
+  });
+  Object.values(byPrompt).forEach(group => {
+    group.forEach(item => {
+      const mine = new Set(item.answer.map(T.normalize));
+      group.forEach(sib => {
+        if (sib === item) return;
+        const sibAns = T.normalize(sib.answer[0]);
+        if (mine.has(sibAns)) return;
+        if (item.pool.some(p => T.normalize(p) === sibAns)) {
+          throw new Error(item.id + ' can show "' + sib.answer[0] + '", the accepted answer for ' + sib.id);
+        }
+      });
+    });
+  });
+});
+
+check('no prompt that can be asked typed has more than one accepted answer', ()=>{
+  // "___ fiesta (party)" appeared twice — once wanting the definite article,
+  // once the indefinite. With the options on screen you could tell which was
+  // meant; typed, both "la" and "una" are correct and only one was accepted.
+  const seen = {};
+  T.ALL_ITEMS.forEach(i => {
+    if (i.type === 'mc') return;
+    const k = i.topic + '||' + T.normalize(String(i.prompt).replace(/<[^>]*>/g,''));
+    (seen[k] = seen[k] || []).push(i);
+  });
+  Object.entries(seen).forEach(([k, g]) => {
+    if (g.length < 2) return;
+    const answers = new Set(g.map(x => T.normalize(x.answer[0])));
+    if (answers.size > 1) {
+      throw new Error('typed prompt "' + k.split('||')[1].slice(0,60) + '" accepts ' + answers.size +
+        ' different answers across ' + g.map(x => x.id).join(', '));
+    }
+  });
+});
+
+check('no item is asked as multiple choice with nothing to choose between', ()=>{
+  T.ALL_ITEMS.forEach(i => {
+    if (T.distractorCount(i) >= 1) return;
+    if (T.prepQuestion(i, null).mode === 'mc') {
+      throw new Error(i.id + ' renders as multiple choice with no wrong option');
+    }
+  });
+});
+
+check('the definite and indefinite article cards say which one they want', ()=>{
+  const def = T.ALL_ITEMS.filter(i => /^art-def-/.test(i.id));
+  const indef = T.ALL_ITEMS.filter(i => /^art-indef-/.test(i.id));
+  if (!def.length || !indef.length) throw new Error('article items not found');
+  def.forEach(i => {
+    if (!/\(the /.test(i.prompt)) throw new Error(i.id + ' does not name the definite article: ' + i.prompt);
+  });
+  indef.forEach(i => {
+    if (!/\((a|an|some) /.test(i.prompt)) throw new Error(i.id + ' does not name the indefinite article: ' + i.prompt);
   });
 });
 

@@ -6,7 +6,8 @@ let code = scriptBody.replace(/\n  applyDisplaySettings\(\);[\s\S]*?\n\}\)\(\);\
 window.__T__={VOCAB_CORE:VOCAB_CORE,DTM_STAGES:DTM_STAGES,EPI_STAGES:EPI_STAGES,RNI_CALC_ITEMS:RNI_CALC_ITEMS,
 FORMULA_SHEET:FORMULA_SHEET,DENSITY_FORMULAS:DENSITY_FORMULAS,POLICY_CASES:POLICY_CASES,LIFE_EXP_EXTREMES:LIFE_EXP_EXTREMES,
 CENSUS_FACTS:CENSUS_FACTS,MALTHUS_FACTS:MALTHUS_FACTS,PYRAMID_SHAPES:PYRAMID_SHAPES,MIGRATION_VOCAB:MIGRATION_VOCAB,
-UNIT_GROUPS:UNIT_GROUPS,TOPICS:TOPICS,CATEGORIES:CATEGORIES,ALL_ITEMS:ALL_ITEMS};
+UNIT_GROUPS:UNIT_GROUPS,TOPICS:TOPICS,CATEGORIES:CATEGORIES,ALL_ITEMS:ALL_ITEMS,
+normalize:normalize,distractorCount:distractorCount,prepQuestion:prepQuestion};
 })();`);
 if (!code.includes('window.__T__')) throw new Error('hook injection mismatch');
 global.window = { scrollTo(){} };
@@ -179,6 +180,86 @@ check('every topic is grouped into exactly one unit, and every grouped id is a r
 check('migration-vocab sits in Chapter 3, not folded into Chapter 2', () => {
   const ch3 = T.UNIT_GROUPS.find(g => g.id === 'chapter-3');
   if (!ch3 || ch3.topicIds.indexOf('migration-vocab') === -1) throw new Error('migration-vocab is not in the Chapter 3 unit group');
+});
+
+console.log('--- Fairness of the questions themselves ---');
+check('a decimal answer is not graded the same as the number ten times larger', () => {
+  // RNI 1.4% and a rate of 14% differ by a factor of ten. normalize() used to
+  // strip the decimal point, so "14%" was accepted for "1.4%" both as a typed
+  // answer and as a clicked option — in the one topic where dividing by ten is
+  // the entire skill being tested.
+  const pairs = [['1.4%','14%'], ['2.5%','25%'], ['1.25%','125%'], ['0.5%','5%']];
+  pairs.forEach(([a, b]) => {
+    if (T.normalize(a) === T.normalize(b)) {
+      throw new Error(a + ' and ' + b + ' both normalize to "' + T.normalize(a) + '"');
+    }
+  });
+  // ...while the forms a student might reasonably type are still equivalent.
+  if (T.normalize('1.4%') !== T.normalize('1.4')) throw new Error('1.4% should still match 1.4');
+});
+
+check('no question shows an option that is also a correct answer to it', () => {
+  // Several topics built their wrong options from the same list the answer came
+  // from, so every option displayed was correct and only one was accepted.
+  const byPrompt = {};
+  T.ALL_ITEMS.forEach(i => {
+    if (!i.pool) return;
+    const k = i.topic + '||' + String(i.prompt).replace(/<[^>]*>/g, '').trim();
+    (byPrompt[k] = byPrompt[k] || []).push(i);
+  });
+  Object.entries(byPrompt).forEach(([k, group]) => {
+    group.forEach(item => {
+      const mine = new Set(item.answer.map(T.normalize));
+      group.forEach(sib => {
+        if (sib === item) return;
+        const sibAns = T.normalize(sib.answer[0]);
+        if (mine.has(sibAns)) return;
+        if (item.pool.some(p => T.normalize(p) === sibAns)) {
+          throw new Error(item.id + ' can show "' + sib.answer[0] + '", which is the accepted answer for ' + sib.id);
+        }
+      });
+    });
+  });
+});
+
+check('no item is asked as multiple choice with nothing to choose between', () => {
+  T.ALL_ITEMS.forEach(i => {
+    if (T.distractorCount(i) >= 1) return;
+    const q = T.prepQuestion(i, null);
+    if (q.mode === 'mc') throw new Error(i.id + ' renders as multiple choice with no wrong option');
+  });
+});
+
+check('every rendered multiple choice offers at least two options', () => {
+  T.ALL_ITEMS.forEach(i => {
+    const q = T.prepQuestion(i, 'mc');
+    if (q.mode === 'mc' && q.opts.length < 2) {
+      throw new Error(i.id + ' renders ' + q.opts.length + ' option(s)');
+    }
+  });
+});
+
+check('no prompt that can be asked typed has more than one accepted answer', () => {
+  // A shared prompt is fine while the options are on screen — "which of these
+  // is a common factor" legitimately has five right answers, and each card
+  // offers one of them against genuinely wrong ones. It stops being fine the
+  // moment the card is asked typed, because then nothing on screen says which
+  // of the five is wanted. Items declared type:'mc' always render as choices,
+  // so only the rest are at risk.
+  const seen = {};
+  T.ALL_ITEMS.forEach(i => {
+    if (i.type === 'mc') return;
+    const k = i.topic + '||' + T.normalize(String(i.prompt).replace(/<[^>]*>/g, ''));
+    (seen[k] = seen[k] || []).push(i);
+  });
+  Object.entries(seen).forEach(([k, g]) => {
+    if (g.length < 2) return;
+    const answers = new Set(g.map(x => T.normalize(x.answer[0])));
+    if (answers.size > 1) {
+      throw new Error('typed prompt "' + k.split('||')[1].slice(0, 60) + '" accepts ' + answers.size +
+        ' different answers across ' + g.map(x => x.id).join(', '));
+    }
+  });
 });
 
 console.log(failures === 0 ? 'ALL ACCURACY CHECKS PASSED' : (failures + ' FAILURES'));
