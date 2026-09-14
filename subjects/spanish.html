@@ -561,6 +561,12 @@
     body{background:#fff; color:#000;}
   }
 </style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Chivo:wght@400;500;700;900&family=Karla:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/synapse.css">
+<script src="/assets/synapse.js" defer></script>
 </head>
 <body style="margin:0;">
 
@@ -2360,6 +2366,134 @@
     return true;
   }
 
+
+  /* ===================== INTERFACE =====================
+     Every page is drawn by the shared engine in public/synapse.js. Everything
+     above this line is untouched and still owns the data: the deck, the Leitner
+     scheduling, the progress object and its sync to the server. The engine only
+     renders it and reports answers back through the adapter below.
+
+     Append ?classic=1 to any URL to fall back to the previous interface. */
+
+  // Guarded because the content tests run this script under Node, where there
+  // is no location object.
+  var CLASSIC = (typeof location !== 'undefined') && /[?&]classic=1/.test(location.search);
+  var ENGINE_ON = false;
+
+  // Where each topic came from on paper. Adding content later means adding one
+  // line here next to the new topic id, so it lands under a real heading
+  // instead of a vague category.
+  var SOURCE_UNITS = {"leccion-prelim-1": {"title": "Lección Preliminar & 1"}, "unidad-1": {"title": "Unidad 1"}, "leccion-2": {"title": "Lección 2 · La comida", "page": 91}};
+  var SOURCE_SECTIONS = {"l2-restaurant": ["Las comidas", 1], "l2-frutas": ["Las frutas", 2], "l2-verduras": ["Las verduras", 3], "l2-carne-pescado": ["La carne y el pescado", 4], "l2-otras-comidas": ["Otras comidas", 5], "l2-bebidas": ["Las bebidas", 6], "l2-verbos": ["Verbos", 7], "l2-comparaciones": ["Las comparaciones", 8], "l2-preterito": ["Gramática de la lección", 9], "l2-car-gar-zar": ["Gramática de la lección", 9], "l2-pronombres": ["Gramática de la lección", 9], "l2-superlativos": ["Gramática de la lección", 9]};
+  var CAT_SECTION = {"grammar": "Gramática", "verbs": "Verbos", "vocab": "Vocabulario"};
+
+  function engineData(){
+    var unitOf = {};
+    UNIT_GROUPS.forEach(function(u){ u.topicIds.forEach(function(id){ unitOf[id] = u; }); });
+
+    var topics = TOPICS.map(function(t){
+      var u = unitOf[t.id];
+      var meta = (u && SOURCE_UNITS[u.id]) || {};
+      var sec = SOURCE_SECTIONS[t.id];
+      return {
+        id: t.id, name: t.name, cat: t.cat, blurb: t.blurb,
+        source: {
+          book: 'Senderos 2',
+          unit: meta.title || (u ? u.name : ''),
+          unitId: u ? u.id : '',
+          section: sec ? sec[0] : (CAT_SECTION[t.cat] || 'Other'),
+          order: sec ? sec[1] : 50,
+          page: meta.page || null
+        }
+      };
+    });
+
+    var units = UNIT_GROUPS.map(function(u){
+      var meta = SOURCE_UNITS[u.id] || {};
+      return { id:u.id, name:u.name, title: meta.title || u.name,
+               book: 'Senderos 2', page: meta.page || null, topicIds: u.topicIds };
+    });
+
+    var items = ALL_ITEMS.map(function(it){
+      var o = {id:it.id, topic:it.topic, type:it.type, prompt:it.prompt, answer:it.answer};
+      if(it.choices) o.choices = it.choices;
+      if(it.pool) o.pool = it.pool;
+      if(it.note) o.note = it.note;
+      return o;
+    });
+
+    return {topics:topics, units:units, icons:TOPIC_ICONS, items:items};
+  }
+
+  function mountEngine(){
+    window.Synapse.mount({
+      subject: SUBJECT,
+      name: 'Español',
+      short: 'Español',
+      tagline: 'Senderos — Lección Preliminar through Lección 2.',
+      nav: 'rail',
+      shell: 'narrow',
+      goal: 40,
+      unitWord: 'Lesson',
+      cats: {"grammar": "Grammar", "verbs": "Verbs", "vocab": "Vocabulary"},
+      speak: true,
+      lang: 'es-ES',
+      rootId: 'app',
+      data: engineData(),
+
+      progress: {
+        read: function(){ return PROGRESS; },
+        save: function(){ saveProgress(); },
+
+        // Answering goes through the page's own scheduler, so the boxes, the
+        // day counter, the streak and the server push all behave as before.
+        record: function(id, correct){
+          var was = getProg(id);
+          var from = was ? Math.max(was.box, 0) : 0;
+          recordAnswer(id, correct);
+          var now = getProg(id) || {};
+          return { from: Math.max(from, 1), to: Math.max(now.box || 0, 1), due: now.due };
+        },
+
+        logSession: function(entry){
+          var e = {
+            ts: Date.now(), date: todayStr(), mode: entry.mode || 'session',
+            label: entry.mode || '', correct: entry.correct, total: entry.total, pct: entry.pct
+          };
+          if(!PROGRESS.history) PROGRESS.history = [];
+          PROGRESS.history.push(e);
+          if(PROGRESS.history.length > 50) PROGRESS.history = PROGRESS.history.slice(-50);
+          saveProgress();
+          if(AUTH.user){
+            apiFetch('/api/session-complete', {method:'POST',
+              body: JSON.stringify(Object.assign({subject:SUBJECT}, e))}).catch(function(){});
+          }
+        },
+
+        reset: function(){
+          PROGRESS = migrateProgress({items:{}, streak:{count:0,last:null}});
+          saveProgress();
+          replaceProgressOnServer();
+        },
+
+        setGoal: function(n){ PROGRESS.goal = n; saveProgress(); }
+      },
+
+      auth: {
+        user: function(){ return AUTH.user; },
+        configured: function(){ return !!GOOGLE_CLIENT_ID; },
+        signOut: function(){ signOut(); },
+        // Google draws its own button; the engine just supplies the slot.
+        mountButton: function(slot){
+          try{
+            google.accounts.id.renderButton(slot, {theme:'outline', size:'medium', text:'signin'});
+          }catch(e){ /* the Google script has not loaded yet; the chrome redraws when it does */ }
+        }
+      }
+    });
+    ENGINE_ON = true;
+  }
+
   function go(view, extra){
     clearSpeedTimer();
     var changed = state.view !== view;
@@ -2374,6 +2508,12 @@
   var HUB_VIEWS = {home:1, study:1, quiz:1, test:1, guided:1, guidedIntro:1, methods:1, methodPicker:1, results:1, history:1, grades:1, settings:1, reference:1, referenceSheet:1};
 
   function render(){
+    // The shared engine draws the interface. The old view functions below are
+    // still here and still tested; ?classic=1 brings them back.
+    if(!CLASSIC && window.Synapse){
+      if(ENGINE_ON) window.Synapse.refresh(); else mountEngine();
+      return;
+    }
     app.innerHTML = '';
     app.appendChild(topbar());
     if(HUB_VIEWS[state.view]) app.appendChild(navBar());

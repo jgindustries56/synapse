@@ -322,6 +322,13 @@ function requireAuth(req, res, next) {
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 
+// The shared view engine and its stylesheet. Long-lived and content-free, so
+// they cache hard; the pages that use them are rendered fresh every request.
+app.use('/assets', express.static(path.join(__dirname, 'public'), {
+  maxAge: '1h',
+  setHeaders(res) { res.setHeader('Cache-Control', 'public, max-age=3600'); }
+}));
+
 app.get('/', (req, res) => {
   res.type('html').send(hubHtml);
 });

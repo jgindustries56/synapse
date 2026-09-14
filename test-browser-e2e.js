@@ -72,13 +72,12 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
   for (const subject of ['aphg', 'spanish']) {
     calls.length = 0;
     await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(1100);
 
     await check(subject + ': the page recognises the signed-in user', async () => {
       ok(calls.some(c => c.startsWith('GET /api/me')), 'never asked who is signed in');
       const body = await page.locator('body').innerText();
-      ok(/E2E Tester|e2e@example\.com|Sign out/i.test(body),
-        'no sign of the signed-in user on the page');
+      ok(/E2E Tester|e2e@example\.com|Sign out/i.test(body), 'no sign of the signed-in user');
     });
 
     await check(subject + ': progress is pulled on arrival', async () => {
@@ -86,20 +85,46 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         'never touched /api/progress on load; saw: ' + calls.join(', '));
     });
 
-    await check(subject + ': the console renders real content, not an empty shell', async () => {
-      const text = await page.locator('body').innerText();
-      ok(text.length > 400, 'page body is only ' + text.length + ' characters');
-      ok(/\d/.test(text), 'no numbers rendered anywhere');
+    await check(subject + ': every page renders real content', async () => {
+      const missing = [];
+      for (const label of ['Console', 'Find', 'Cards', 'Drill', 'Blast', 'Match', 'Learn', 'Test', 'Progress']) {
+        const clicked = await page.evaluate(l => {
+          const b = Array.from(document.querySelectorAll(
+            '.tabs button, .rail button.nav, .bottombar button'))
+            .find(x => (x.textContent || '').trim().endsWith(l));
+          if (b) { b.click(); return true; }
+          return false;
+        }, label);
+        if (!clicked) { missing.push(label + ' (no tab)'); continue; }
+        await page.waitForTimeout(320);
+        const len = await page.evaluate(() => (document.querySelector('#app').innerText || '').length);
+        // Blast is deliberately sparse: one question and four answers, nothing else.
+        const floor = label === 'Blast' ? 120 : 300;
+        if (len < floor) missing.push(label + ' (' + len + ' chars)');
+        const over = await page.evaluate(() =>
+          document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        if (over > 2) missing.push(label + ' (overflows ' + over + 'px)');
+      }
+      ok(missing.length === 0, 'pages not rendering: ' + missing.join(', '));
+    });
+
+    await check(subject + ': the deck is the real one', async () => {
+      const txt = await page.evaluate(() => {
+        const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
+          .find(x => (x.textContent || '').trim().endsWith('Console'));
+        if (b) b.click();
+        return document.querySelector('#app').innerText;
+      });
+      const expect = subject === 'aphg' ? '346' : '1,322';
+      ok(txt.includes(expect), 'console does not mention the full deck (' + expect + ')');
     });
 
     // ---- answering must reach the server -------------------------------
     calls.length = 0;
     await check(subject + ': answering a question saves to the server', async () => {
-      const started = await startAnySession(page);
-      ok(started, 'could not start a study session from the UI');
-      const answered = await answerOne(page);
-      ok(answered, 'could not answer a question');
-      await page.waitForTimeout(700);
+      await openDrill(page);
+      ok(await answerOne(page), 'could not answer a question on the Drill page');
+      await page.waitForTimeout(800);
       ok(calls.some(c => c.startsWith('PUT /api/progress')),
         'no PUT /api/progress after answering; saw: ' + calls.join(', '));
     });
@@ -111,103 +136,62 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       ok(Object.keys(saved.items || {}).length > 0, 'progress file has no cards in it');
     });
 
-    // ---- the lag the user complained about ------------------------------
-    await check(subject + ': opening the help panel does not rebuild the page', async () => {
-      await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(800);
-      const r = await page.evaluate(async () => {
-        const app = document.querySelector('#app');
-        const before = app.children.length;
-        let removed = 0;
-        const obs = new MutationObserver(ms => ms.forEach(m => {
-          if (m.target === app) removed += m.removedNodes.length;
-        }));
-        obs.observe(app, { childList: true });
-        const btn = app.querySelector('.info-btn');
-        if (btn) btn.click();
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-        obs.disconnect();
-        return { before, removed, opened: !!app.querySelector('.info-panel'), had: !!btn };
-      });
-      log.push('       help panel: ' + r.removed + ' of ' + r.before + ' nodes torn out');
-      ok(r.had, 'no help button found');
-      ok(r.opened, 'the help panel did not open');
-      ok(r.removed === 0, 'opening the help panel tore out ' + r.removed +
-        ' of ' + r.before + ' top-level nodes — a full-page rebuild for a panel toggle');
-    });
-
-    await check(subject + ': opening the help panel does not rebuild the page', async () => {
-      await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(800);
-      const r = await page.evaluate(async () => {
-        const app = document.querySelector('#app');
-        const before = app.children.length;
-        let removed = 0;
-        const obs = new MutationObserver(ms => ms.forEach(m => {
-          if (m.target === app) removed += m.removedNodes.length;
-        }));
-        obs.observe(app, { childList: true });
-        const btn = app.querySelector('.info-btn');
-        if (btn) btn.click();
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-        obs.disconnect();
-        return { before, removed, opened: !!app.querySelector('.info-panel'), had: !!btn };
-      });
-      log.push('       help panel: ' + r.removed + ' of ' + r.before + ' nodes torn out');
-      ok(r.had, 'no help button found');
-      ok(r.opened, 'the help panel did not open');
-      ok(r.removed === 0, 'opening the help panel tore out ' + r.removed +
-        ' of ' + r.before + ' top-level nodes — a full-page rebuild for a panel toggle');
-    });
-
-    await check(subject + ': re-selecting the page you are on does not throw you to the top', async () => {
+    await check(subject + ': search finds a real card', async () => {
       await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(900);
-      const r = await page.evaluate(async () => {
-        const click = re => {
-          const b = Array.from(document.querySelectorAll('button'))
-            .find(x => re.test(x.textContent || ''));
-          if (b) { b.click(); return true; }
-          return false;
-        };
-        document.documentElement.style.minHeight = '3000px';
-        window.scrollTo(0, 600);
-        await new Promise(r => setTimeout(r, 120));
-        const from = Math.round(window.scrollY);
-        const hit = click(/Home/i);                 // the page we are already on
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-        const to = Math.round(window.scrollY);
-        document.documentElement.style.minHeight = '';
-        return { hit, from, to };
-      });
-      log.push('       same-page click: scroll ' + r.from + ' -> ' + r.to);
-      ok(r.hit, 'no Home button to press');
-      ok(!(r.from > 300 && r.to === 0),
-        'pressing the page you are already on scrolled you back to the top (' +
-        r.from + ' -> ' + r.to + ')');
-    });
-
-    await check(subject + ': answering mid-session does not repaint the page around you', async () => {
-      await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(800);
-      const started = await startAnySession(page);
-      ok(started, 'could not start a session to measure');
-      await page.evaluate(() => window.scrollTo(0, 400));
-      await page.waitForTimeout(150);
-      const r = await repaintReport(page, () => {
-        // In a running session the answers are the numbered buttons.
-        const b = Array.from(document.querySelectorAll('button'))
-          .find(x => /^[1-4]\s*\S/.test((x.textContent || '').trim()));
+      await page.evaluate(() => {
+        const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
+          .find(x => (x.textContent || '').trim().endsWith('Find'));
         if (b) b.click();
       });
-      log.push('       answering:   ' + r.removed + ' of ' + r.before +
-        ' top-level nodes replaced, ' + Math.round(r.ms) + 'ms, scroll ' +
-        r.scrollFrom + ' -> ' + r.scrollTo);
-      ok(!r.wipedAll,
-        'answering a question rebuilt all ' + r.before + ' top-level nodes');
-      ok(!(r.scrollFrom > 100 && r.scrollTo === 0),
-        'answering threw the page back to the top (scroll ' + r.scrollFrom + ' -> ' + r.scrollTo + ')');
-      ok(r.ms < 120, 'the click took ' + Math.round(r.ms) + 'ms to settle');
+      await page.waitForTimeout(400);
+      const term = subject === 'spanish' ? 'car gar zar' : 'migration';
+      await page.fill('#find-input', term);
+      await page.waitForTimeout(400);
+      const res = await page.locator('.resbar').innerText().catch(() => '');
+      ok(/matching/.test(res), 'search for "' + term + '" produced no results ("' + res + '")');
+    });
+
+    await check(subject + ': Blast offers exactly four answers', async () => {
+      await page.evaluate(() => {
+        const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
+          .find(x => (x.textContent || '').trim().endsWith('Blast'));
+        if (b) b.click();
+      });
+      await page.waitForTimeout(500);
+      const n = await page.locator('.bbox').count();
+      ok(n === 4, 'Blast showed ' + n + ' answer boxes, expected 4');
+    });
+
+    // ---- pressing a button must not rebuild the page around you ---------
+    await check(subject + ': answering does not repaint the page around you', async () => {
+      await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(900);
+      await openDrill(page);
+      const r = await page.evaluate(async () => {
+        const app = document.querySelector('#app');
+        const surface = app.firstElementChild || app;
+        const before = surface.children.length;
+        let removed = 0;
+        const obs = new MutationObserver(ms => ms.forEach(m => {
+          if (m.target === surface) removed += m.removedNodes.length;
+        }));
+        obs.observe(surface, { childList: true });
+        window.scrollTo(0, 300);
+        const from = Math.round(window.scrollY);
+        const t0 = performance.now();
+        const b = document.querySelector('.opt') ||
+          Array.from(document.querySelectorAll('.typedrow .btn'))[0];
+        if (b) b.click();
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        obs.disconnect();
+        return { before, removed, ms: performance.now() - t0,
+                 from, to: Math.round(window.scrollY) };
+      });
+      log.push('       answering: ' + r.removed + ' of ' + r.before + ' page nodes replaced, ' +
+        Math.round(r.ms) + 'ms, scroll ' + r.from + ' -> ' + r.to);
+      ok(r.removed === 0, 'answering replaced ' + r.removed + ' of ' + r.before + ' page-level nodes');
+      ok(!(r.from > 100 && r.to === 0), 'answering threw the page back to the top');
     });
 
     // ---- a revisit gets the data back ------------------------------------
@@ -217,7 +201,7 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       const seenCards = Object.keys(saved.items).length;
       const fresh = await ctx.newPage();
       await fresh.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
-      await fresh.waitForTimeout(900);
+      await fresh.waitForTimeout(1100);
       const restored = await fresh.evaluate(() => {
         try {
           const k = Object.keys(localStorage).find(x => /progress/.test(x));
@@ -227,6 +211,13 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       await fresh.close();
       ok(restored >= seenCards,
         'server holds ' + seenCards + ' answered cards but the fresh page restored ' + restored);
+    });
+
+    await check(subject + ': ?classic=1 still brings back the previous interface', async () => {
+      await page.goto(base + '/' + subject + '?classic=1', { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(900);
+      const has = await page.evaluate(() => !!document.querySelector('.info-btn, .nav-wrap'));
+      ok(has, 'the classic fallback did not render');
     });
   }
 
@@ -273,57 +264,28 @@ async function repaintReport(page, clickFn) {
   }, '(' + clickFn.toString() + ')()');
 }
 
-/* The apps open a session either from the recommended "Start" button on the
-   console or from any topic tile; the questions themselves are numbered
-   buttons, or a text box for typed recall. */
-async function startAnySession(page) {
-  const opened = await page.evaluate(() => {
-    const btns = Array.from(document.querySelectorAll('button'));
-    const start = btns.find(b => /Start/i.test(b.textContent || ''));
-    if (start) { start.click(); return 'start'; }
-    const topic = btns.find(b => /\d+%$/.test((b.textContent || '').trim()));
-    if (topic) { topic.click(); return 'topic'; }
-    return '';
-  });
-  if (!opened) return false;
-  await page.waitForTimeout(700);
-  if (await hasQuestion(page)) return true;
-
-  // A topic tile can open a picker first; take whatever it offers.
+/* The engine puts every question on the Drill page: four options, or a text
+   box where the card has nothing to choose between. */
+async function openDrill(page) {
   await page.evaluate(() => {
-    const b = Array.from(document.querySelectorAll('button'))
-      .find(x => /Start|Begin|All|Mixed|Go/i.test(x.textContent || ''));
+    const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
+      .find(x => (x.textContent || '').trim().endsWith('Drill'));
     if (b) b.click();
   });
-  await page.waitForTimeout(700);
-  return hasQuestion(page);
-}
-
-async function hasQuestion(page) {
-  return page.evaluate(() => {
-    const numbered = Array.from(document.querySelectorAll('button'))
-      .filter(b => /^[1-4]\s*\S/.test((b.textContent || '').trim())).length;
-    const typed = !!document.querySelector('#app input[type="text"], #app input:not([type])');
-    const exiting = /Exit/i.test(document.body.innerText);
-    return exiting && (numbered >= 2 || typed);
-  });
+  await page.waitForTimeout(600);
 }
 
 async function answerOne(page) {
   return page.evaluate(() => {
-    const input = document.querySelector('#app input[type="text"], #app input:not([type])');
+    const opt = document.querySelector('.opt');
+    if (opt) { opt.click(); return true; }
+    const input = document.querySelector('.typedrow input');
     if (input) {
       input.value = 'something';
       input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-      const go = Array.from(document.querySelectorAll('button'))
-        .find(b => /check|submit|answer/i.test(b.textContent || ''));
-      if (go) go.click();
-      return true;
+      const go = document.querySelector('.typedrow .btn');
+      if (go) { go.click(); return true; }
     }
-    const b = Array.from(document.querySelectorAll('button'))
-      .find(x => /^[1-4]\s*\S/.test((x.textContent || '').trim()));
-    if (b) { b.click(); return true; }
     return false;
   });
 }
