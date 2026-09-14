@@ -63,9 +63,10 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
   page.on('console', m => {
     if (m.type() !== 'error') return;
     const t = m.text();
-    // Google's script host is unreachable from this sandbox, and a missing
-    // favicon is not an application fault.
-    if (/ERR_CONNECTION|ERR_NAME|favicon|gsi\/client|accounts\.google|status of 404/.test(t)) return;
+    // Google's script and font hosts are unreachable from this sandbox, whose
+    // TLS proxy also fails cert validation on them. Neither is an application
+    // fault, and neither happens in production.
+    if (/ERR_CONNECTION|ERR_NAME|ERR_CERT|favicon|gsi\/client|accounts\.google|fonts\.g|status of 404/.test(t)) return;
     pageErrors.push('console: ' + t);
   });
 

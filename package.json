@@ -12,7 +12,8 @@
     "test:spanish": "node test-spanish-content.js && node test-spanish-accuracy.js",
     "test:e2e": "node test-e2e-backend.js",
     "test:browser": "node test-browser-e2e.js",
-    "test:chrome": "node test-chrome-e2e.js"
+    "test:chrome": "node test-chrome-e2e.js",
+    "test:signin": "node test-signin-history.js"
   },
   "engines": {
     "node": ">=18"

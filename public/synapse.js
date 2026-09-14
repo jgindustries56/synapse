@@ -167,11 +167,17 @@
     });
     return { seen: seen, right: right, pct: pct(right, seen) };
   }
+  /* The host keeps the running streak itself and the server reconciles it
+     across devices, so that stored figure is the authority. Deriving one from
+     the per-day counts is only a fallback: those counts can start later than
+     the streak did, which understated a returning user's run. */
   function streak(cfg) {
-    var P = load(cfg), n = 0, d = today();
+    var P = load(cfg);
+    var stored = P.streak && P.streak.count;
+    var n = 0, d = today();
     if (!P.days[dayKey(d)]) d = shiftDays(d, -1);
     while (P.days[dayKey(d)]) { n++; d = shiftDays(d, -1); }
-    return n;
+    return Math.max(n, stored || 0);
   }
   function last7(cfg) {
     var P = load(cfg), out = [], t = today();
