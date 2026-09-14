@@ -1723,10 +1723,13 @@
 
   function go(view, extra){
     clearSpeedTimer();
+    var changed = state.view !== view;
     state.view = view;
     Object.assign(state, extra||{});
     render();
-    window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+    // Only jump to the top when the page under you actually changed. Re-rendering
+    // the view you are already on used to throw you back to the top mid-read.
+    if(changed) window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
   }
 
   var HUB_VIEWS = {home:1, study:1, quiz:1, test:1, guided:1, guidedIntro:1, methods:1, methodPicker:1, results:1, history:1, grades:1, settings:1, reference:1, referenceSheet:1};
@@ -1792,7 +1795,20 @@
 
     var infoBtn = el('button','info-btn','i');
     infoBtn.title = 'How this works';
-    infoBtn.onclick = function(){ state.infoOpen = !state.infoOpen; render(); };
+    infoBtn.setAttribute('aria-expanded', String(!!state.infoOpen));
+    // Opening a help panel is not a navigation: it used to call render(), which
+    // tore down and rebuilt every element on the page underneath it. Insert or
+    // remove just the panel instead, so nothing else so much as repaints.
+    infoBtn.onclick = function(){
+      state.infoOpen = !state.infoOpen;
+      infoBtn.setAttribute('aria-expanded', String(state.infoOpen));
+      var open = app.querySelector('.info-panel');
+      if(!state.infoOpen){ if(open) open.remove(); return; }
+      if(open) return;
+      var anchor = bar.nextElementSibling;
+      if(anchor && anchor.className.indexOf('nav-wrap') !== -1) anchor = anchor.nextElementSibling;
+      app.insertBefore(infoPanel(), anchor);
+    };
     stats.appendChild(infoBtn);
 
     stats.appendChild(authArea());

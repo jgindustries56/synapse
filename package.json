@@ -2,14 +2,16 @@
   "name": "synapse",
   "version": "1.0.0",
   "private": true,
-  "description": "A unified spaced-repetition study hub — AP Human Geography, Spanish, and more subjects to come.",
+  "description": "A unified spaced-repetition study hub \u2014 AP Human Geography, Spanish, and more subjects to come.",
   "scripts": {
     "start": "node server.js",
-    "test": "node test-auth.js && node test-routes.js && node test-aphg-content.js && node test-aphg-accuracy.js && node test-spanish-content.js && node test-spanish-accuracy.js",
+    "test": "node test-auth.js && node test-routes.js && node test-aphg-content.js && node test-aphg-accuracy.js && node test-spanish-content.js && node test-spanish-accuracy.js && node test-e2e-backend.js",
     "test:auth": "node test-auth.js",
     "test:routes": "node test-routes.js",
     "test:aphg": "node test-aphg-content.js && node test-aphg-accuracy.js",
-    "test:spanish": "node test-spanish-content.js && node test-spanish-accuracy.js"
+    "test:spanish": "node test-spanish-content.js && node test-spanish-accuracy.js",
+    "test:e2e": "node test-e2e-backend.js",
+    "test:browser": "node test-browser-e2e.js"
   },
   "engines": {
     "node": ">=18"
