@@ -129,6 +129,7 @@ input{font-family:inherit;}
 .rail .railfoot{margin-top:auto; padding:12px 12px 0; border-top:1px solid var(--edge-soft);
   font-size:.78rem; color:var(--mute); line-height:1.5;}
 .bottombar{display:none;}
+.mobiletop{display:none;}
 /* A grid item defaults to min-width:auto, which lets one wide child (a chart row,
    a long topic blurb) push the whole column past the viewport. Pin it to 0 and
    the inner scroll containers do their job instead. */
@@ -426,6 +427,12 @@ input{font-family:inherit;}
 @media (max-width:760px){
   .raillayout{grid-template-columns:1fr;}
   .rail{display:none;}
+  /* One navigation at phone width: the bottom bar. The top strip and the rail
+     both step aside, and identity moves to a compact bar at the top. */
+  .topbar .tabs{display:none;}
+  .mobiletop{display:flex; align-items:center; justify-content:space-between; gap:12px;
+    position:sticky; top:0; z-index:61; background:var(--panel);
+    border-bottom:1px solid var(--edge); padding:9px 16px;}
   .bottombar{display:flex; position:sticky; bottom:0; z-index:60; background:var(--panel);
     border-top:1px solid var(--edge); padding:6px 4px calc(6px + env(safe-area-inset-bottom));
     overflow-x:auto; gap:2px;}
@@ -476,3 +483,6 @@ input{font-family:inherit;}
   max-width:none; width:auto; margin:0; padding:0;
   background:transparent; border:0; display:block;
 }
+
+/* The stand-in shown until Google's own button arrives. */
+.gfallback{padding:7px 13px; font-size:.82rem; border-radius:7px;}

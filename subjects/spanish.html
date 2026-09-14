@@ -566,7 +566,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Chivo:wght@400;500;700;900&family=Karla:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/synapse.css">
-<script src="/assets/synapse.js" defer></script>
+<!-- Loaded synchronously and ahead of the page script below: that script calls
+     render() as it parses, and must find the engine already defined. With defer
+     it did not, and anyone who was not signed in silently got the old view. -->
+<script src="/assets/synapse.js"></script>
 </head>
 <body style="margin:0;">
 

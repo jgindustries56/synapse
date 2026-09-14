@@ -546,15 +546,27 @@
       add(surface, topChrome(c));
       add(surface, body);
     } else {
+      // The rail is desktop-only, so a phone needs somewhere else to show who
+      // is signed in — otherwise hiding the rail hides sign-in with it.
+      add(surface, mobileTop(c));
       var layout = el('div', 'raillayout');
       add(layout, railChrome(c));
       var right = el('div', 'spanishpage');
       add(right, body);
       add(layout, right);
       add(surface, layout);
-      add(surface, bottomChrome(c));
     }
+    // Both layouts get the bottom bar; CSS shows it only at phone width, where
+    // it replaces the top tab strip and the rail alike.
+    add(surface, bottomChrome(c));
     return surface;
+  }
+
+  function mobileTop(c) {
+    var bar = el('div', 'mobiletop');
+    add(bar, brand(c));
+    add(bar, authArea(c));
+    return bar;
   }
 
   function brand(c) {
@@ -587,8 +599,12 @@
       return wrap;
     }
     var slot = el('div', 'gbtn');
+    // A working control either way: Google swaps its own button in once its
+    // script is up, and if that never arrives this still opens the sign-in.
+    add(slot, button('btn ghost gfallback', 'Sign in with Google', function () {
+      if (A.prompt) A.prompt();
+    }));
     add(wrap, slot);
-    // Google renders its own button into the slot once its script has loaded.
     if (A.mountButton) setTimeout(function () { A.mountButton(slot); }, 0);
     return wrap;
   }
