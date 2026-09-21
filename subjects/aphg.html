@@ -595,7 +595,12 @@
     {id:'malthus', name:'Malthus & Neo-Malthusians', cat:'cases', blurb:'The original theory and its modern revival'},
     {id:'life-expectancy', name:'Life Expectancy', cat:'cases', blurb:'What shortens it, and the highest/lowest countries'},
     {id:'pop-policy', name:'Population Policies', cat:'cases', blurb:'Pronatalist, anti-natalist, and eugenic policy'},
-    {id:'migration-vocab', name:'Chapter 3 Vocabulary', cat:'concepts', blurb:'Migration types, push/pull factors, and refugee status — the term list'}
+    {id:'mig-core', name:'Core Movement Terms', cat:'concepts', blurb:'Mobility, circulation, emigration vs immigration, net migration'},
+    {id:'mig-types', name:'Types of Migration', cat:'concepts', blurb:'International, internal, interregional, intraregional, transnational'},
+    {id:'mig-why', name:'Why People Move', cat:'concepts', blurb:'Push and pull factors, intervening obstacles and opportunities'},
+    {id:'mig-displaced', name:'Displaced Populations', cat:'cases', blurb:'Refugee, IDP, asylum seeker, guest worker — and what separates them'},
+    {id:'mig-models', name:'Patterns & Models', cat:'models', blurb:'Ravenstein, distance decay, the gravity model, the migration transition'},
+    {id:'mig-policy', name:'Consequences & Policy', cat:'cases', blurb:'Brain drain, remittances, quota laws, the 1986 reform act'}
   ];
   var TOPIC_MAP = {};
   TOPICS.forEach(function(t){ TOPIC_MAP[t.id] = t; });
@@ -611,7 +616,9 @@
       'old-age-dependency','composite-formulas','dtm','epi-transition','pop-pyramids',
       'pop-clusters','census','malthus','life-expectancy','pop-policy'
     ]},
-    {id:'chapter-3', name:'Chapter 3 · Migration', color:'var(--accent-clay)', topicIds:['migration-vocab']}
+    {id:'chapter-3', name:'Chapter 3 · Migration', color:'var(--accent-clay)', topicIds:[
+      'mig-core','mig-types','mig-why','mig-displaced','mig-models','mig-policy'
+    ]}
   ];
 
   var TOPIC_ICONS = {
@@ -620,7 +627,8 @@
     'old-age-dependency':'🧓', 'composite-formulas':'🧮', 'dtm':'🔀',
     'epi-transition':'🦠', 'pop-pyramids':'🔺', 'pop-clusters':'🌏',
     'census':'🗳️', 'malthus':'🌾', 'life-expectancy':'⎳', 'pop-policy':'📜',
-    'migration-vocab':'🧳'
+    'mig-core':'🚶', 'mig-types':'🧭', 'mig-why':'🧲',
+    'mig-displaced':'🛟', 'mig-models':'📐', 'mig-policy':'🏛️'
   };
   function topicIcon(id){ return TOPIC_ICONS[id] || '📖'; }
 
@@ -661,30 +669,135 @@
      the class handout lists terms only, with directions to look definitions
      up in the textbook and a dictionary, so no source text to quote from
      verbatim exists. Confirmed with the owner before being added. */
-  var MIGRATION_VOCAB = [
-    {term:'Migration', def:'A permanent or semi-permanent move to a new location.'},
-    {term:'Chain migration', def:'Migration of people to a location because relatives or members of their community migrated there earlier.'},
-    {term:'Voluntary migration', def:'Movement undertaken by choice, not coercion.'},
-    {term:'Internal migration', def:'Permanent movement within the same country.'},
-    {term:'Step migration', def:'Migration to a distant destination happening in stages, such as farm to village to city.'},
-    {term:'Counter migration', def:'A migration flow that moves in the opposite direction of a larger, dominant flow.'},
-    {term:'Immigration', def:'Migration into a country or location to live there.'},
-    {term:'Emigration', def:'Migration away from a country or location.'},
-    {term:'Push factors', def:'Negative conditions that drive people to leave a location.'},
-    {term:'Pull factors', def:'Positive conditions that attract migrants to a location.'},
-    {term:'Gravity Model', def:'A model predicting migration or interaction between two places based on their population sizes and the distance between them.'},
-    {term:'Ethnic neighborhoods', def:'Clusters within a city where people of a shared ethnicity or culture concentrate, often near where they first arrived.'},
-    {term:'Asylum seekers', def:'People who have fled their home country seeking refugee protection elsewhere, whose claim has not yet been legally confirmed.'},
-    {term:'Refugees', def:'People who have crossed an international border fleeing persecution, war, or violence.'},
-    {term:'Internally Displaced Persons (IDP)', def:'People forced to flee for the same reasons as refugees, but who remain inside their own country’s borders.'},
-    {term:'Remittances', def:'Money migrants send back to family in their home country.'},
-    {term:'Intervening opportunity', def:'A nearer, more attractive destination that reduces migration to a farther one.'},
-    {term:'Intervening obstacle', def:'An environmental, cultural, or political barrier that hinders migration.'},
-    {term:'Brain Drain', def:'Large-scale emigration of educated or skilled people from a country, to its detriment.'},
-    {term:'Brain Gain', def:'Large-scale immigration of educated or skilled people into a country, to its benefit.'},
-    {term:'Guest workers', def:'Migrants with legal permission to work in a foreign country, usually temporarily.'},
-    {term:'Unauthorized immigrant', def:'Someone in a country without legal permission, or who has overstayed a visa.'},
-    {term:'Selective immigration', def:'A policy screening and admitting immigrants by specific criteria such as skills, health, or background.'}
+  /* ---------- Chapter 3 · Migration ----------
+     Six groups, matching the headings on the Chapter 3 handout, so a card is
+     always studied under the section it was taught in rather than in one flat
+     list of forty terms. Definitions are the handout's own wording. */
+
+  var MIG_CORE = [
+    {term:'Mobility', def:'The umbrella term for all human movement, permanent or not.'},
+    {term:'Migration', def:'A permanent move to a new location; a form of relocation diffusion.'},
+    {term:'Circulation', def:'Short-term, repetitive, cyclical movement, such as a daily commute or weekly worship.'},
+    {term:'Seasonal mobility', def:'Recurring movement tied to the calendar, such as a student moving to a dorm each fall and home each spring.'},
+    {term:'Emigration', def:'Migration from a place.'},
+    {term:'Immigration', def:'Migration to a place.'},
+    {term:'Net migration', def:'Immigrants minus emigrants; positive means net in-migration, negative means net out-migration.'}
+  ];
+
+  var MIG_TYPES = [
+    {term:'International migration', def:'A permanent move from one country to another.'},
+    {term:'Voluntary migration', def:'The migrant chooses to move, usually for economic or environmental reasons.'},
+    {term:'Forced migration', def:'The migrant is compelled to move, usually by political or environmental factors.'},
+    {term:'Internal migration', def:'A permanent move within the same country.'},
+    {term:'Interregional migration', def:'Migration from one region to another; historically rural to urban, for jobs.'},
+    {term:'Intraregional migration', def:'Migration within one region; most commonly from older cities to newer suburbs.'},
+    {term:'Transnational migration', def:'Migrants keep active economic and cultural ties to their home country while living abroad.'},
+    {term:'Counter migration', def:'A migration flow that moves in the opposite direction of a larger, dominant flow.'}
+  ];
+
+  var MIG_WHY = [
+    {term:'Push factor', def:'A condition that drives people away from a place.'},
+    {term:'Pull factor', def:'A condition that draws people toward a place.'},
+    {term:'Economic push/pull', def:'Joblessness at home and opportunity at the destination; the dominant reason for migration worldwide.'},
+    {term:'Cultural push/pull', def:'Slavery, political persecution, or war push; political and religious freedom pulls.'},
+    {term:'Environmental push/pull', def:'Flooding, drought, or hazard push; an attractive climate or landscape pulls.'},
+    {term:'Intervening obstacle', def:'An environmental or political barrier that blocks or slows migration, such as a mountain range, an ocean, or a visa requirement.'},
+    {term:'Intervening opportunity', def:'A nearer attraction that stops migrants short of their intended destination.'}
+  ];
+
+  var MIG_DISPLACED = [
+    {term:'Refugee', def:'Someone forced to leave their country and unable to return for fear of persecution based on race, religion, nationality, political opinion, or social group.'},
+    {term:'Internally displaced person (IDP)', def:'Someone forced to flee for the same reasons as a refugee who has not crossed an international border.'},
+    {term:'Asylum seeker', def:'Someone who has migrated to another country hoping to be recognized as a refugee, whose claim is not yet decided.'},
+    {term:'Guest worker', def:'A migrant granted temporary legal permission to work in another country, typically in low-wage labor.'}
+  ];
+
+  var MIG_MODELS = [
+    {term:'E. G. Ravenstein', def:'The 19th-century geographer whose migration principles underpin modern migration study, grouped into distance, reasons, and characteristics of migrants.'},
+    {term:'Distance decay', def:'The farther away a place is, the less likely people are to migrate to it.'},
+    {term:'Gravity model', def:'Predicts migration between two places as proportional to their populations and inversely proportional to the distance between them.'},
+    {term:'Step migration', def:'Migration accomplished in a series of shorter moves rather than one long one, such as farm to village to town to city.'},
+    {term:'Chain migration', def:'Migration to a place where relatives or people of a shared nationality have already settled.'},
+    {term:'Counterurbanization', def:'Net migration from urban areas to rural ones.'},
+    {term:'Migration transition', def:'Zelinsky’s model: a change in a society’s migration pattern driven by the same shifts that produce the demographic transition. Stage 2 brings high international emigration and rural-to-urban movement; Stages 3 and 4 bring high international immigration and city-to-suburb movement.'}
+  ];
+
+  var MIG_POLICY = [
+    {term:'Brain drain', def:'Large-scale emigration of talented, highly educated people from a country.'},
+    {term:'Brain gain', def:'Large-scale immigration of talented, highly educated people into a country, to its benefit.'},
+    {term:'Remittances', def:'Money migrants send back to family in their country of origin; a major income source for some nations.'},
+    {term:'Quota laws', def:'U.S. legislation from the 1920s capping the number of immigrants permitted from each country annually.'},
+    {term:'Undocumented immigrant', def:'A person residing in a country without legal authorization, whether by entering without permission or overstaying a visa.'},
+    {term:'Immigration Reform and Control Act (1986)', def:'Granted legal status to several hundred thousand people already in the U.S. without documents, causing the early-1990s spike in recorded immigration.'},
+    {term:'Guest worker programs', def:'Formal systems importing temporary labor, notably in Europe and the petroleum-exporting states of Southwest Asia.'},
+    {term:'Selective immigration', def:'A policy screening and admitting immigrants by specific criteria such as skills, health, or background.'},
+    {term:'Ethnic neighborhoods', def:'Clusters within a city where people of a shared ethnicity or culture concentrate, often near where they first arrived.'}
+  ];
+
+  /* Applying the terms, not just reciting them — the same treatment every
+     Chapter 2 topic gets. */
+  var MIG_CORE_MC = [
+    {prompt:'Which term covers ALL human movement, whether or not it is permanent?', answer:'Mobility', choices:['Mobility','Migration','Circulation','Immigration']},
+    {prompt:'Driving to work each morning and home each evening is an example of…', answer:'Circulation', choices:['Circulation','Migration','Emigration','Net migration']},
+    {prompt:'A student who moves to a dorm each fall and home each spring is showing…', answer:'Seasonal mobility', choices:['Seasonal mobility','Migration','Forced migration','Counterurbanization']},
+    {prompt:'Leaving Poland is ___ ; arriving in Germany is ___.', answer:'emigration; immigration', choices:['emigration; immigration','immigration; emigration','circulation; mobility','mobility; migration']},
+    {prompt:'A country records 400,000 immigrants and 250,000 emigrants in a year. Its net migration is…', answer:'+150,000', choices:['+150,000','−150,000','+650,000','+400,000'], note:'Net migration is immigrants minus emigrants, so a positive figure means more people arrived than left.'},
+    {prompt:'Migration is a form of which kind of diffusion?', answer:'Relocation diffusion', choices:['Relocation diffusion','Contagious diffusion','Stimulus diffusion','Hierarchical diffusion']}
+  ];
+
+  var MIG_TYPES_MC = [
+    {prompt:'A family moves from Alabama to Michigan for work. This is…', answer:'Interregional migration', choices:['Interregional migration','International migration','Intraregional migration','Transnational migration']},
+    {prompt:'A family moves from a central city to a suburb of the same metro area. This is…', answer:'Intraregional migration', choices:['Intraregional migration','Interregional migration','International migration','Forced migration']},
+    {prompt:'Historically, interregional migration in the United States moved people mainly…', answer:'from rural areas to cities, for jobs', choices:['from rural areas to cities, for jobs','from cities to rural areas','between neighbouring suburbs','out of the country']},
+    {prompt:'Someone living abroad who still sends money home, follows its politics and visits often is engaged in…', answer:'Transnational migration', choices:['Transnational migration','Forced migration','Circulation','Counterurbanization']},
+    {prompt:'What separates voluntary from forced migration?', answer:'Whether the migrant chose to move or was compelled to', choices:['Whether the migrant chose to move or was compelled to','Whether an international border was crossed','Whether the move is permanent','Whether the migrant sends remittances']},
+    {prompt:'Forced migration is usually driven by…', answer:'political or environmental factors', choices:['political or environmental factors','better job prospects','a more attractive climate alone','family already settled abroad']},
+    {prompt:'Most people move from the Rust Belt to the Sun Belt; a smaller flow runs the other way. That smaller flow is…', answer:'Counter migration', choices:['Counter migration','Chain migration','Step migration','Circulation']}
+  ];
+
+  var MIG_WHY_MC = [
+    {prompt:'A push factor acts at the ___ ; a pull factor acts at the ___.', answer:'origin; destination', choices:['origin; destination','destination; origin','border; interior','city; suburb']},
+    {prompt:'Joblessness at home and opportunity abroad — the dominant reason for migration worldwide — is a…', answer:'Economic push/pull', choices:['Economic push/pull','Cultural push/pull','Environmental push/pull','Intervening obstacle']},
+    {prompt:'War and political persecution driving people out of a country is an example of a…', answer:'Cultural push', choices:['Cultural push','Economic pull','Environmental pull','Intervening opportunity']},
+    {prompt:'Repeated flooding and drought driving families off their land is an example of an…', answer:'Environmental push', choices:['Environmental push','Cultural push','Economic pull','Intervening opportunity']},
+    {prompt:'A visa requirement, an ocean, or a mountain range standing in a migrant’s way is…', answer:'An intervening obstacle', choices:['An intervening obstacle','An intervening opportunity','A pull factor','A push factor']},
+    {prompt:'A migrant bound for Chicago takes a job in St. Louis instead and stays. St. Louis is…', answer:'An intervening opportunity', choices:['An intervening opportunity','An intervening obstacle','A push factor','Counterurbanization']},
+    {prompt:'What separates an intervening opportunity from an intervening obstacle?', answer:'The opportunity replaces the destination; the obstacle only blocks or slows the journey', choices:['The opportunity replaces the destination; the obstacle only blocks or slows the journey','One is physical and the other political','One applies only to refugees','One happens before the move and the other after']}
+  ];
+
+  var MIG_DISPLACED_MC = [
+    {prompt:'Someone who fled across an international border fearing persecution for their religion is a…', answer:'Refugee', choices:['Refugee','Internally displaced person','Guest worker','Undocumented immigrant']},
+    {prompt:'Someone who fled that same persecution but is still inside their own country is…', answer:'An internally displaced person', choices:['An internally displaced person','A refugee','An asylum seeker','An emigrant']},
+    {prompt:'Someone who has reached another country and applied for refugee status, with no decision yet, is…', answer:'An asylum seeker', choices:['An asylum seeker','A refugee','An internally displaced person','A guest worker']},
+    {prompt:'The single legal distinction between a refugee and an internally displaced person is…', answer:'whether an international border was crossed', choices:['whether an international border was crossed','whether the move was voluntary','how long ago they fled','whether they intend to return']},
+    {prompt:'Refugee status rests on a fear of persecution based on race, religion, nationality, political opinion, or…', answer:'membership of a social group', choices:['membership of a social group','income level','age','occupation']},
+    {prompt:'A migrant admitted on a temporary permit to do low-wage work is a…', answer:'Guest worker', choices:['Guest worker','Refugee','Asylum seeker','Undocumented immigrant']}
+  ];
+
+  var MIG_MODELS_MC = [
+    {prompt:'Distance decay predicts that as a place gets farther away, migration to it…', answer:'falls', choices:['falls','rises','stays the same','becomes more permanent']},
+    {prompt:'The gravity model predicts migration between two places from…', answer:'their populations and the distance between them', choices:['their populations and the distance between them','their birth and death rates','their land areas','their income levels']},
+    {prompt:'In the gravity model, predicted migration is proportional to population and ___ to distance.', answer:'inversely proportional', choices:['inversely proportional','directly proportional','unrelated','equal']},
+    {prompt:'Farm to village to town to city, over a number of years, is…', answer:'Step migration', choices:['Step migration','Chain migration','Counterurbanization','Circulation']},
+    {prompt:'Moving to a neighbourhood because relatives and people from your home country already live there is…', answer:'Chain migration', choices:['Chain migration','Step migration','Forced migration','Transnational migration']},
+    {prompt:'Net migration running from cities out to rural areas is…', answer:'Counterurbanization', choices:['Counterurbanization','Interregional migration','Circulation','Brain drain']},
+    {prompt:'Whose migration principles — grouped by distance, reasons, and the characteristics of migrants — underpin modern migration study?', answer:'E. G. Ravenstein', choices:['E. G. Ravenstein','Wilbur Zelinsky','Thomas Malthus','Ernst Ravenstein-Zelinsky']},
+    {prompt:'In the migration transition, a Stage 2 society shows…', answer:'high international emigration plus rural-to-urban movement', choices:['high international emigration plus rural-to-urban movement','high international immigration plus city-to-suburb movement','almost no migration at all','only seasonal mobility']},
+    {prompt:'In the migration transition, Stage 3 and 4 societies show…', answer:'high international immigration plus city-to-suburb movement', choices:['high international immigration plus city-to-suburb movement','high international emigration plus rural-to-urban movement','almost no migration at all','only forced migration']},
+    {prompt:'The migration transition is driven by the same social and economic shifts that produce which other model?', answer:'The demographic transition', choices:['The demographic transition','The gravity model','Distance decay','The epidemiologic transition']}
+  ];
+
+  var MIG_POLICY_MC = [
+    {prompt:'Thousands of doctors and engineers leaving a country for better-paid work abroad is…', answer:'Brain drain', choices:['Brain drain','Brain gain','Remittances','Chain migration']},
+    {prompt:'For the country those doctors and engineers move to, the same movement is…', answer:'Brain gain', choices:['Brain gain','Brain drain','Counter migration','Counterurbanization']},
+    {prompt:'A construction worker in Qatar wires part of her wages to her family in Nepal. That money is…', answer:'Remittances', choices:['Remittances','Quota laws','Brain drain','Net migration']},
+    {prompt:'U.S. laws from the 1920s capping how many immigrants each country could send per year are…', answer:'Quota laws', choices:['Quota laws','The Immigration Reform and Control Act','Guest worker programs','Selective immigration']},
+    {prompt:'A person living in a country without legal authorization is…', answer:'An undocumented immigrant', choices:['An undocumented immigrant','A guest worker','An asylum seeker','A refugee']},
+    {prompt:'Which act granted legal status to several hundred thousand undocumented people already in the United States?', answer:'The Immigration Reform and Control Act (1986)', choices:['The Immigration Reform and Control Act (1986)','The 1920s quota laws','The Refugee Act','The Guest Worker Act']},
+    {prompt:'The early-1990s spike in recorded U.S. immigration was caused largely by…', answer:'the Immigration Reform and Control Act legalizing people already living there', choices:['the Immigration Reform and Control Act legalizing people already living there','a sudden surge of new arrivals','the repeal of the quota laws','a change in how the census counted people'], note:'The spike is a change in who was recorded, not a change in how many people arrived.'},
+    {prompt:'Formal systems importing temporary labor, notably in Europe and the oil-exporting states of Southwest Asia, are…', answer:'Guest worker programs', choices:['Guest worker programs','Quota laws','Counterurbanization','Asylum systems']},
+    {prompt:'A points system admitting migrants by skills, health and education is…', answer:'Selective immigration', choices:['Selective immigration','Chain migration','Brain drain','Quota laws']},
+    {prompt:'Little Havana in Miami and Chinatown in San Francisco are examples of…', answer:'Ethnic neighborhoods', choices:['Ethnic neighborhoods','Intervening opportunities','Guest worker programs','Counter migrations']}
   ];
 
   /* ---------- 14. Chronic / degenerative disease ---------- */
@@ -775,7 +888,8 @@
     {name:'Youth dependency ratio', formula:'population under 15 divided by population 15 to 64, times 100'},
     {name:'Old-age dependency ratio', formula:'population 65 plus divided by population 15 to 64, times 100'},
     {name:'Total dependency ratio', formula:'under 15 plus over 64, divided by population 15 to 64, times 100'},
-    {name:'Sex ratio', formula:'males divided by females, times 100'}
+    {name:'Sex ratio', formula:'males divided by females, times 100'},
+    {name:'Gravity model', formula:'population 1 times population 2, divided by the distance between them squared'}
   ];
 
   /* ---------- 9. Demographic Transition Model ---------- */
@@ -919,7 +1033,12 @@
   /* ---------- Guided-exercise / reference-sheet explainer text per topic ---------- */
   var RULES = {
     'vocab-core': {title:'Chapter 2 Vocabulary', explanation:'These 28 terms are the vocabulary backbone of the whole population unit — nearly every other topic in this app uses them. Learn the term-to-definition direction first, then the reverse.'},
-    'migration-vocab': {title:'Chapter 3 Vocabulary', explanation:'These 23 terms cover why and how people move: types of migration, the push/pull factors behind them, and the legal categories — refugee, asylum seeker, IDP, guest worker — that determine someone’s status once they do.'},
+    'mig-core': {title:'Core Movement Terms', explanation:'Not all movement is migration. Mobility is the umbrella term; circulation and seasonal mobility are repetitive and temporary; migration alone is permanent. Emigration and immigration are the same move seen from the two ends of it, and net migration is the difference between them.', example:{main:'400,000 immigrants − 250,000 emigrants = +150,000 net migration', note:'A positive figure means more people arrived than left; a negative one means the reverse.'}},
+    'mig-types': {title:'Types of Migration', explanation:'The types answer two separate questions: how far (international, internal, interregional, intraregional) and how freely (voluntary or forced). Transnational migration cuts across both — living in one country while keeping active ties to another.', example:{main:'Interregional: Alabama → Michigan. Intraregional: city → suburb.', note:'Interregional migration was historically rural to urban for work; intraregional is most often older city to newer suburb.'}},
+    'mig-why': {title:'Why People Move', explanation:'A push factor acts at the origin and drives people away; a pull factor acts at the destination and draws them in. Both come in economic, cultural and environmental forms, and economic is the dominant one worldwide. Two things can interrupt the journey: an intervening obstacle blocks or slows it, while an intervening opportunity replaces the destination altogether.', example:{main:'Bound for Chicago, a migrant takes work in St. Louis and stays', note:'St. Louis is an intervening opportunity. A visa refusal or a mountain range would have been an intervening obstacle.'}},
+    'mig-displaced': {title:'Displaced Populations', explanation:'These four categories are legal statuses, and the distinctions decide what protection someone gets. A refugee has crossed an international border fleeing persecution; an internally displaced person fled for exactly the same reasons but has not crossed one; an asylum seeker has crossed and applied, but no decision has been made; a guest worker is there legally, temporarily, to work.', example:{main:'Refugee vs IDP: the border is the whole difference', note:'Persecution must be based on race, religion, nationality, political opinion, or membership of a social group.'}},
+    'mig-models': {title:'Patterns & Models', explanation:'Ravenstein’s 19th-century principles still frame the subject, grouped into distance, reasons, and the characteristics of migrants. Distance decay and the gravity model both formalise the same instinct — nearer places attract more movement. Step and chain migration describe the shape a move takes; Zelinsky’s migration transition ties a society’s migration pattern to the same shifts that drive the demographic transition.', example:{main:'Gravity model: (population 1 × population 2) ÷ distance²', note:'Proportional to the populations, inversely proportional to the distance — which is distance decay expressed as arithmetic.'}},
+    'mig-policy': {title:'Consequences & Policy', explanation:'Migration leaves a mark at both ends. The origin can suffer brain drain but gain remittances; the destination can enjoy brain gain and grow ethnic neighborhoods. Policy then shapes the flow: 1920s quota laws capped arrivals by country, selective immigration screens by skills, guest worker programs import labour temporarily, and the 1986 Immigration Reform and Control Act legalised people already present.', example:{main:'The early-1990s spike in recorded U.S. immigration', note:'Caused by the 1986 act legalising people already living there — a change in who was counted, not in how many arrived.'}},
     'chronic-disease': {title:'Chronic & Degenerative Disease', explanation:'Chronic diseases are long-lasting and non-communicable — they are not "caught" from someone else, and they usually develop from aging, genetics, or lifestyle rather than a single infection.', example:{main:'Cardiovascular disease and cancer', note:'The world’s leading causes of death, concentrated in countries at epidemiologic transition Stages 3 and 4.'}},
     'density-measures': {title:'Population Density', explanation:'Arithmetic density is the simplest measure (population ÷ total land) but treats all land as equally usable. Physiological density (population ÷ arable land) is preferred because it measures real pressure on food-producing land. Agricultural density (farmers ÷ arable land) shows how mechanized farming is.', example:{main:'Egypt: moderate arithmetic density, but extreme physiological density', note:'~95% of Egyptians live on ~4% of the country’s territory, along the Nile — the desert inflates the "total land" figure without anyone living there.'}},
     'rni-doubling': {title:'RNI & Doubling Time', explanation:'RNI = (CBR − CDR) ÷ 10, expressed as a percent, and excludes migration. Doubling time = 70 ÷ RNI%. Small changes in RNI produce huge changes in doubling time — that is the entire point of the Rule of 70.', example:{main:'CBR 22, CDR 8 → RNI 1.4% → doubling time 50 years', note:'Compare Niger’s RNI of 3.5%, which doubles its population in only 20 years.'}},
@@ -989,7 +1108,20 @@
   }
 
   function buildVocabCoreItems(){ return defsItems(VOCAB_CORE, 'vocab-core'); }
-  function buildMigrationVocabItems(){ return defsItems(MIGRATION_VOCAB, 'migration-vocab'); }
+  function buildMigrationItems(){
+    return defsItems(MIG_CORE, 'mig-core')
+      .concat(mcItems(MIG_CORE_MC, 'mig-core', 'mc'))
+      .concat(defsItems(MIG_TYPES, 'mig-types'))
+      .concat(mcItems(MIG_TYPES_MC, 'mig-types', 'mc'))
+      .concat(defsItems(MIG_WHY, 'mig-why'))
+      .concat(mcItems(MIG_WHY_MC, 'mig-why', 'mc'))
+      .concat(defsItems(MIG_DISPLACED, 'mig-displaced'))
+      .concat(mcItems(MIG_DISPLACED_MC, 'mig-displaced', 'mc'))
+      .concat(defsItems(MIG_MODELS, 'mig-models'))
+      .concat(mcItems(MIG_MODELS_MC, 'mig-models', 'mc'))
+      .concat(defsItems(MIG_POLICY, 'mig-policy'))
+      .concat(mcItems(MIG_POLICY_MC, 'mig-policy', 'mc'));
+  }
 
   function buildChronicItems(){
     return defsItems(CHRONIC_FACTS, 'chronic-disease').concat(mcItems(CHRONIC_MC, 'chronic-disease', 'mc'));
@@ -1144,7 +1276,7 @@
     .concat(buildMalthusItems())
     .concat(buildLifeExpectancyItems())
     .concat(buildPolicyItems())
-    .concat(buildMigrationVocabItems());
+    .concat(buildMigrationItems());
 
   var ITEMS_BY_TOPIC = {};
   ALL_ITEMS.forEach(function(it){
@@ -1748,7 +1880,14 @@
   // line here next to the new topic id, so it lands under a real heading
   // instead of a vague category.
   var SOURCE_UNITS = {"chapter-2": {"title": "Chapter 2 · Population Geography"}, "chapter-3": {"title": "Chapter 3 · Migration"}};
-  var SOURCE_SECTIONS = {"migration-vocab": ["Chapter 3 Vocabulary List", 1]};
+  var SOURCE_SECTIONS = {
+    "mig-core": ["Core Movement Terms", 1],
+    "mig-types": ["Types of Migration", 2],
+    "mig-why": ["Why People Move", 3],
+    "mig-displaced": ["Displaced Populations", 4],
+    "mig-models": ["Patterns and Models", 5],
+    "mig-policy": ["Consequences and Policy", 6]
+  };
   var CAT_SECTION = {"concepts": "Concepts", "formulas": "Formulas", "models": "Models", "cases": "Case studies"};
 
   function engineData(){

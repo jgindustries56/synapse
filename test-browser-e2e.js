@@ -116,7 +116,7 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         if (b) b.click();
         return document.querySelector('#app').innerText;
       });
-      const expect = subject === 'aphg' ? '346' : '1,322';
+      const expect = subject === 'aphg' ? '432' : '1,322';
       ok(txt.includes(expect), 'console does not mention the full deck (' + expect + ')');
     });
 

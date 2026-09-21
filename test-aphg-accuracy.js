@@ -5,7 +5,8 @@ const scriptBody = blocks.find(b => b.includes('(function(){'));
 let code = scriptBody.replace(/\n  applyDisplaySettings\(\);[\s\S]*?\n\}\)\(\);\s*$/, `
 window.__T__={VOCAB_CORE:VOCAB_CORE,DTM_STAGES:DTM_STAGES,EPI_STAGES:EPI_STAGES,RNI_CALC_ITEMS:RNI_CALC_ITEMS,
 FORMULA_SHEET:FORMULA_SHEET,DENSITY_FORMULAS:DENSITY_FORMULAS,POLICY_CASES:POLICY_CASES,LIFE_EXP_EXTREMES:LIFE_EXP_EXTREMES,
-CENSUS_FACTS:CENSUS_FACTS,MALTHUS_FACTS:MALTHUS_FACTS,PYRAMID_SHAPES:PYRAMID_SHAPES,MIGRATION_VOCAB:MIGRATION_VOCAB,
+CENSUS_FACTS:CENSUS_FACTS,MALTHUS_FACTS:MALTHUS_FACTS,PYRAMID_SHAPES:PYRAMID_SHAPES,
+MIG_CORE:MIG_CORE,MIG_TYPES:MIG_TYPES,MIG_WHY:MIG_WHY,MIG_DISPLACED:MIG_DISPLACED,MIG_MODELS:MIG_MODELS,MIG_POLICY:MIG_POLICY,
 UNIT_GROUPS:UNIT_GROUPS,TOPICS:TOPICS,CATEGORIES:CATEGORIES,ALL_ITEMS:ALL_ITEMS,
 normalize:normalize,distractorCount:distractorCount,prepQuestion:prepQuestion};
 })();`);
@@ -92,8 +93,11 @@ check('every doubling-time calculation matches the Rule of 70', () => {
 });
 
 console.log('--- Formula sheet ---');
-check('formula sheet has exactly the 10 chapter formulas, no duplicates', () => {
-  if (T.FORMULA_SHEET.length !== 10) throw new Error('expected 10 formulas, got ' + T.FORMULA_SHEET.length);
+// 10 -> 11: the owner asked for the Chapter 3 migration vocabulary to be wired
+// into every part of the app it belongs in, and the gravity model is a formula.
+// It is the only Chapter 3 entry here; the rest of that chapter is not formulaic.
+check('formula sheet has exactly the 11 chapter formulas, no duplicates', () => {
+  if (T.FORMULA_SHEET.length !== 11) throw new Error('expected 11 formulas, got ' + T.FORMULA_SHEET.length);
   const seen = new Set();
   T.FORMULA_SHEET.forEach(f => { if (seen.has(f.name)) throw new Error('duplicate formula name: ' + f.name); seen.add(f.name); });
 });
@@ -133,39 +137,98 @@ check('every topic belongs to a declared category', () => {
 });
 
 console.log('--- Chapter 3 vocabulary (Migration) ---');
-const CHAPTER_3_SHEET_TERMS = [
-  'Migration','Chain migration','Voluntary migration','Internal migration','Step migration',
-  'Counter migration','Immigration','Emigration','Push factors','Pull factors','Gravity Model',
-  'Ethnic neighborhoods','Asylum seekers','Refugees','Internally Displaced Persons (IDP)',
-  'Remittances','Intervening opportunity','Intervening obstacle','Brain Drain','Brain Gain',
-  'Guest workers','Unauthorized immigrant','Selective immigration'
-];
-check('vocabulary list has exactly the 23 terms from the handout, no duplicates', () => {
-  if (T.MIGRATION_VOCAB.length !== 23) throw new Error('expected 23 terms, got ' + T.MIGRATION_VOCAB.length);
+/* The handout's six sections, term for term and spelled its way. The app groups
+   the cards under these same headings, so this doubles as a check that nothing
+   drifted out of the section it was taught in. */
+const CH3 = {
+  'mig-core': ['Mobility','Migration','Circulation','Seasonal mobility','Emigration','Immigration','Net migration'],
+  'mig-types': ['International migration','Voluntary migration','Forced migration','Internal migration',
+                'Interregional migration','Intraregional migration','Transnational migration','Counter migration'],
+  'mig-why': ['Push factor','Pull factor','Economic push/pull','Cultural push/pull','Environmental push/pull',
+              'Intervening obstacle','Intervening opportunity'],
+  'mig-displaced': ['Refugee','Internally displaced person (IDP)','Asylum seeker','Guest worker'],
+  'mig-models': ['E. G. Ravenstein','Distance decay','Gravity model','Step migration','Chain migration',
+                 'Counterurbanization','Migration transition'],
+  'mig-policy': ['Brain drain','Brain gain','Remittances','Quota laws','Undocumented immigrant',
+                 'Immigration Reform and Control Act (1986)','Guest worker programs','Selective immigration',
+                 'Ethnic neighborhoods']
+};
+const CH3_LISTS = {
+  'mig-core': () => T.MIG_CORE, 'mig-types': () => T.MIG_TYPES, 'mig-why': () => T.MIG_WHY,
+  'mig-displaced': () => T.MIG_DISPLACED, 'mig-models': () => T.MIG_MODELS, 'mig-policy': () => T.MIG_POLICY
+};
+const CH3_ALL = () => Object.keys(CH3_LISTS).reduce((a, k) => a.concat(CH3_LISTS[k]()), []);
+
+Object.keys(CH3).forEach(topic => {
+  check(topic + ' holds exactly the terms under that heading, spelled the same way', () => {
+    const have = CH3_LISTS[topic]().map(w => w.term);
+    const want = CH3[topic];
+    if (have.length !== want.length) throw new Error('expected ' + want.length + ' terms, got ' + have.length);
+    want.forEach(term => { if (have.indexOf(term) === -1) throw new Error('missing or renamed: ' + term); });
+    have.forEach(term => { if (want.indexOf(term) === -1) throw new Error('not on the handout: ' + term); });
+  });
+});
+
+check('no term appears in two sections', () => {
   const seen = new Set();
-  T.MIGRATION_VOCAB.forEach(w => { if (seen.has(w.term)) throw new Error('duplicate term: ' + w.term); seen.add(w.term); });
+  CH3_ALL().forEach(w => {
+    if (seen.has(w.term)) throw new Error('duplicate term across sections: ' + w.term);
+    seen.add(w.term);
+  });
 });
-check('every term numbered on the handout is present, spelled the same way', () => {
-  const have = new Set(T.MIGRATION_VOCAB.map(w => w.term));
-  CHAPTER_3_SHEET_TERMS.forEach(term => { if (!have.has(term)) throw new Error('handout term missing or renamed: ' + term); });
-});
-check('no term beyond the 23 on the handout was added', () => {
-  const allowed = new Set(CHAPTER_3_SHEET_TERMS);
-  T.MIGRATION_VOCAB.forEach(w => { if (!allowed.has(w.term)) throw new Error('term not on the handout: ' + w.term); });
-});
+
 check('every definition is a distinct, non-empty sentence', () => {
   const seen = new Set();
-  T.MIGRATION_VOCAB.forEach(w => {
+  CH3_ALL().forEach(w => {
     if (!w.def || w.def.length < 10) throw new Error(w.term + ' has no real definition');
     if (seen.has(w.def)) throw new Error('two terms share an identical definition: ' + w.term);
     seen.add(w.def);
   });
 });
-check('refugees, asylum seekers, and IDPs are kept distinct (the classic mix-up)', () => {
-  const byTerm = {}; T.MIGRATION_VOCAB.forEach(w => { byTerm[w.term] = w.def; });
-  if (!/border/i.test(byTerm['Refugees'])) throw new Error('Refugees should be defined by crossing an international border');
-  if (!/own country|within/i.test(byTerm['Internally Displaced Persons (IDP)'])) throw new Error('IDP should be defined as staying inside their own country');
-  if (!/not yet|has not|whose claim/i.test(byTerm['Asylum seekers'])) throw new Error('Asylum seekers should be defined as not-yet-confirmed refugees');
+
+check('refugee, IDP and asylum seeker are kept distinct (the classic mix-up)', () => {
+  const by = {}; T.MIG_DISPLACED.forEach(w => { by[w.term] = w.def; });
+  if (!/country/i.test(by['Refugee']))
+    throw new Error('Refugee should be defined by being forced to leave their country');
+  if (!/not crossed an international border/i.test(by['Internally displaced person (IDP)']))
+    throw new Error('IDP should be defined as not having crossed an international border');
+  if (!/not yet decided/i.test(by['Asylum seeker']))
+    throw new Error('Asylum seeker should be defined as a claim not yet decided');
+});
+
+check('emigration and immigration are not defined as each other', () => {
+  const by = {}; T.MIG_CORE.forEach(w => { by[w.term] = w.def; });
+  if (!/from a place/i.test(by['Emigration'])) throw new Error('Emigration should be migration FROM a place');
+  if (!/to a place/i.test(by['Immigration'])) throw new Error('Immigration should be migration TO a place');
+});
+
+check('the gravity model is on the formula sheet, not only in the glossary', () => {
+  const names = T.FORMULA_SHEET.map(f => f.name);
+  if (names.indexOf('Gravity model') === -1) throw new Error('Gravity model is missing from FORMULA_SHEET');
+});
+
+check('the migration models are filed as models, and the policy terms as cases', () => {
+  const cat = id => (T.TOPICS.find(t => t.id === id) || {}).cat;
+  if (cat('mig-models') !== 'models') throw new Error('mig-models is filed as ' + cat('mig-models'));
+  if (cat('mig-policy') !== 'cases') throw new Error('mig-policy is filed as ' + cat('mig-policy'));
+  if (cat('mig-displaced') !== 'cases') throw new Error('mig-displaced is filed as ' + cat('mig-displaced'));
+});
+
+check('every migration term is reachable as a card, in both directions', () => {
+  const ids = new Set(T.ALL_ITEMS.map(i => i.id));
+  Object.keys(CH3).forEach(topic => {
+    CH3_LISTS[topic]().forEach((w, i) => {
+      if (!ids.has('t2d-' + topic + '-' + i)) throw new Error('no term→definition card for ' + w.term);
+      if (!ids.has('d2t-' + topic + '-' + i)) throw new Error('no definition→term card for ' + w.term);
+    });
+  });
+});
+
+check('every migration section is also asked as applied questions, not just definitions', () => {
+  Object.keys(CH3).forEach(topic => {
+    const applied = T.ALL_ITEMS.filter(i => i.topic === topic && (i.type === 'mc' || i.type === 'typed'));
+    if (applied.length < 4) throw new Error(topic + ' has only ' + applied.length + ' applied questions');
+  });
 });
 
 console.log('--- Unit grouping ---');
@@ -177,9 +240,12 @@ check('every topic is grouped into exactly one unit, and every grouped id is a r
   const seen = new Set();
   grouped.forEach(id => { if (seen.has(id)) throw new Error(id + ' appears in more than one unit group'); seen.add(id); });
 });
-check('migration-vocab sits in Chapter 3, not folded into Chapter 2', () => {
+check('all six migration sections sit in Chapter 3, not folded into Chapter 2', () => {
   const ch3 = T.UNIT_GROUPS.find(g => g.id === 'chapter-3');
-  if (!ch3 || ch3.topicIds.indexOf('migration-vocab') === -1) throw new Error('migration-vocab is not in the Chapter 3 unit group');
+  if (!ch3) throw new Error('there is no Chapter 3 unit group');
+  Object.keys(CH3).forEach(id => {
+    if (ch3.topicIds.indexOf(id) === -1) throw new Error(id + ' is not in the Chapter 3 unit group');
+  });
 });
 
 console.log('--- Fairness of the questions themselves ---');

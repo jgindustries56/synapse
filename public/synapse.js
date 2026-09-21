@@ -1007,6 +1007,13 @@
           });
           order.sort(function (x, y) { return rank[x] - rank[y]; });
           order.forEach(function (sec) {
+            // A heading that holds one topic of the same name says it twice.
+            if (bySection[sec].length === 1 && bySection[sec][0].name === sec) {
+              var solo = el('div', 'topiclist');
+              add(solo, topicRow(c, bySection[sec][0]));
+              add(p, solo);
+              return;
+            }
             var head = el('div', 'secthead');
             add(head, txt('span', 'sn', sec));
             add(head, txt('span', 'sc', bySection[sec].length + ' ' + plural(bySection[sec].length, 'topic')));
