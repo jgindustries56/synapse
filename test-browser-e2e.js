@@ -164,6 +164,62 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       ok(n === 4, 'Blast showed ' + n + ' answer boxes, expected 4');
     });
 
+    await check(subject + ': Blast can be pinned to one unit', async () => {
+      await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(900);
+      await page.evaluate(() => {
+        const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
+          .find(x => (x.textContent || '').trim().endsWith('Blast'));
+        if (b) b.click();
+      });
+      await page.waitForTimeout(500);
+
+      const scopes = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('.filters .fbtn')).map(b => (b.textContent || '').trim()));
+      ok(scopes.length >= 2, 'Blast offers no way to choose what to play: ' + JSON.stringify(scopes));
+      ok(scopes[0] === 'Everything', 'the first Blast scope should be Everything, got ' + scopes[0]);
+
+      // AP HG must be able to play the migration chapter on its own.
+      const wanted = subject === 'aphg'
+        ? scopes.find(x => /Chapter 3/.test(x))
+        : scopes.find(x => x !== 'Everything');
+      ok(wanted, 'no unit scope to pick from: ' + JSON.stringify(scopes));
+
+      const picked = await page.evaluate(label => {
+        const b = Array.from(document.querySelectorAll('.filters .fbtn'))
+          .find(x => (x.textContent || '').trim() === label);
+        if (!b) return false;
+        b.click();
+        return true;
+      }, wanted);
+      ok(picked, 'could not select the ' + wanted + ' scope');
+      await page.waitForTimeout(600);
+
+      const pressed = await page.evaluate(() => {
+        const b = document.querySelector('.filters .fbtn[aria-pressed="true"]');
+        return b ? (b.textContent || '').trim() : null;
+      });
+      ok(pressed === wanted, 'selected ' + wanted + ' but ' + pressed + ' is shown as chosen');
+
+      const boxes = await page.locator('.bbox').count();
+      ok(boxes === 4, 'a scoped round showed ' + boxes + ' answer boxes, expected 4');
+
+      // Play it out; the results must say which pool was played.
+      let finished = false;
+      for (let i = 0; i < 90 && !finished; i++) {
+        finished = await page.evaluate(() => {
+          if (document.querySelector('.bover')) return true;
+          const b = document.querySelector('.bbox:not([disabled])');
+          if (b) b.click();
+          return false;
+        });
+        await page.waitForTimeout(400);
+      }
+      ok(finished, 'the scoped round never reached its results');
+      const summary = await page.locator('.bover').innerText();
+      ok(summary.includes(wanted), 'the results do not name the pool played (' + wanted + ')');
+    });
+
     // ---- pressing a button must not rebuild the page around you ---------
     await check(subject + ': answering does not repaint the page around you', async () => {
       await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });

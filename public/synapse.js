@@ -508,6 +508,7 @@
   var state = {
     subject: null,      // null = hub
     page: 'home',
+    blastScope: 'all',  // which pool Blast draws its round from
     scopeTopic: null,   // topic id a session was launched from
     scopeLabel: 'Everything due',
     query: '',
@@ -1430,15 +1431,59 @@
    * Blast — one question, four big boxes, a clock                       *
    * ------------------------------------------------------------------ */
 
+  /* What a round can be drawn from: the whole deck, any one unit, or whatever
+     is starred. A pool needs four cards before it can fill four boxes. */
+  function blastPools(c) {
+    var playable = c.data.items.filter(function (it) { return canMultipleChoice(c, it); });
+    var pools = [{ id: 'all', label: 'Everything', items: playable }];
+
+    c.data.units.forEach(function (u) {
+      var inUnit = {};
+      u.topicIds.forEach(function (id) { inUnit[id] = true; });
+      pools.push({
+        id: u.id,
+        label: (u.title || u.name),
+        items: playable.filter(function (it) { return inUnit[it.topic]; })
+      });
+    });
+
+    var starred = playable.filter(function (it) { return isStarred(it.id); });
+    if (starred.length) pools.push({ id: 'starred', label: '★ Starred', items: starred });
+
+    return pools.filter(function (p) { return p.items.length >= 4; });
+  }
+
   function blastView(c) {
     var f = frag();
     add(f, pageHead('Ten questions, twelve seconds each', 'Blast'));
 
-    var pool = c.data.items.filter(function (it) { return canMultipleChoice(c, it); });
+    var pools = blastPools(c);
+    var chosen = null;
+    for (var pi = 0; pi < pools.length; pi++) {
+      if (pools[pi].id === state.blastScope) { chosen = pools[pi]; break; }
+    }
+    if (!chosen) chosen = pools[0];
+    var pool = chosen.items;
+
+    // Arriving from a topic still plays that topic, as it always did.
     if (state.scopeTopic && state.scopeTopic !== '__starred__') {
       var scoped = pool.filter(function (it) { return it.topic === state.scopeTopic; });
       if (scoped.length >= 10) pool = scoped;
     }
+
+    var picker = el('div', 'filters');
+    pools.forEach(function (p) {
+      var b = button('fbtn', esc(p.label), function () {
+        state.blastScope = p.id;
+        state.scopeTopic = null;
+        go('blast');
+      });
+      b.setAttribute('aria-pressed', String(p === chosen));
+      b.title = p.items.length + ' cards to draw from';
+      add(picker, b);
+    });
+    add(f, picker);
+
     var queue = shuffle(pool).slice(0, 10);
 
     var idx = 0, score = 0, combo = 0, bestCombo = 0, correctCount = 0;
@@ -1552,7 +1597,7 @@
       var over = el('div', 'bover');
       add(over, txt('div', 'score m', String(score)));
       add(over, txt('div', 'sl', 'points · ' + correctCount + ' of ' + queue.length +
-        ' right · best run of ' + bestCombo));
+        ' right · best run of ' + bestCombo + ' · ' + chosen.label));
       add(over, txt('p', 'say', isBest ? 'New personal best.' : 'Your best is ' + best + '.'));
       add(over, txt('p', 'because',
         'Every answer here still counts towards your schedule — the cards you missed come back today.'));
