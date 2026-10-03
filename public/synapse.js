@@ -10,6 +10,7 @@
        subject, name, short, tagline, nav: 'top' | 'rail', shell, cats, goal,
        unitWord, speak, lang, rootId,
        greeting, dateWord, catsTitle, catsNote,   // optional voice, rail console only
+       skills,                                     // optional: adds the Practice page
 
        data:     { topics, units, icons, items },
        progress: { read, save, record, logSession, reset, setGoal },
@@ -34,6 +35,15 @@
     { id: 'test',     label: 'Test',     icon: '✓' },
     { id: 'progress', label: 'Progress', icon: '↗' }
   ];
+
+  /* Practice sits right after the console for a subject that supplies skills,
+     and does not exist at all for one that does not. */
+  var PRACTICE_PAGE = { id: 'practice', label: 'Practice', icon: '\u2211' };
+
+  function pagesFor(c) {
+    if (!c || !c.skills || !c.skills.length) return PAGES;
+    return [PAGES[0], PRACTICE_PAGE].concat(PAGES.slice(1));
+  }
 
   var INTERVALS = [0, 1, 3, 7, 14, 30];
   var STAGE_WORDS = ['just learned', 'starting to stick', 'sticking', 'solid', 'known'];
@@ -518,7 +528,8 @@
     scopeTopic: null,   // topic id a session was launched from
     scopeLabel: 'Everything due',
     query: '',
-    filter: 'all'
+    filter: 'all',
+    skill: null         // the Practice skill being worked, or null for the list
   };
 
   var root = null;   // set by mount()
@@ -531,6 +542,7 @@
       state.scopeTopic = opts.topic;
       state.scopeLabel = opts.label || 'Everything due';
     }
+    if (page !== 'practice') state.skill = null;
     state.page = page;
     render(true);
   }
@@ -627,7 +639,7 @@
     var inner = el('div', 'tb-in');
     add(inner, brand(c));
     var tabs = el('div', 'tabs');
-    PAGES.forEach(function (p) {
+    pagesFor(c).forEach(function (p) {
       var b = button(null, esc(p.label), function () { go(p.id); });
       if (state.page === p.id) b.setAttribute('aria-current', 'true');
       add(tabs, b);
@@ -642,7 +654,7 @@
     var rail = el('nav', 'rail');
     rail.setAttribute('aria-label', 'Sections');
     add(rail, brand(c));
-    PAGES.forEach(function (p) {
+    pagesFor(c).forEach(function (p) {
       var b = button('nav', '<span class="ic">' + p.icon + '</span>' + esc(p.label), function () { go(p.id); });
       if (state.page === p.id) b.setAttribute('aria-current', 'true');
       add(rail, b);
@@ -659,7 +671,7 @@
   function bottomChrome(c) {
     var bar = el('nav', 'bottombar');
     bar.setAttribute('aria-label', 'Sections');
-    PAGES.forEach(function (p) {
+    pagesFor(c).forEach(function (p) {
       var b = button(null, '<span class="ic">' + p.icon + '</span>' + esc(p.label), function () { go(p.id); });
       if (state.page === p.id) b.setAttribute('aria-current', 'true');
       add(bar, b);
@@ -671,6 +683,7 @@
     var shell = el('div', c.shell === 'wide' ? 'wide' : 'narrow');
     var view;
     switch (state.page) {
+      case 'practice': view = practiceView(c); break;
       case 'search':   view = searchView(c); break;
       case 'cards':    view = cardsView(c); break;
       case 'drill':    view = drillView(c); break;
@@ -836,6 +849,20 @@
       plural(streak(c), 'day') + '. Lifetime accuracy ' + lt.pct + '%.'));
 
     var quick = panel();
+    if (skillsOf(c).length) {
+      var sd = skillsDone(c), sn = skillsOf(c).length;
+      add(quick, says('Practice is where the work happens.',
+        sd + ' of ' + sn + ' skills finished. Every problem is generated fresh, so there is nothing to memorise but the method.'));
+      var pr = el('div', 'btnrow');
+      add(pr, button('btn', 'Open Practice', function () { go('practice'); }));
+      add(pr, button('btn ghost', 'Review ' + due + ' due', function () {
+        go('drill', { topic: null, label: 'Everything due' });
+      }));
+      add(pr, button('btn ghost', 'Blast', function () { go('blast'); }));
+      add(quick, pr);
+      add(f, quick);
+      quick = panel();
+    }
     add(quick, says('Start where it helps most.', 'Each of these draws from the cards the schedule says are ripest.'));
     var r = el('div', 'btnrow');
     add(r, startButton(c, 'Review ' + due + ' due'));
@@ -2248,6 +2275,298 @@
 
     return f;
   }
+
+  /* ------------------------------------------------------------------ *
+   * Practice — a mastery loop over randomly generated problems          *
+   *                                                                     *
+   * The host supplies cfg.skills, each one:                             *
+   *   { id, name, unit, section, required, choices?,                    *
+   *     gen: function(){ return {q, a:[...], steps:[...], hint?} } }    *
+   *                                                                     *
+   * Every attempt calls gen() again, so the numbers are new every time  *
+   * and there is nothing to memorise but the method. A run of `required`*
+   * correct finishes the skill; one miss resets the run to zero and     *
+   * shows the worked steps for the problem that was just missed.        *
+   * ------------------------------------------------------------------ */
+
+  function skillsOf(c) { return (c && c.skills) || []; }
+
+  function skillState(id) {
+    var P = load();
+    if (!P.skills) P.skills = {};
+    if (!P.skills[id]) P.skills[id] = { run: 0, best: 0, done: false, tries: 0, right: 0 };
+    return P.skills[id];
+  }
+
+  function skillsDone(c) {
+    var P = load();
+    if (!P.skills) return 0;
+    return skillsOf(c).filter(function (s) {
+      return P.skills[s.id] && P.skills[s.id].done;
+    }).length;
+  }
+
+  function required(s) { return s.required || 4; }
+
+  /* ---------- reading what the student typed ---------- */
+
+  /* "2 sqrt 10", "2root10" and "2√10" are the same answer; so are "x = 40"
+     and "40", "(5, 7)" and "5,7", "undef" and "undefined". */
+  function answerNorm(s) {
+    return String(s)
+      .toLowerCase()
+      .replace(/√/g, 'sqrt')
+      .replace(/\broot\b/g, 'sqrt')
+      .replace(/°/g, '')
+      .replace(/−/g, '-')
+      .replace(/\bdegrees?\b/g, '')
+      .replace(/\bunits?\b/g, '')
+      .replace(/\b(?:undef|dne|no solution)\b/g, 'undefined')
+      .replace(/^[a-z]\s*=\s*/, '')
+      .replace(/[()\s]/g, '');
+  }
+
+  /* A number, a fraction, or a surd like 2sqrt10 or sqrt2/2. Returns null for
+     anything that is not purely numeric, so those fall back to text matching. */
+  function numParse(src) {
+    var t = answerNorm(src);
+    if (!t) return null;
+    var sign = 1;
+    if (t.charAt(0) === '-') { sign = -1; t = t.slice(1); }
+    function piece(p) {
+      var m = p.match(/^(\d*(?:\.\d+)?)sqrt(\d+(?:\.\d+)?)$/);
+      if (m) return (m[1] === '' ? 1 : Number(m[1])) * Math.sqrt(Number(m[2]));
+      if (/^sqrt\d+(\.\d+)?$/.test(p)) return Math.sqrt(Number(p.slice(4)));
+      if (/^\d+(\.\d+)?$/.test(p)) return Number(p);
+      return null;
+    }
+    var bits = t.split('/');
+    if (bits.length === 1) { var v = piece(bits[0]); return v === null ? null : sign * v; }
+    if (bits.length === 2) {
+      var n = piece(bits[0]), d = piece(bits[1]);
+      if (n === null || d === null || d === 0) return null;
+      return sign * n / d;
+    }
+    return null;
+  }
+
+  function answerMatches(given, accepted) {
+    var g = answerNorm(given);
+    if (!g) return false;
+    var gn = numParse(given);
+    return accepted.some(function (a) {
+      if (answerNorm(a) === g) return true;
+      var an = numParse(a);
+      return an !== null && gn !== null && Math.abs(an - gn) < 1e-6;
+    });
+  }
+
+  /* ---------- the page ---------- */
+
+  function practiceView(c) {
+    var open = state.skill && skillsOf(c).filter(function (s) { return s.id === state.skill; })[0];
+    return open ? skillRunView(c, open) : skillListView(c);
+  }
+
+  function skillListView(c) {
+    var f = frag();
+    var all = skillsOf(c);
+    var done = skillsDone(c);
+    add(f, pageHead(done + ' of ' + all.length + ' skills finished', 'Practice'));
+
+    add(f, lead(
+      'Every problem here is <b>generated fresh</b>, so the numbers change every single time.',
+      'Pick a skill and answer ' + required(all[0] || {}) + ' in a row correctly to finish it. ' +
+      'A wrong answer sends the run back to zero and shows you the working — which is the point: ' +
+      'getting it wrong and immediately seeing why is what moves a method into memory.'));
+
+    // Grouped by unit, in the order the units are already declared.
+    var byUnit = {};
+    all.forEach(function (s) { (byUnit[s.unit] = byUnit[s.unit] || []).push(s); });
+
+    c.data.units.forEach(function (u) {
+      var mine = byUnit[u.id];
+      if (!mine || !mine.length) return;
+      var finished = mine.filter(function (s) { return skillState(s.id).done; }).length;
+      var p = panel();
+      add(p, says(u.title || u.name, finished + ' of ' + mine.length + ' finished here'));
+      var list = el('div', 'skilllist');
+      mine.forEach(function (s) { add(list, skillRow(s)); });
+      add(p, list);
+      add(f, p);
+    });
+
+    return f;
+  }
+
+  function skillRow(s) {
+    var st = skillState(s.id);
+    var b = button('skillrow' + (st.done ? ' done' : ''), null, function () {
+      state.skill = s.id;
+      render(true);
+    });
+    var left = el('div', 'sk-l');
+    add(left, txt('div', 'sk-name', s.name));
+    if (s.section) add(left, txt('div', 'sk-sec', s.section));
+    add(b, left);
+    var pill = el('div', 'sk-pill');
+    pill.textContent = st.done ? '✓ done' : st.run + ' / ' + required(s);
+    add(b, pill);
+    return b;
+  }
+
+  function skillRunView(c, s) {
+    var f = frag();
+    var st = skillState(s.id);
+    var need = required(s);
+
+    var head = el('div', 'skhead');
+    add(head, button('linkbtn', '← All skills', function () {
+      state.skill = null;
+      render(true);
+    }));
+    add(f, head);
+    add(f, pageHead(s.section || '', s.name));
+
+    // The run of correct answers, as dots.
+    var dots = el('div', 'rundots');
+    function paintDots() {
+      dots.replaceChildren();
+      for (var i = 0; i < need; i++) {
+        var d = el('span', 'dot' + (i < st.run ? ' on' : ''));
+        add(dots, d);
+      }
+      add(dots, txt('span', 'runtext',
+        st.done ? 'Skill finished — keep going if you like'
+                : st.run + ' of ' + need + ' in a row'));
+    }
+    paintDots();
+    add(f, dots);
+
+    var box = panel();
+    box.classList.add('practice');
+    add(f, box);
+
+    var current = null;      // the problem on screen
+    var answered = false;
+
+    var qEl = el('div', 'pq');
+    var formEl = el('div', 'pform');
+    var feedEl = el('div', 'pfeed');
+    var exampleEl = el('div', 'pexample');
+    add(box, qEl, formEl, feedEl, exampleEl);
+
+    function fresh() {
+      current = s.gen();
+      answered = false;
+      qEl.innerHTML = current.q;
+      feedEl.replaceChildren();
+      exampleEl.replaceChildren();
+      buildForm();
+    }
+
+    function buildForm() {
+      formEl.replaceChildren();
+      if (s.choices || current.choices) {
+        var opts = shuffle((current.choices || s.choices).slice());
+        var grid = el('div', 'pchoices');
+        opts.forEach(function (o) {
+          var b = button('pchoice', esc(o), function () { submit(o, b); });
+          add(grid, b);
+        });
+        add(formEl, grid);
+      } else {
+        var row = el('div', 'prow');
+        var input = el('input', 'pinput');
+        input.type = 'text';
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('autocapitalize', 'off');
+        input.setAttribute('spellcheck', 'false');
+        input.placeholder = current.placeholder || 'Your answer';
+        input.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter') { ev.preventDefault(); submit(input.value); }
+        });
+        add(row, input);
+        add(row, button('btn', 'Check', function () { submit(input.value); }));
+        add(formEl, row);
+        if (current.hint) add(formEl, txt('p', 'phint', current.hint));
+        setTimeout(function () { try { input.focus(); } catch (e) {} }, 0);
+      }
+      var tools = el('div', 'ptools');
+      add(tools, button('linkbtn', 'Show an example', showExample));
+      add(formEl, tools);
+    }
+
+    function showExample() {
+      if (exampleEl.childNodes.length) { exampleEl.replaceChildren(); return; }
+      var ex = s.gen();
+      var wrap = el('div', 'exbox');
+      add(wrap, txt('div', 'exlabel', 'A worked example of the same kind'));
+      var q = el('div', 'exq');
+      q.innerHTML = ex.q;
+      add(wrap, q);
+      var ol = el('ol', 'exsteps');
+      (ex.steps || []).forEach(function (line) {
+        var li = el('li');
+        li.innerHTML = line;
+        add(ol, li);
+      });
+      add(wrap, ol);
+      add(wrap, txt('div', 'exans', 'Answer: ' + ex.a[0]));
+      add(exampleEl, wrap);
+    }
+
+    function submit(value, node) {
+      if (answered) return;
+      answered = true;
+      var right = answerMatches(value, current.a);
+      st.tries++;
+      if (right) {
+        st.right++;
+        st.run++;
+        if (st.run > st.best) st.best = st.run;
+        if (st.run >= need) st.done = true;
+      } else {
+        st.run = 0;
+      }
+      save();
+      paintDots();
+      if (node) node.classList.add(right ? 'hit' : 'miss');
+
+      formEl.querySelectorAll('button, input').forEach(function (n) { n.disabled = true; });
+
+      var fb = el('div', 'fb ' + (right ? 'ok' : 'no'));
+      add(fb, txt('div', 'fbhead', right ? 'Correct' : 'Not quite'));
+      if (!right) {
+        add(fb, txt('div', 'fbline', 'You answered: ' + (String(value).trim() || '(nothing)')));
+        add(fb, txt('div', 'fbline', 'The answer is: ' + current.a[0]));
+        var ol = el('ol', 'fbsteps');
+        (current.steps || []).forEach(function (line) {
+          var li = el('li');
+          li.innerHTML = line;
+          add(ol, li);
+        });
+        add(fb, ol);
+        add(fb, txt('div', 'fbnote', 'The run goes back to zero. The next problem is a new one of the same kind.'));
+      } else if (st.done && st.run === need) {
+        add(fb, txt('div', 'fbline', '✓ Skill finished — ' + need + ' in a row.'));
+      }
+      var next = el('div', 'fbrow');
+      add(next, button('btn', right ? 'Next problem' : 'Try another', fresh));
+      if (st.done) {
+        add(next, button('btn ghost', 'Back to the skill list', function () {
+          state.skill = null;
+          render(true);
+        }));
+      }
+      add(fb, next);
+      feedEl.replaceChildren(fb);
+    }
+
+    fresh();
+    return f;
+  }
+
   /* ------------------------------------------------------------------ *
    * Mounting                                                            *
    * ------------------------------------------------------------------ */
@@ -2266,6 +2585,9 @@
     // The host calls this after something changed behind the engine's back —
     // progress arriving from the server, or a sign-in completing.
     refresh: function () { if (CFG && root) render(false); },
-    page: function () { return state.page; }
+    page: function () { return state.page; },
+    // A seam for test-geometry-practice.js: it generates thousands of problems
+    // and has to grade them exactly as a student's typing would be graded.
+    __checkAnswer: answerMatches
   };
 })();

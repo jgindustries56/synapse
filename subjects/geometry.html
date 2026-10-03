@@ -256,6 +256,920 @@
     document.head.appendChild(s);
   }
 
+
+  /* ============================= PRACTICE SKILLS =============================
+     DeltaMath's loop, which the research describes as: a skill is a problem
+     type, every attempt is a freshly randomised version of it, a run of
+     correct answers finishes the skill, and one miss resets the run and shows
+     the method. The engine owns that loop; what follows owns the problems.
+
+     Every generator returns {q, a, steps} and may add a hint or its own
+     choices. `a[0]` is the answer shown when you miss; the rest are spellings
+     that are also accepted. ========================================= */
+
+  function ri(lo, hi){ return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+  function nz(lo, hi){ var v = 0; while(v === 0) v = ri(lo, hi); return v; }
+  function sgn(n){ return n < 0 ? '- ' + Math.abs(n) : '+ ' + n; }
+  function coord(x, y){ return '(' + x + ', ' + y + ')'; }
+  function gcd(a, b){ a = Math.abs(a); b = Math.abs(b); while(b){ var t = b; b = a % b; a = t; } return a; }
+
+  /* A fraction in lowest terms, as a string. */
+  function fracStr(n, d){
+    if(d < 0){ n = -n; d = -d; }
+    var g = gcd(n, d) || 1;
+    n /= g; d /= g;
+    return d === 1 ? String(n) : n + '/' + d;
+  }
+
+  /* √n with the largest square factor pulled out: 40 -> "2√10", 36 -> "6". */
+  function radStr(n){
+    var out = 1, inside = n;
+    for(var k = Math.floor(Math.sqrt(n)); k >= 2; k--){
+      if(inside % (k * k) === 0){ out = k; inside = inside / (k * k); break; }
+    }
+    if(inside === 1) return String(out);
+    return (out === 1 ? '' : out) + '√' + inside;
+  }
+
+  /* ---------- Unit 2A: transformations ---------- */
+
+  var REFLECTIONS = [
+    {label:'the x-axis',       f:function(x,y){ return [x, -y]; }, why:'Over the x-axis only y changes sign: (x, y) → (x, -y).'},
+    {label:'the y-axis',       f:function(x,y){ return [-x, y]; }, why:'Over the y-axis only x changes sign: (x, y) → (-x, y).'},
+    {label:'the line y = x',   f:function(x,y){ return [y, x]; },  why:'Over y = x the coordinates swap: (x, y) → (y, x).'},
+    {label:'the line y = -x',  f:function(x,y){ return [-y, -x]; },why:'Over y = -x they swap and both change sign: (x, y) → (-y, -x).'}
+  ];
+
+  var ROTATIONS = [
+    {label:'90° counterclockwise', f:function(x,y){ return [-y, x]; },  rule:'(x, y) → (-y, x)'},
+    {label:'90° clockwise',        f:function(x,y){ return [y, -x]; },  rule:'(x, y) → (y, -x)'},
+    {label:'180°',                 f:function(x,y){ return [-x, -y]; }, rule:'(x, y) → (-x, -y)'},
+    {label:'270° counterclockwise',f:function(x,y){ return [y, -x]; },  rule:'(x, y) → (y, -x)'},
+    {label:'270° clockwise',       f:function(x,y){ return [-y, x]; },  rule:'(x, y) → (-y, x)'}
+  ];
+
+  var SKILLS = [
+    {
+      id:'sk-translate', name:'Translate a point by a rule', unit:'unit-2a', section:'Translations',
+      gen:function(){
+        var x = nz(-9,9), y = nz(-9,9), a = nz(-8,8), b = nz(-8,8);
+        var ix = x + a, iy = y + b;
+        return {
+          q:'Translate the point ' + coord(x,y) + ' by the rule (x, y) → (x ' + sgn(a) + ', y ' + sgn(b) + ').',
+          a:[coord(ix,iy)],
+          hint:'Add each number to the matching coordinate.',
+          steps:['Across: ' + x + ' ' + sgn(a) + ' = ' + ix + '.',
+                 'Up or down: ' + y + ' ' + sgn(b) + ' = ' + iy + '.',
+                 'So the image is ' + coord(ix,iy) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-translate-vector', name:'Write the translation as a vector', unit:'unit-2a', section:'Translations',
+      gen:function(){
+        var x = nz(-9,9), y = nz(-9,9), a = nz(-8,8), b = nz(-8,8);
+        return {
+          q:'A translation maps ' + coord(x,y) + ' onto ' + coord(x+a, y+b) + '. Write the translation vector.',
+          a:['⟨' + a + ', ' + b + '⟩', coord(a,b)],
+          placeholder:'e.g. ⟨3, -4⟩',
+          hint:'Subtract the preimage from the image.',
+          steps:['Across: ' + (x+a) + ' - (' + x + ') = ' + a + '.',
+                 'Up or down: ' + (y+b) + ' - (' + y + ') = ' + b + '.',
+                 'So the vector is ⟨' + a + ', ' + b + '⟩.']
+        };
+      }
+    },
+    {
+      id:'sk-reflect', name:'Reflect a point over an axis or diagonal', unit:'unit-2a', section:'Reflections',
+      gen:function(){
+        var x = nz(-9,9), y = nz(-9,9), r = pick(REFLECTIONS);
+        var im = r.f(x,y);
+        return {
+          q:'Reflect the point ' + coord(x,y) + ' over ' + r.label + '.',
+          a:[coord(im[0], im[1])],
+          hint:'Which coordinate changes, and how?',
+          steps:[r.why, 'So ' + coord(x,y) + ' becomes ' + coord(im[0], im[1]) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-reflect-line', name:'Reflect over a horizontal or vertical line', unit:'unit-2a', section:'Reflections',
+      gen:function(){
+        var x = nz(-9,9), y = nz(-9,9), k = nz(-6,6), vertical = Math.random() < 0.5;
+        var im = vertical ? [2*k - x, y] : [x, 2*k - y];
+        var line = vertical ? ('x = ' + k) : ('y = ' + k);
+        var from = vertical ? x : y;
+        return {
+          q:'Reflect the point ' + coord(x,y) + ' over the line ' + line + '.',
+          a:[coord(im[0], im[1])],
+          hint:'Count how far the point is from the line, then go the same distance the other side.',
+          steps:['The point sits ' + Math.abs(from - k) + ' from ' + line + '.',
+                 'The image sits ' + Math.abs(from - k) + ' the other side: 2(' + k + ') - (' + from + ') = ' + (2*k - from) + '.',
+                 'The other coordinate does not move, so the image is ' + coord(im[0], im[1]) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-rotate', name:'Rotate a point about the origin', unit:'unit-2a', section:'Rotations',
+      gen:function(){
+        var x = nz(-9,9), y = nz(-9,9), r = pick(ROTATIONS);
+        var im = r.f(x,y);
+        return {
+          q:'Rotate the point ' + coord(x,y) + ' ' + r.label + ' about the origin.',
+          a:[coord(im[0], im[1])],
+          hint:'Remember the four coordinate rules.',
+          steps:['The rule for ' + r.label + ' is ' + r.rule + '.',
+                 'Applying it to ' + coord(x,y) + ' gives ' + coord(im[0], im[1]) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-rot-symmetry', name:'Angle of rotational symmetry', unit:'unit-2a', section:'Symmetry',
+      gen:function(){
+        var n = pick([3,4,5,6,8,9,10,12,15,18,20,24]);
+        return {
+          q:'What is the smallest angle of rotational symmetry for a regular ' + n + '-gon?',
+          a:[(360/n) + '°', String(360/n)],
+          hint:'360° divided by the number of arms.',
+          steps:['A regular ' + n + '-gon has ' + n + ' identical arms.',
+                 '360 ÷ ' + n + ' = ' + (360/n) + '.',
+                 'So the smallest rotation is ' + (360/n) + '°.']
+        };
+      }
+    },
+
+    /* ---------- Lines and angles ---------- */
+    {
+      id:'sk-comp-supp', name:'Complement and supplement', unit:'unit-lines', section:'Angle Pairs',
+      gen:function(){
+        var comp = Math.random() < 0.5;
+        var a = comp ? ri(5,85) : ri(5,175);
+        var ans = (comp ? 90 : 180) - a;
+        return {
+          q:'Find the ' + (comp ? 'complement' : 'supplement') + ' of ' + a + '°.',
+          a:[ans + '°', String(ans)],
+          hint:comp ? 'Complementary angles add to 90°.' : 'Supplementary angles add to 180°.',
+          steps:[(comp ? 'Complements' : 'Supplements') + ' add to ' + (comp ? 90 : 180) + '°.',
+                 (comp ? 90 : 180) + ' - ' + a + ' = ' + ans + '.']
+        };
+      }
+    },
+    {
+      id:'sk-transversal-x', name:'Solve for x on a transversal', unit:'unit-lines', section:'Transversals',
+      gen:function(){
+        var congruent = Math.random() < 0.5;
+        var x = ri(2, 20), a = ri(2, 9), b = ri(1, 30), c = ri(2, 9);
+        var kind, d, lhs, rhs;
+        if(congruent){
+          while(c === a){ c = ri(2,9); }
+          d = (a*x + b) - c*x;            // forces the stated x to be the solution
+          kind = pick(['Corresponding', 'Alternate interior', 'Alternate exterior']);
+          lhs = a + 'x ' + sgn(b); rhs = c + 'x ' + sgn(d);
+          return {
+            q:'Two parallel lines are cut by a transversal. ' + kind + ' angles measure (' + lhs + ')° and (' + rhs + ')°. Find x.',
+            a:[String(x)],
+            hint:kind + ' angles on parallel lines are congruent, so set the two expressions equal.',
+            steps:[kind + ' angles are congruent, so ' + lhs + ' = ' + rhs + '.',
+                   'Collect the x terms: ' + (a-c) + 'x = ' + (d-b) + '.',
+                   'So x = ' + x + '.']
+          };
+        }
+        d = 180 - (a*x + b) - c*x;        // forces the stated x to be the solution
+        lhs = a + 'x ' + sgn(b); rhs = c + 'x ' + sgn(d);
+        return {
+          q:'Two parallel lines are cut by a transversal. Same-side interior angles measure (' + lhs + ')° and (' + rhs + ')°. Find x.',
+          a:[String(x)],
+          hint:'Same-side interior angles on parallel lines are supplementary.',
+          steps:['Same-side interior angles add to 180°, so (' + lhs + ') + (' + rhs + ') = 180.',
+                 'Collect: ' + (a+c) + 'x ' + sgn(b+d) + ' = 180.',
+                 'So x = ' + x + '.']
+        };
+      }
+    },
+    {
+      id:'sk-transversal-measure', name:'Find the matching angle', unit:'unit-lines', section:'Transversals',
+      gen:function(){
+        var m = ri(25, 155);
+        var pairs = [
+          {k:'Corresponding',          sup:false},
+          {k:'Alternate interior',     sup:false},
+          {k:'Alternate exterior',     sup:false},
+          {k:'Same-side interior',     sup:true},
+          {k:'Same-side exterior',     sup:true}
+        ];
+        var p = pick(pairs);
+        var ans = p.sup ? 180 - m : m;
+        return {
+          q:'Two parallel lines are cut by a transversal. One angle measures ' + m + '°. What does its ' +
+            p.k.toLowerCase() + ' partner measure?',
+          a:[ans + '°', String(ans)],
+          hint:'Is that pair congruent, or supplementary?',
+          steps:[p.k + ' angles on parallel lines are ' + (p.sup ? 'supplementary' : 'congruent') + '.',
+                 p.sup ? ('180 - ' + m + ' = ' + ans + '.') : ('So the partner is also ' + ans + '°.')]
+        };
+      }
+    },
+    {
+      id:'sk-slope-par-perp', name:'Parallel and perpendicular slopes', unit:'unit-lines', section:'Slopes of Lines',
+      gen:function(){
+        var n = nz(-9,9), d = ri(1,9);
+        var perp = Math.random() < 0.5;
+        var given = fracStr(n, d);
+        var ans = perp ? fracStr(-d, n) : fracStr(n, d);
+        return {
+          q:'A line has slope ' + given + '. What is the slope of a line ' + (perp ? 'perpendicular' : 'parallel') + ' to it?',
+          a:[ans],
+          hint:perp ? 'Flip it over and change the sign.' : 'Parallel lines have the same slope.',
+          steps:perp
+            ? ['Perpendicular slopes are opposite reciprocals.',
+               'Flip ' + given + ' and change its sign to get ' + ans + '.',
+               'Check: ' + given + ' × ' + ans + ' = -1.']
+            : ['Parallel lines have equal slopes.', 'So the slope is still ' + ans + '.']
+        };
+      }
+    },
+    {
+      id:'sk-classify-lines', name:'Parallel, perpendicular, or neither', unit:'unit-lines', section:'Slopes of Lines',
+      choices:['Parallel', 'Perpendicular', 'Neither'],
+      gen:function(){
+        var n = nz(-6,6), d = ri(1,6);
+        var kind = pick(['Parallel','Perpendicular','Neither']);
+        var m2;
+        if(kind === 'Parallel') m2 = fracStr(n, d);
+        else if(kind === 'Perpendicular') m2 = fracStr(-d, n);
+        else {
+          var n2 = nz(-6,6), d2 = ri(1,6);
+          while(fracStr(n2,d2) === fracStr(n,d) || fracStr(n2,d2) === fracStr(-d,n)){ n2 = nz(-6,6); d2 = ri(1,6); }
+          m2 = fracStr(n2, d2);
+        }
+        var m1 = fracStr(n, d);
+        return {
+          q:'One line has slope ' + m1 + ' and another has slope ' + m2 + '. Are they parallel, perpendicular, or neither?',
+          a:[kind],
+          steps:['Equal slopes mean parallel; slopes multiplying to -1 mean perpendicular.',
+                 'Here the slopes are ' + m1 + ' and ' + m2 + '.',
+                 'So the lines are ' + kind.toLowerCase() + '.']
+        };
+      }
+    },
+
+    /* ---------- Triangles ---------- */
+    {
+      id:'sk-third-angle', name:'Third angle of a triangle', unit:'unit-triangles', section:'Angle Theorems',
+      gen:function(){
+        var a = ri(20, 110), b = ri(20, 160 - a);
+        var c = 180 - a - b;
+        return {
+          q:'Two angles of a triangle measure ' + a + '° and ' + b + '°. Find the third angle.',
+          a:[c + '°', String(c)],
+          hint:'The three angles add to 180°.',
+          steps:['The angles of a triangle add to 180°.',
+                 '180 - ' + a + ' - ' + b + ' = ' + c + '.']
+        };
+      }
+    },
+    {
+      id:'sk-exterior-angle', name:'Exterior angle theorem', unit:'unit-triangles', section:'Angle Theorems',
+      gen:function(){
+        var r1 = ri(20, 100), r2 = ri(20, 170 - r1);
+        var ext = r1 + r2;
+        if(Math.random() < 0.5){
+          return {
+            q:'An exterior angle of a triangle measures ' + ext + '° and one remote interior angle measures ' +
+              r1 + '°. Find the other remote interior angle.',
+            a:[r2 + '°', String(r2)],
+            hint:'An exterior angle equals the sum of the two remote interior angles.',
+            steps:['Exterior = the two remote interiors added.',
+                   ext + ' - ' + r1 + ' = ' + r2 + '.']
+          };
+        }
+        return {
+          q:'A triangle has remote interior angles of ' + r1 + '° and ' + r2 + '°. Find the exterior angle.',
+          a:[ext + '°', String(ext)],
+          hint:'An exterior angle equals the sum of the two remote interior angles.',
+          steps:['Exterior = the two remote interiors added.',
+                 r1 + ' + ' + r2 + ' = ' + ext + '.']
+        };
+      }
+    },
+    {
+      id:'sk-exterior-x', name:'Solve for x with an exterior angle', unit:'unit-triangles', section:'Angle Theorems',
+      gen:function(){
+        var x = ri(3, 25), a = ri(2,6), b = ri(1,30), c = ri(2,6);
+        var e = a + c + ri(1,4);                     // keeps the equation solvable for a positive x
+        var d = (a*x + b) + (c*x) - e*x;             // forces the stated x
+        return {
+          q:'Two remote interior angles measure (' + a + 'x ' + sgn(b) + ')° and ' + c + 'x°, and the exterior angle measures (' +
+            e + 'x ' + sgn(d) + ')°. Find x.',
+          a:[String(x)],
+          hint:'Set the two remote interiors equal to the exterior angle.',
+          steps:['(' + a + 'x ' + sgn(b) + ') + ' + c + 'x = ' + e + 'x ' + sgn(d) + '.',
+                 'Collect: ' + (a+c) + 'x ' + sgn(b) + ' = ' + e + 'x ' + sgn(d) + '.',
+                 'So x = ' + x + '.']
+        };
+      }
+    },
+    {
+      id:'sk-isosceles', name:'Isosceles base and vertex angles', unit:'unit-triangles', section:'Isosceles Triangles',
+      gen:function(){
+        if(Math.random() < 0.5){
+          var v = 2 * ri(5, 87);               // even, so the base angles are whole numbers
+          var base = (180 - v) / 2;
+          return {
+            q:'An isosceles triangle has a vertex angle of ' + v + '°. Find one base angle.',
+            a:[base + '°', String(base)],
+            hint:'The two base angles are congruent, and all three add to 180°.',
+            steps:['180 - ' + v + ' = ' + (180 - v) + ' left for the two base angles.',
+                   (180 - v) + ' ÷ 2 = ' + base + '.']
+          };
+        }
+        var b2 = ri(10, 85);
+        var vert = 180 - 2 * b2;
+        return {
+          q:'An isosceles triangle has a base angle of ' + b2 + '°. Find the vertex angle.',
+          a:[vert + '°', String(vert)],
+          hint:'Both base angles are ' + b2 + '°.',
+          steps:['Both base angles measure ' + b2 + '°.',
+                 '180 - ' + b2 + ' - ' + b2 + ' = ' + vert + '.']
+        };
+      }
+    },
+    {
+      id:'sk-congruence-pick', name:'Name the congruence shortcut', unit:'unit-triangles', section:'Proving Triangles Congruent',
+      choices:['SSS', 'SAS', 'ASA', 'AAS', 'HL', 'Not enough'],
+      gen:function(){
+        var cases = [
+          {a:'SSS', q:'All three pairs of sides are marked congruent.', why:'Three sides is SSS.'},
+          {a:'SAS', q:'Two pairs of sides are marked congruent, and so is the angle between them.', why:'The angle sits between the two sides, so SAS.'},
+          {a:'ASA', q:'Two pairs of angles are marked congruent, and so is the side between them.', why:'The side sits between the two angles, so ASA.'},
+          {a:'AAS', q:'Two pairs of angles are marked congruent, and so is a side that is not between them.', why:'The side is outside the two angles, so AAS.'},
+          {a:'HL',  q:'Both triangles are right triangles, with congruent hypotenuses and one congruent pair of legs.', why:'Right triangles with a hypotenuse and a leg is HL.'},
+          {a:'Not enough', q:'Two pairs of sides are marked congruent, and so is an angle that is not between them.', why:'That is SSA, which is the ambiguous case and proves nothing.'},
+          {a:'Not enough', q:'All three pairs of angles are marked congruent, and no sides are marked.', why:'That is AAA, which proves similarity but not congruence.'}
+        ];
+        var c = pick(cases);
+        return { q:c.q + ' Which shortcut applies?', a:[c.a], steps:[c.why] };
+      }
+    },
+    {
+      id:'sk-proof-reason', name:'Give the reason for a statement', unit:'unit-triangles', section:'Writing Proofs',
+      choices:['Given', 'Reflexive Property', 'Vertical Angles Theorem', 'Definition of an angle bisector',
+               'Alternate Interior Angles Theorem', 'CPCTC'],
+      gen:function(){
+        var cases = [
+          {s:'The problem states that AB is congruent to CD.', a:'Given', why:'If the problem hands it to you, the reason is Given.'},
+          {s:'The two triangles share side ML, and you write ML congruent to ML.', a:'Reflexive Property', why:'Anything is congruent to itself.'},
+          {s:'Two lines cross, and you write the opposite angles congruent.', a:'Vertical Angles Theorem', why:'Opposite angles at a crossing are vertical angles.'},
+          {s:'BD bisects angle ABC, and you write the two halves congruent.', a:'Definition of an angle bisector', why:'That is exactly what a bisector does.'},
+          {s:'Two parallel lines are cut by a transversal, and you write the Z-shaped pair congruent.', a:'Alternate Interior Angles Theorem', why:'A Z or N shape between parallel lines is the alternate interior pair.'},
+          {s:'The triangles are already proved congruent, and you write a leftover pair of sides congruent.', a:'CPCTC', why:'Corresponding parts of congruent triangles are congruent.'}
+        ];
+        var c = pick(cases);
+        return { q:c.s + ' What is the reason?', a:[c.a], steps:[c.why] };
+      }
+    },
+
+    /* ---------- Coordinate geometry ---------- */
+    {
+      id:'sk-distance', name:'Distance between two points', unit:'unit-coord', section:'Coordinate Formulas',
+      gen:function(){
+        var x1 = ri(-9,9), y1 = ri(-9,9), dx = nz(-9,9), dy = nz(-9,9);
+        var x2 = x1 + dx, y2 = y1 + dy;
+        var sq = dx*dx + dy*dy;
+        return {
+          q:'Find the distance between ' + coord(x1,y1) + ' and ' + coord(x2,y2) + '. Leave the answer exact.',
+          a:[radStr(sq)],
+          placeholder:'e.g. 2√10 or 13',
+          hint:'It is the Pythagorean theorem: square the two gaps, add, then take the root.',
+          steps:['Across: ' + x2 + ' - (' + x1 + ') = ' + dx + '. Up or down: ' + y2 + ' - (' + y1 + ') = ' + dy + '.',
+                 'Square and add: ' + (dx*dx) + ' + ' + (dy*dy) + ' = ' + sq + '.',
+                 '√' + sq + ' = ' + radStr(sq) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-midpoint', name:'Midpoint of two points', unit:'unit-coord', section:'Coordinate Formulas',
+      gen:function(){
+        var mx = ri(-8,8), my = ri(-8,8), dx = nz(-7,7), dy = nz(-7,7);
+        var x1 = mx - dx, y1 = my - dy, x2 = mx + dx, y2 = my + dy;
+        return {
+          q:'Find the midpoint of ' + coord(x1,y1) + ' and ' + coord(x2,y2) + '.',
+          a:[coord(mx,my)],
+          hint:'Average the x values, then average the y values.',
+          steps:['(' + x1 + ' + ' + x2 + ') ÷ 2 = ' + mx + '.',
+                 '(' + y1 + ' + ' + y2 + ') ÷ 2 = ' + my + '.',
+                 'So the midpoint is ' + coord(mx,my) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-endpoint', name:'Missing endpoint from a midpoint', unit:'unit-coord', section:'Coordinate Formulas',
+      gen:function(){
+        var mx = ri(-7,7), my = ri(-7,7), dx = nz(-7,7), dy = nz(-7,7);
+        var x1 = mx - dx, y1 = my - dy, x2 = mx + dx, y2 = my + dy;
+        return {
+          q:'The midpoint of AB is ' + coord(mx,my) + ' and A is ' + coord(x1,y1) + '. Find B.',
+          a:[coord(x2,y2)],
+          hint:'Double the midpoint, then subtract the endpoint you have.',
+          steps:['2(' + mx + ') - (' + x1 + ') = ' + x2 + '.',
+                 '2(' + my + ') - (' + y1 + ') = ' + y2 + '.',
+                 'So B is ' + coord(x2,y2) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-slope-2pts', name:'Slope through two points', unit:'unit-coord', section:'Coordinate Formulas',
+      gen:function(){
+        var x1 = ri(-9,9), y1 = ri(-9,9);
+        var mode = pick(['normal','normal','normal','zero','undefined']);
+        var dx = mode === 'undefined' ? 0 : nz(-9,9);
+        var dy = mode === 'zero' ? 0 : (mode === 'undefined' ? nz(-9,9) : nz(-9,9));
+        var x2 = x1 + dx, y2 = y1 + dy;
+        var ans = dx === 0 ? 'Undefined' : fracStr(dy, dx);
+        return {
+          q:'Find the slope of the line through ' + coord(x1,y1) + ' and ' + coord(x2,y2) + '.',
+          a:[ans],
+          placeholder:'a number, a fraction, or "undefined"',
+          hint:'Rise over run — and watch for a run of zero.',
+          steps:['Rise: ' + y2 + ' - (' + y1 + ') = ' + dy + '. Run: ' + x2 + ' - (' + x1 + ') = ' + dx + '.',
+                 dx === 0 ? 'Dividing by a run of 0 is undefined, so the line is vertical.'
+                          : (dy + ' ÷ ' + dx + ' = ' + ans + '.')]
+        };
+      }
+    },
+    {
+      id:'sk-polygon-sum', name:'Interior angle sum of a polygon', unit:'unit-coord', section:'Polygon Angles',
+      gen:function(){
+        var n = ri(3, 20);
+        var sum = (n - 2) * 180;
+        return {
+          q:'Find the sum of the interior angles of a ' + n + '-sided polygon.',
+          a:[sum + '°', String(sum)],
+          hint:'(n - 2) × 180°.',
+          steps:['(' + n + ' - 2) = ' + (n-2) + ' triangles.',
+                 (n-2) + ' × 180 = ' + sum + '.']
+        };
+      }
+    },
+    {
+      id:'sk-polygon-each', name:'Each angle of a regular polygon', unit:'unit-coord', section:'Polygon Angles',
+      gen:function(){
+        var n = pick([3,4,5,6,8,9,10,12,15,18,20,24,36]);
+        var interior = Math.random() < 0.5;
+        var ans = interior ? ((n-2)*180)/n : 360/n;
+        return {
+          q:'Find the measure of each ' + (interior ? 'interior' : 'exterior') + ' angle of a regular ' + n + '-gon.',
+          a:[ans + '°', String(ans)],
+          hint:interior ? 'Total the interiors, then share them out.' : 'The exteriors always total 360°.',
+          steps:interior
+            ? ['The interiors total (' + n + ' - 2) × 180 = ' + ((n-2)*180) + '°.',
+               ((n-2)*180) + ' ÷ ' + n + ' = ' + ans + '.']
+            : ['The exteriors of any convex polygon total 360°.',
+               '360 ÷ ' + n + ' = ' + ans + '.']
+        };
+      }
+    },
+    {
+      id:'sk-polygon-sides', name:'Find the number of sides', unit:'unit-coord', section:'Polygon Angles',
+      gen:function(){
+        var n = pick([3,4,5,6,8,9,10,12,15,18,20,24,36]);
+        var fromExterior = Math.random() < 0.5;
+        var ext = 360/n, interior = ((n-2)*180)/n;
+        return fromExterior ? {
+          q:'Each exterior angle of a regular polygon measures ' + ext + '°. How many sides does it have?',
+          a:[String(n)],
+          hint:'The exteriors total 360°.',
+          steps:['360 ÷ (each exterior) = the number of sides.', '360 ÷ ' + ext + ' = ' + n + '.']
+        } : {
+          q:'Each interior angle of a regular polygon measures ' + interior + '°. How many sides does it have?',
+          a:[String(n)],
+          hint:'Find the exterior angle first.',
+          steps:['The exterior angle is 180 - ' + interior + ' = ' + ext + '°.',
+                 '360 ÷ ' + ext + ' = ' + n + '.']
+        };
+      }
+    },
+    {
+      id:'sk-quad-diagonals', name:'Name the quadrilateral from its diagonals', unit:'unit-coord', section:'Diagonal Properties',
+      choices:['Square', 'Rectangle', 'Rhombus', 'Kite', 'Isosceles trapezoid', 'Parallelogram'],
+      gen:function(){
+        var cases = [
+          {a:'Square', q:'congruent, perpendicular, and bisect each other', why:'Congruent gives a rectangle, perpendicular gives a rhombus. Both at once is a square.'},
+          {a:'Rectangle', q:'congruent and bisect each other, but are not perpendicular', why:'Congruent bisecting diagonals belong to a rectangle.'},
+          {a:'Rhombus', q:'perpendicular and bisect each other, but are not congruent', why:'Perpendicular bisecting diagonals belong to a rhombus.'},
+          {a:'Kite', q:'perpendicular, with exactly one bisecting the other', why:'Only a kite has one diagonal bisecting the other.'},
+          {a:'Isosceles trapezoid', q:'congruent but do not bisect each other', why:'Congruent diagonals that are not bisectors belong to an isosceles trapezoid.'},
+          {a:'Parallelogram', q:'bisect each other but are neither congruent nor perpendicular', why:'Bisecting alone is the plain parallelogram.'}
+        ];
+        var c = pick(cases);
+        return { q:'A quadrilateral has diagonals that are ' + c.q + '. What is it?', a:[c.a], steps:[c.why] };
+      }
+    },
+    {
+      id:'sk-quad-tool', name:'Which formula proves which shape', unit:'unit-coord', section:'Proving Shapes',
+      choices:['Slope formula', 'Distance formula', 'Midpoint formula'],
+      gen:function(){
+        var cases = [
+          {a:'Slope formula', q:'show that two sides are parallel'},
+          {a:'Slope formula', q:'show that two sides meet at a right angle'},
+          {a:'Distance formula', q:'show that all four sides are congruent'},
+          {a:'Distance formula', q:'show that the diagonals are congruent'},
+          {a:'Midpoint formula', q:'show that the diagonals bisect each other'},
+          {a:'Distance formula', q:'prove a quadrilateral is a rhombus from its sides'},
+          {a:'Slope formula', q:'prove a quadrilateral is a trapezoid'}
+        ];
+        var c = pick(cases);
+        return {
+          q:'On a coordinate grid, which formula do you use to ' + c.q + '?',
+          a:[c.a],
+          steps:['Slopes answer parallel and perpendicular; distances answer congruent; midpoints answer bisecting.',
+                 'So you use the ' + c.a.toLowerCase() + '.']
+        };
+      }
+    },
+
+    /* ---------- Similarity ---------- */
+    {
+      id:'sk-scale-factor', name:'Find the scale factor', unit:'unit-similarity', section:'Scale Factor',
+      gen:function(){
+        var k = pick([2,3,4,5]);
+        var a = ri(2,12);
+        var half = Math.random() < 0.5;
+        return half ? {
+          q:'Two similar figures have corresponding sides of ' + (a*k) + ' and ' + a + '. What is the scale factor from the first to the second?',
+          a:[fracStr(1, k)],
+          hint:'Divide the second by the first.',
+          steps:[a + ' ÷ ' + (a*k) + ' = ' + fracStr(1,k) + '.']
+        } : {
+          q:'Two similar figures have corresponding sides of ' + a + ' and ' + (a*k) + '. What is the scale factor from the first to the second?',
+          a:[String(k)],
+          hint:'Divide the second by the first.',
+          steps:[(a*k) + ' ÷ ' + a + ' = ' + k + '.']
+        };
+      }
+    },
+    {
+      id:'sk-proportion', name:'Solve a proportion for a side', unit:'unit-similarity', section:'Scale Factor',
+      gen:function(){
+        var k = pick([2,3,4,5]);
+        var a = ri(2,12), b = ri(2,12);
+        return {
+          q:'Two triangles are similar. ' + a + ' corresponds to ' + (a*k) + ', and ' + b + ' corresponds to x. Find x.',
+          a:[String(b*k)],
+          hint:'Find the scale factor, then apply it.',
+          steps:['The scale factor is ' + (a*k) + ' ÷ ' + a + ' = ' + k + '.',
+                 b + ' × ' + k + ' = ' + (b*k) + '.']
+        };
+      }
+    },
+    {
+      id:'sk-similar-pick', name:'Name the similarity shortcut', unit:'unit-similarity', section:'Proving Triangles Similar',
+      choices:['SSS similarity', 'SAS similarity', 'AA similarity'],
+      gen:function(){
+        var cases = [
+          {a:'SSS similarity', q:'All three pairs of sides are in the same ratio.'},
+          {a:'SAS similarity', q:'Two pairs of sides are in the same ratio and the angles between them are congruent.'},
+          {a:'AA similarity', q:'Two pairs of angles are congruent.'},
+          {a:'AA similarity', q:'All three pairs of angles are congruent.'}
+        ];
+        var c = pick(cases);
+        return { q:c.q + ' Which shortcut proves the triangles similar?', a:[c.a],
+                 steps:['Sides in ratio is SSS, two sides with the angle between them is SAS, and angles alone is AA.'] };
+      }
+    },
+
+    /* ---------- Right triangle trigonometry ---------- */
+    {
+      id:'sk-special-45', name:'45-45-90 triangles', unit:'unit-trig', section:'Special Right Triangles',
+      gen:function(){
+        var leg = ri(2, 15);
+        if(Math.random() < 0.5){
+          return {
+            q:'A 45-45-90 triangle has legs of ' + leg + '. Find the hypotenuse, exactly.',
+            a:[leg + '√2'],
+            hint:'The ratio is 1 : 1 : √2.',
+            steps:['The hypotenuse is a leg times √2.', leg + ' × √2 = ' + leg + '√2.']
+          };
+        }
+        return {
+          q:'A 45-45-90 triangle has a hypotenuse of ' + leg + '√2. Find a leg.',
+          a:[String(leg)],
+          hint:'The ratio is 1 : 1 : √2.',
+          steps:['Divide the hypotenuse by √2.', leg + '√2 ÷ √2 = ' + leg + '.']
+        };
+      }
+    },
+    {
+      id:'sk-special-30', name:'30-60-90 triangles', unit:'unit-trig', section:'Special Right Triangles',
+      gen:function(){
+        var s = ri(2, 15);
+        var want = pick(['hyp', 'long', 'short']);
+        if(want === 'hyp') return {
+          q:'A 30-60-90 triangle has a short leg of ' + s + '. Find the hypotenuse.',
+          a:[String(2*s)],
+          hint:'The ratio is 1 : √3 : 2.',
+          steps:['The hypotenuse is twice the short leg.', '2 × ' + s + ' = ' + (2*s) + '.']
+        };
+        if(want === 'long') return {
+          q:'A 30-60-90 triangle has a short leg of ' + s + '. Find the long leg, exactly.',
+          a:[s + '√3'],
+          hint:'The ratio is 1 : √3 : 2.',
+          steps:['The long leg is the short leg times √3.', s + ' × √3 = ' + s + '√3.']
+        };
+        return {
+          q:'A 30-60-90 triangle has a hypotenuse of ' + (2*s) + '. Find the short leg.',
+          a:[String(s)],
+          hint:'The ratio is 1 : √3 : 2.',
+          steps:['The short leg is half the hypotenuse.', (2*s) + ' ÷ 2 = ' + s + '.']
+        };
+      }
+    },
+    {
+      id:'sk-triple', name:'Pythagorean triples', unit:'unit-trig', section:'Pythagorean Triples',
+      gen:function(){
+        var base = pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[9,40,41],[20,21,29]]);
+        var k = pick([1,1,1,2,3]);
+        var a = base[0]*k, b = base[1]*k, c = base[2]*k;
+        if(Math.random() < 0.5) return {
+          q:'A right triangle has legs of ' + a + ' and ' + b + '. Find the hypotenuse.',
+          a:[String(c)],
+          hint:'a² + b² = c².',
+          steps:[a + '² + ' + b + '² = ' + (a*a) + ' + ' + (b*b) + ' = ' + (c*c) + '.',
+                 '√' + (c*c) + ' = ' + c + '.']
+        };
+        return {
+          q:'A right triangle has a hypotenuse of ' + c + ' and one leg of ' + a + '. Find the other leg.',
+          a:[String(b)],
+          hint:'c² - a² = b².',
+          steps:[c + '² - ' + a + '² = ' + (c*c) + ' - ' + (a*a) + ' = ' + (b*b) + '.',
+                 '√' + (b*b) + ' = ' + b + '.']
+        };
+      }
+    },
+    {
+      id:'sk-ratio-setup', name:'Pick the right trig ratio', unit:'unit-trig', section:'Trig Ratios',
+      choices:['sine', 'cosine', 'tangent'],
+      gen:function(){
+        var cases = [
+          {a:'sine', q:'the side opposite the angle and the hypotenuse'},
+          {a:'cosine', q:'the side adjacent to the angle and the hypotenuse'},
+          {a:'tangent', q:'the side opposite the angle and the side adjacent to it'}
+        ];
+        var c = pick(cases);
+        return {
+          q:'You know ' + c.q + '. Which ratio connects them?',
+          a:[c.a],
+          steps:['SOH CAH TOA: sine is opposite over hypotenuse, cosine is adjacent over hypotenuse, tangent is opposite over adjacent.',
+                 'So you want ' + c.a + '.']
+        };
+      }
+    },
+    {
+      id:'sk-ratio-value', name:'Write a trig ratio as a fraction', unit:'unit-trig', section:'Trig Ratios',
+      gen:function(){
+        var base = pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25]]);
+        var k = pick([1,1,2]);
+        var o = base[0]*k, ad = base[1]*k, h = base[2]*k;
+        var which = pick(['sin','cos','tan']);
+        var ans = which === 'sin' ? fracStr(o,h) : which === 'cos' ? fracStr(ad,h) : fracStr(o,ad);
+        var top = which === 'sin' ? 'opposite' : which === 'cos' ? 'adjacent' : 'opposite';
+        var bot = which === 'tan' ? 'adjacent' : 'hypotenuse';
+        return {
+          q:'In a right triangle, the side opposite angle A is ' + o + ', the side adjacent is ' + ad +
+            ', and the hypotenuse is ' + h + '. Write ' + which + '(A) as a fraction in lowest terms.',
+          a:[ans],
+          hint:'SOH CAH TOA.',
+          steps:[which + ' is ' + top + ' over ' + bot + '.',
+                 'That is ' + (which === 'tan' ? (o + '/' + ad) : which === 'cos' ? (ad + '/' + h) : (o + '/' + h)) +
+                 ', which reduces to ' + ans + '.']
+        };
+      }
+    },
+    {
+      id:'sk-cofunction', name:'Complementary angle identity', unit:'unit-trig', section:'Complementary Angle Identity',
+      gen:function(){
+        var a = ri(5, 85);
+        var sine = Math.random() < 0.5;
+        var other = 90 - a;
+        return {
+          q:'Rewrite ' + (sine ? 'sin' : 'cos') + '(' + a + '°) using ' + (sine ? 'cosine' : 'sine') +
+            '. Give just the angle.',
+          a:[other + '°', String(other)],
+          hint:'Subtract from 90° and swap the name.',
+          steps:['sin(A) = cos(90° - A), and the other way round.',
+                 '90 - ' + a + ' = ' + other + '.',
+                 'So ' + (sine ? 'sin' : 'cos') + '(' + a + '°) = ' + (sine ? 'cos' : 'sin') + '(' + other + '°).']
+        };
+      }
+    },
+
+    /* ---------- The unit circle ---------- */
+    {
+      id:'sk-exact-value', name:'Exact value of sin, cos or tan', unit:'unit-circle', section:'Unit Circle Values',
+      gen:function(){
+        var rows = [
+          {d:0,   s:'0',       c:'1',       t:'0'},
+          {d:30,  s:'1/2',     c:'√3/2', t:'√3/3'},
+          {d:45,  s:'√2/2', c:'√2/2', t:'1'},
+          {d:60,  s:'√3/2', c:'1/2',     t:'√3'},
+          {d:90,  s:'1',       c:'0',       t:'Undefined'},
+          {d:120, s:'√3/2', c:'-1/2',    t:'-√3'},
+          {d:135, s:'√2/2', c:'-√2/2', t:'-1'},
+          {d:150, s:'1/2',     c:'-√3/2', t:'-√3/3'},
+          {d:180, s:'0',       c:'-1',      t:'0'},
+          {d:210, s:'-1/2',    c:'-√3/2', t:'√3/3'},
+          {d:225, s:'-√2/2', c:'-√2/2', t:'1'},
+          {d:240, s:'-√3/2', c:'-1/2',    t:'√3'},
+          {d:270, s:'-1',      c:'0',       t:'Undefined'},
+          {d:300, s:'-√3/2', c:'1/2',     t:'-√3'},
+          {d:315, s:'-√2/2', c:'√2/2', t:'-1'},
+          {d:330, s:'-1/2',    c:'√3/2', t:'-√3/3'}
+        ];
+        var r = pick(rows);
+        var which = pick(['sin','cos','tan']);
+        var ans = which === 'sin' ? r.s : which === 'cos' ? r.c : r.t;
+        // Only an angle off the axes has an acute reference angle worth naming.
+        var ref = r.d % 90 === 0 ? 0 : (r.d > 180 ? (r.d > 270 ? 360 - r.d : r.d - 180) : (r.d > 90 ? 180 - r.d : r.d));
+        return {
+          q:'Find the exact value of ' + which + '(' + r.d + '°).',
+          a:[ans],
+          placeholder:'e.g. √3/2 or -1/2',
+          hint:'Find the reference angle, read the first-quadrant value, then fix the sign.',
+          steps:['The point on the unit circle at ' + r.d + '° is (' + r.c + ', ' + r.s + ').',
+                 'Cosine is the x-coordinate, sine is the y-coordinate, and tangent is sine over cosine.',
+                 'So ' + which + '(' + r.d + '°) = ' + ans + '.' +
+                 (ref ? ' (The reference angle is ' + ref + '°.)' : '')]
+        };
+      }
+    },
+    {
+      id:'sk-coterminal', name:'Coterminal angles', unit:'unit-circle', section:'Coterminal and Reference Angles',
+      gen:function(){
+        var base = ri(5, 355);
+        var turns = pick([-2,-1,1,2]);
+        var given = base + 360 * turns;
+        return {
+          q:'Find the angle between 0° and 360° that is coterminal with ' + given + '°.',
+          a:[base + '°', String(base)],
+          hint:'Add or subtract 360° until you land in range.',
+          steps:[(turns > 0 ? 'Subtract' : 'Add') + ' 360° ' + Math.abs(turns) + ' time(s).',
+                 given + (turns > 0 ? ' - ' : ' + ') + (360 * Math.abs(turns)) + ' = ' + base + '.']
+        };
+      }
+    },
+    {
+      id:'sk-reference', name:'Reference angle', unit:'unit-circle', section:'Coterminal and Reference Angles',
+      gen:function(){
+        var d = pick([15,25,35,50,70,100,115,130,160,170,190,205,230,250,260,280,295,310,340,350]);
+        var ref = d < 90 ? d : d < 180 ? 180 - d : d < 270 ? d - 180 : 360 - d;
+        return {
+          q:'Find the reference angle for ' + d + '°.',
+          a:[ref + '°', String(ref)],
+          hint:'It is the acute angle to the x-axis.',
+          steps:[d + '° lands in Quadrant ' + (d < 90 ? 'I' : d < 180 ? 'II' : d < 270 ? 'III' : 'IV') + '.',
+                 d < 90 ? 'In Quadrant I the angle is its own reference angle.'
+                        : d < 180 ? ('180 - ' + d + ' = ' + ref + '.')
+                        : d < 270 ? (d + ' - 180 = ' + ref + '.')
+                                  : ('360 - ' + d + ' = ' + ref + '.')]
+        };
+      }
+    },
+    {
+      id:'sk-quadrant-sign', name:'Sign of a function in a quadrant', unit:'unit-circle', section:'Signs by Quadrant',
+      choices:['Positive', 'Negative'],
+      gen:function(){
+        var q = ri(1,4);
+        var which = pick(['sine','cosine','tangent']);
+        var pos = which === 'sine' ? (q === 1 || q === 2)
+                : which === 'cosine' ? (q === 1 || q === 4)
+                : (q === 1 || q === 3);
+        var why = which === 'sine' ? 'Sine follows y, which is positive in Quadrants I and II.'
+                : which === 'cosine' ? 'Cosine follows x, which is positive in Quadrants I and IV.'
+                : 'Tangent is y over x, positive where the two signs agree — Quadrants I and III.';
+        return {
+          q:'Is ' + which + ' positive or negative in Quadrant ' + ['I','II','III','IV'][q-1] + '?',
+          a:[pos ? 'Positive' : 'Negative'],
+          steps:[why, 'So in Quadrant ' + ['I','II','III','IV'][q-1] + ' it is ' + (pos ? 'positive' : 'negative') + '.']
+        };
+      }
+    },
+    {
+      id:'sk-trig-equation', name:'Solve a trig equation on 0 to 360', unit:'unit-circle', section:'Solving Trig Equations',
+      gen:function(){
+        var rows = [
+          {fn:'cos', v:'1/2',        sols:[60,300]},
+          {fn:'cos', v:'-1/2',       sols:[120,240]},
+          {fn:'cos', v:'√2/2',  sols:[45,315]},
+          {fn:'cos', v:'-√2/2', sols:[135,225]},
+          {fn:'cos', v:'√3/2',  sols:[30,330]},
+          {fn:'cos', v:'-√3/2', sols:[150,210]},
+          {fn:'cos', v:'0',          sols:[90,270]},
+          {fn:'cos', v:'-1',         sols:[180]},
+          {fn:'cos', v:'1',          sols:[0]},
+          {fn:'sin', v:'1/2',        sols:[30,150]},
+          {fn:'sin', v:'-1/2',       sols:[210,330]},
+          {fn:'sin', v:'√2/2',  sols:[45,135]},
+          {fn:'sin', v:'-√2/2', sols:[225,315]},
+          {fn:'sin', v:'√3/2',  sols:[60,120]},
+          {fn:'sin', v:'-√3/2', sols:[240,300]},
+          {fn:'sin', v:'0',          sols:[0,180]},
+          {fn:'sin', v:'1',          sols:[90]},
+          {fn:'sin', v:'-1',         sols:[270]}
+        ];
+        var r = pick(rows);
+        var fwd = r.sols.join(', ');
+        var rev = r.sols.slice().reverse().join(', ');
+        return {
+          q:'Solve ' + r.fn + '(θ) = ' + r.v + ' for 0° ≤ θ < 360°. List every answer.',
+          a:[fwd + '°', fwd, rev, rev + '°'],
+          placeholder:r.sols.length > 1 ? 'e.g. 45, 315' : 'one angle',
+          hint:'Find the reference angle, then work out which quadrants carry that sign.',
+          steps:[r.fn === 'cos' ? 'Cosine is the x-coordinate.' : 'Sine is the y-coordinate.',
+                 'On 0° to 360° that value is hit at ' + fwd + '°.',
+                 r.sols.length > 1 ? 'Both answers count — each value appears twice in a full turn.'
+                                   : 'Only one angle in the turn gives that value.']
+        };
+      }
+    },
+
+    /* ---------- Polynomials ---------- */
+    {
+      id:'sk-factor-test', name:'Is it a factor?', unit:'unit-poly', section:'Synthetic Division',
+      choices:['Yes', 'No'],
+      gen:function(){
+        var r = nz(-4,4);
+        var b = nz(-6,6), c = nz(-6,6);
+        // (x - r)(x^2 + bx + c) expanded, then sometimes nudged so it is not a factor.
+        var p3 = 1, p2 = b - r, p1 = c - r*b, p0 = -r*c;
+        var isFactor = Math.random() < 0.5;
+        if(!isFactor) p0 += nz(-3,3);
+        var fx = 'x³ ' + sgn(p2) + 'x² ' + sgn(p1) + 'x ' + sgn(p0);
+        var rem = p3*r*r*r + p2*r*r + p1*r + p0;
+        return {
+          q:'Use synthetic division to decide: is (x ' + sgn(-r) + ') a factor of ' + fx + '?',
+          a:[rem === 0 ? 'Yes' : 'No'],
+          steps:['Divide by the root ' + r + '.',
+                 'The remainder comes out ' + rem + '.',
+                 rem === 0 ? 'A remainder of 0 means it is a factor.'
+                           : 'A remainder other than 0 means it is not a factor.']
+        };
+      }
+    },
+    {
+      id:'sk-remainder', name:'Find the remainder', unit:'unit-poly', section:'Synthetic Division',
+      gen:function(){
+        var r = nz(-4,4);
+        var a3 = nz(-3,3), a2 = nz(-6,6), a1 = nz(-6,6), a0 = nz(-9,9);
+        var rem = a3*r*r*r + a2*r*r + a1*r + a0;
+        var fx = (a3 === 1 ? '' : a3 === -1 ? '-' : a3) + 'x³ ' + sgn(a2) + 'x² ' + sgn(a1) + 'x ' + sgn(a0);
+        return {
+          q:'Divide ' + fx + ' by (x ' + sgn(-r) + ') and give the remainder.',
+          a:[String(rem)],
+          hint:'The remainder is what you get by putting the root into the polynomial.',
+          steps:['Synthetic division by the root ' + r + ' leaves the remainder in the last column.',
+                 'Equivalently, substitute x = ' + r + ': the polynomial comes out ' + rem + '.',
+                 'So the remainder is ' + rem + '.']
+        };
+      }
+    },
+    {
+      id:'sk-poly-coefficient', name:'Coefficient in a polynomial product', unit:'unit-poly', section:'Multiplying and Subtracting',
+      gen:function(){
+        var a = nz(-5,5), b = nz(-9,9), c = nz(-5,5), d = nz(-9,9);
+        // (ax + b)(cx + d) -> acx^2 + (ad + bc)x + bd
+        var mid = a*d + b*c;
+        return {
+          q:'Expand (' + a + 'x ' + sgn(b) + ')(' + c + 'x ' + sgn(d) + '). What is the coefficient of x?',
+          a:[String(mid)],
+          hint:'The x term comes from the outer pair plus the inner pair.',
+          steps:['Outer: ' + a + 'x × ' + d + ' = ' + (a*d) + 'x.',
+                 'Inner: ' + b + ' × ' + c + 'x = ' + (b*c) + 'x.',
+                 (a*d) + ' + (' + (b*c) + ') = ' + mid + '.']
+        };
+      }
+    },
+    {
+      id:'sk-poly-subtract', name:'Subtract two polynomials', unit:'unit-poly', section:'Multiplying and Subtracting',
+      gen:function(){
+        var a1 = nz(-9,9), b1 = nz(-9,9), c1 = nz(-9,9);
+        var a2 = nz(-9,9), b2 = nz(-9,9), c2 = nz(-9,9);
+        var which = pick(['x²','x','constant']);
+        var ans = which === 'x²' ? a1 - a2 : which === 'x' ? b1 - b2 : c1 - c2;
+        return {
+          q:'Work out (' + a1 + 'x² ' + sgn(b1) + 'x ' + sgn(c1) + ') - (' + a2 + 'x² ' + sgn(b2) + 'x ' + sgn(c2) +
+            '). What is the ' + (which === 'constant' ? 'constant term' : 'coefficient of ' + which) + '?',
+          a:[String(ans)],
+          hint:'The minus sign applies to every term in the second bracket.',
+          steps:['Distribute the minus across the whole second bracket.',
+                 which === 'x²' ? (a1 + ' - (' + a2 + ') = ' + ans + '.')
+                   : which === 'x' ? (b1 + ' - (' + b2 + ') = ' + ans + '.')
+                   : (c1 + ' - (' + c2 + ') = ' + ans + '.')]
+        };
+      }
+    }
+  ];
+
   /* ===================== INTERFACE =====================
      Everything above owns the data. The engine renders it and reports answers
      back through the adapter below, so scheduling, sync and content stay here
@@ -312,6 +1226,7 @@
       goal: 30,
       unitWord: 'Unit',
       cats: CAT_LABELS,
+      skills: SKILLS,
       speak: false,
       lang: 'en-US',
       rootId: 'app',

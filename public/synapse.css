@@ -160,6 +160,70 @@ input{font-family:inherit;}
 .fcday{min-width:0;}
 .topicrow > *{min-width:0;}
 
+/* ---------------- Practice: the mastery loop ---------------- */
+.skilllist{display:flex; flex-direction:column; gap:6px; margin-top:12px;}
+.skillrow{display:flex; align-items:center; justify-content:space-between; gap:12px;
+  width:100%; text-align:left; cursor:pointer; padding:12px 14px;
+  border:1px solid var(--edge); border-radius:var(--r); background:var(--panel2);}
+.skillrow:hover{border-color:var(--data);}
+.skillrow.done{border-color:var(--good);}
+.skillrow .sk-l{min-width:0;}
+.skillrow .sk-name{font-weight:600; font-size:.98rem;}
+.skillrow .sk-sec{font-size:.78rem; color:var(--mute); margin-top:2px;}
+.skillrow .sk-pill{flex:none; font-family:var(--mono); font-size:.8rem; font-weight:600;
+  padding:4px 10px; border-radius:999px; background:var(--edge-soft); color:var(--label);}
+.skillrow.done .sk-pill{background:var(--good); color:var(--panel);}
+
+.skhead{margin-bottom:6px;}
+.rundots{display:flex; align-items:center; gap:7px; margin:14px 0 4px;}
+.rundots .dot{width:13px; height:13px; border-radius:50%; background:var(--edge);
+  border:1px solid var(--edge);}
+.rundots .dot.on{background:var(--good); border-color:var(--good);}
+.rundots .runtext{margin-left:6px; font-size:.84rem; color:var(--label);}
+
+.panel.practice{margin-top:10px;}
+.pq{font-size:1.25rem; line-height:1.5; font-weight:600; font-family:var(--display);
+  text-wrap:balance; margin-bottom:16px;}
+.prow{display:flex; gap:8px; flex-wrap:wrap;}
+.pinput{flex:1 1 180px; min-width:0; padding:11px 13px; font-size:1.05rem;
+  font-family:var(--mono); border:1px solid var(--edge); border-radius:var(--r);
+  background:var(--panel2); color:var(--ink);}
+.pinput:disabled{opacity:.65;}
+.phint{margin-top:9px; font-size:.85rem; color:var(--mute);}
+.ptools{margin-top:12px;}
+.pchoices{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+.pchoices > *{min-width:0;}
+.pchoice{padding:13px 12px; border:1px solid var(--edge); border-radius:var(--r);
+  background:var(--panel2); cursor:pointer; font-size:.95rem; font-weight:600; text-align:center;}
+.pchoice:hover:not(:disabled){border-color:var(--data);}
+.pchoice.hit{background:var(--good); border-color:var(--good); color:var(--panel);}
+.pchoice.miss{background:var(--bad); border-color:var(--bad); color:var(--panel);}
+
+.fb{margin-top:16px; padding:14px; border-radius:var(--r); border:1px solid var(--edge);}
+.fb.ok{border-color:var(--good); background:var(--data-soft);}
+.fb.no{border-color:var(--bad);}
+.fbhead{font-weight:700; font-family:var(--display); font-size:1.05rem;}
+.fb.ok .fbhead{color:var(--good);}
+.fb.no .fbhead{color:var(--bad);}
+.fbline{margin-top:6px; font-size:.95rem;}
+.fbsteps{margin:10px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:5px;
+  font-size:.92rem; line-height:1.5;}
+.fbnote{margin-top:10px; font-size:.82rem; color:var(--mute);}
+.fbrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+
+.pexample{margin-top:14px;}
+.exbox{border:1px dashed var(--edge); border-radius:var(--r); padding:14px; background:var(--panel2);}
+.exlabel{font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; color:var(--mute);}
+.exq{margin-top:8px; font-weight:600;}
+.exsteps{margin:10px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:5px;
+  font-size:.92rem; line-height:1.5;}
+.exans{margin-top:10px; font-weight:600; color:var(--data);}
+
+@media (max-width:520px){
+  .pchoices{grid-template-columns:1fr;}
+  .pq{font-size:1.12rem;}
+}
+
 /* ---------------- page shells ---------------- */
 .wide{max-width:980px; margin:0 auto; padding-block:24px 80px; padding-left:20px; padding-right:20px;}
 .narrow{max-width:660px; margin:0 auto; padding-block:26px 80px; padding-left:20px; padding-right:20px;}

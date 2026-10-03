@@ -72,7 +72,11 @@ const DESKTOP_CHROME = { aphg: 'tabs', spanish: 'rail', geometry: 'rail' };
         if (!r.engine) problems.push('the new interface did not mount at all');
         if (vp.name === 'phone') {
           if (!r.bottom) problems.push('no bottom bar');
-          if (r.bottomButtons !== 9) problems.push(r.bottomButtons + ' bottom-bar items, expected 9');
+          // A subject that supplies Practice skills carries one extra destination.
+          const wantItems = subject === 'geometry' ? 10 : 9;
+          if (r.bottomButtons !== wantItems) {
+            problems.push(r.bottomButtons + ' bottom-bar items, expected ' + wantItems);
+          }
           if (r.tabs) problems.push('the top tab strip is still showing alongside it');
           if (r.rail) problems.push('the rail is still showing alongside it');
         } else {

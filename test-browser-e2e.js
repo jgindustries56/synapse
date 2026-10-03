@@ -97,7 +97,9 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
 
     await check(subject + ': every page renders real content', async () => {
       const missing = [];
-      for (const label of ['Console', 'Find', 'Cards', 'Drill', 'Blast', 'Match', 'Learn', 'Test', 'Progress']) {
+      const labels = ['Console', 'Find', 'Cards', 'Drill', 'Blast', 'Match', 'Learn', 'Test', 'Progress'];
+      if (subject === 'geometry') labels.splice(1, 0, 'Practice');
+      for (const label of labels) {
         const clicked = await page.evaluate(l => {
           const b = Array.from(document.querySelectorAll(
             '.tabs button, .rail button.nav, .bottombar button'))
@@ -108,8 +110,8 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         if (!clicked) { missing.push(label + ' (no tab)'); continue; }
         await page.waitForTimeout(320);
         const len = await page.evaluate(() => (document.querySelector('#app').innerText || '').length);
-        // Blast is deliberately sparse: one question and four answers, nothing else.
-        const floor = label === 'Blast' ? 120 : 300;
+        // Blast and Practice are deliberately sparse: one question and its answers.
+        const floor = (label === 'Blast' || label === 'Practice') ? 120 : 300;
         if (len < floor) missing.push(label + ' (' + len + ' chars)');
         const over = await page.evaluate(() =>
           document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -145,6 +147,114 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       }
       ok(txt.includes(NAME[subject]), 'the console never names this subject (' + NAME[subject] + ')');
     });
+
+    /* ---- Practice: the mastery loop, driven for real ---------------------
+       The DeltaMath shape of it: a run of correct answers finishes a skill,
+       one miss resets the run to zero and shows the working. Both halves are
+       exercised here by answering correctly and then deliberately wrongly. */
+    if (subject === 'geometry') {
+      await check(subject + ': Practice lists skills grouped by unit', async () => {
+        await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(900);
+        await openPage(page, 'Practice');
+        await page.waitForTimeout(400);
+        const rows = await page.locator('.skillrow').count();
+        ok(rows >= 30, 'only ' + rows + ' skills listed');
+        const units = await page.locator('.panel .say').count();
+        ok(units >= 6, 'skills are not grouped by unit (' + units + ' groups)');
+      });
+
+      await check(subject + ': a correct answer advances the run', async () => {
+        const opened = await page.evaluate(() => {
+          const b = Array.from(document.querySelectorAll('.skillrow'))
+            .find(x => /Third angle of a triangle/.test(x.textContent || ''));
+          if (!b) return false;
+          b.click();
+          return true;
+        });
+        ok(opened, 'could not open the third-angle skill');
+        await page.waitForTimeout(400);
+
+        const before = await page.locator('.rundots .dot.on').count();
+        const q = await page.locator('.pq').innerText();
+        const m = q.match(/(\d+)° and (\d+)°/);
+        ok(m, 'could not read the generated question: ' + q);
+
+        await page.fill('.pinput', String(180 - Number(m[1]) - Number(m[2])));
+        await page.click('.prow .btn');
+        await page.waitForTimeout(400);
+
+        const fb = await page.locator('.fb').innerText();
+        ok(/Correct/.test(fb), 'a right answer was marked wrong: ' + fb);
+        const after = await page.locator('.rundots .dot.on').count();
+        ok(after === before + 1, 'the run went from ' + before + ' to ' + after);
+      });
+
+      await check(subject + ': a new problem appears each time', async () => {
+        const seen = new Set();
+        for (let i = 0; i < 6; i++) {
+          seen.add(await page.locator('.pq').innerText());
+          await page.click('.fbrow .btn');
+          await page.waitForTimeout(250);
+          const q = await page.locator('.pq').innerText();
+          const m = q.match(/(\d+)° and (\d+)°/);
+          await page.fill('.pinput', String(180 - Number(m[1]) - Number(m[2])));
+          await page.click('.prow .btn');
+          await page.waitForTimeout(250);
+        }
+        ok(seen.size >= 4, 'only ' + seen.size + ' different problems in six attempts');
+      });
+
+      await check(subject + ': a wrong answer resets the run and shows the working', async () => {
+        await page.click('.fbrow .btn');
+        await page.waitForTimeout(300);
+        await page.fill('.pinput', '-999');
+        await page.click('.prow .btn');
+        await page.waitForTimeout(400);
+        const fb = await page.locator('.fb').innerText();
+        ok(/Not quite/.test(fb), 'a wrong answer was marked right');
+        ok(/The answer is/.test(fb), 'no correct answer was shown');
+        const steps = await page.locator('.fbsteps li').count();
+        ok(steps >= 2, 'only ' + steps + ' worked steps shown');
+        const dots = await page.locator('.rundots .dot.on').count();
+        ok(dots === 0, 'the run did not reset (' + dots + ' still lit)');
+      });
+
+      await check(subject + ': Show an example works out a problem of the same kind', async () => {
+        await page.click('.fbrow .btn');
+        await page.waitForTimeout(300);
+        await page.evaluate(() => {
+          const b = Array.from(document.querySelectorAll('.ptools .linkbtn'))[0];
+          if (b) b.click();
+        });
+        await page.waitForTimeout(300);
+        const ex = await page.locator('.exbox').innerText();
+        ok(/Answer:/.test(ex), 'the example shows no answer');
+        const steps = await page.locator('.exsteps li').count();
+        ok(steps >= 2, 'the example shows only ' + steps + ' steps');
+      });
+
+      await check(subject + ': finishing a skill is remembered on the server', async () => {
+        for (let i = 0; i < 4; i++) {
+          const q = await page.locator('.pq').innerText();
+          const m = q.match(/(\d+)° and (\d+)°/);
+          await page.fill('.pinput', String(180 - Number(m[1]) - Number(m[2])));
+          await page.click('.prow .btn');
+          await page.waitForTimeout(300);
+          if (i < 3) { await page.click('.fbrow .btn'); await page.waitForTimeout(250); }
+        }
+        const fb = await page.locator('.fb').innerText();
+        ok(/Skill finished/.test(fb), 'four in a row did not finish the skill: ' + fb);
+        await page.waitForTimeout(800);
+
+        const file = server.progressPath('e2e-user', subject);
+        const saved = JSON.parse(fs.readFileSync(file, 'utf8'));
+        ok(saved.skills && saved.skills['sk-third-angle'],
+          'the skill was not written to the server');
+        ok(saved.skills['sk-third-angle'].done === true,
+          'the server does not have the skill marked done');
+      });
+    }
 
     // ---- answering must reach the server -------------------------------
     calls.length = 0;
@@ -360,6 +470,15 @@ async function repaintReport(page, clickFn) {
 
 /* The engine puts every question on the Drill page: four options, or a text
    box where the card has nothing to choose between. */
+async function openPage(page, label) {
+  await page.evaluate(l => {
+    const b = Array.from(document.querySelectorAll(
+      '.tabs button, .rail button.nav, .bottombar button'))
+      .find(x => (x.textContent || '').trim().endsWith(l));
+    if (b) b.click();
+  }, label);
+}
+
 async function openDrill(page) {
   await page.evaluate(() => {
     const b = Array.from(document.querySelectorAll('.tabs button, .rail button.nav, .bottombar button'))
