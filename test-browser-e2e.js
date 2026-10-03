@@ -74,7 +74,7 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
   // must be findable in it. A subject listed in CLASSIC still carries the
   // previous interface behind ?classic=1; Geometry was built on the engine
   // from the start and has nothing to fall back to.
-  const DECK_SIZE = { aphg: '432', spanish: '1,322', geometry: '1,173' };
+  const DECK_SIZE = { aphg: '432', spanish: '1,322', geometry: '1,412' };
   const SEARCH_FOR = { aphg: 'migration', spanish: 'car gar zar', geometry: 'rotation' };
   const UNIT_SCOPE = { aphg: /Chapter 3/, spanish: null, geometry: /Transformations/ };
   const CLASSIC = { aphg: true, spanish: true, geometry: false };

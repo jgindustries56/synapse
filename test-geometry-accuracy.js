@@ -848,5 +848,175 @@ check('the lines-of-symmetry counts and the arms equation agree', () => {
   assert.ok(/exactly two/i.test(letters), 'the letters card does not correct the "infinite" claim');
 });
 
+
+/* ==================================================================
+   The third batch: proof work, angle algebra, mapping onto itself, and
+   the polynomial operations beyond division. Every equation below is
+   solved here from its own coefficients and compared with the card.
+   ================================================================== */
+
+check('the triangle angle equations solve to what the cards say', () => {
+  // (x + 25) + (x + 17) = 3x + 2  ->  2x + 42 = 3x + 2  ->  x = 40
+  const x1 = 42 - 2;
+  assert.strictEqual(2 * x1 + 42, 3 * x1 + 2, 'the exterior-angle equation does not balance');
+  expect('tri-algebra', '(x + 25) and (x + 17)', String(x1));
+
+  // 96 + 2(y - 8) = 180
+  const y1 = (180 - 96 + 16) / 2;
+  assert.strictEqual(96 + 2 * (y1 - 8), 180, 'the isosceles equation does not balance');
+  expect('tri-algebra', 'two congruent angles of (y - 8)', String(y1));
+
+  // y + 32 = 2y, then 2y + 2y + x = 180
+  const y2 = 32;
+  assert.strictEqual(y2 + 32, 2 * y2, 'y + 32 = 2y does not hold');
+  expect('tri-algebra', 'Angles (y + 32) and 2y are congruent', String(y2));
+  const x2 = 180 - 2 * (2 * y2);
+  assert.strictEqual(2 * y2 + 2 * y2 + x2, 180, 'the third angle does not complete 180');
+  expect('tri-algebra', 'the third angle x is', x2 + '°');
+
+  // (3x + 4) + (4x + 4) = 8x - 10
+  const x3 = 8 + 10;
+  assert.strictEqual(7 * x3 + 8, 8 * x3 - 10, 'the second exterior-angle equation does not balance');
+  expect('tri-algebra', '(3x + 4) and (4x + 4)', String(x3));
+
+  expect('tri-algebra', 'exterior angle is 101', (101 - 31) + '°');
+  expect('tri-algebra', '28° vertex angle', ((180 - 28) / 2) + '°');
+});
+
+check('the transversal equations solve to what the cards say', () => {
+  // (4x + 11) + (6x + 19) = 180
+  const x1 = (180 - 30) / 10;
+  assert.strictEqual((4 * x1 + 11) + (6 * x1 + 19), 180, 'the first pair does not sum to 180');
+  expect('ln-algebra', '(4x + 11) and (6x + 19)', String(x1));
+
+  // (2x + 43) + (2x - 3) = 180
+  const x2 = (180 - 40) / 4;
+  assert.strictEqual((2 * x2 + 43) + (2 * x2 - 3), 180, 'the second pair does not sum to 180');
+  expect('ln-algebra', '(2x + 43) and (2x - 3)', String(x2));
+  expect('ln-algebra', 'the angle (2x - 3) measures', (2 * x2 - 3) + '°');
+  expect('ln-algebra', 'its supplement measures', (180 - (2 * x2 - 3)) + '°');
+
+  expect('ln-algebra', 'measure 2x and 110', String(110 / 2));
+  const x3 = (180 - 11 - 46) / 3;
+  assert.strictEqual((3 * x3 + 11) + 46, 180, 'the third pair does not sum to 180');
+  expect('ln-algebra', '(3x + 11) and 46', String(x3));
+
+  // x^2 + 66 = 76 - 3x
+  expect('ln-algebra', 'equal to 76 - 3x gives the equation', 'x² + 3x - 10 = 0');
+  expect('ln-algebra', 'x² + 3x - 10 factors to', '(x + 5)(x - 2)');
+  [-4, 0, 2, 7].forEach(v => {
+    assert.ok(close((v + 5) * (v - 2), v * v + 3 * v - 10), 'the factorisation fails at x = ' + v);
+    assert.ok(close(v * v + 3 * v - 10, (v * v + 66) - (76 - 3 * v)), 'the rearrangement is wrong at x = ' + v);
+  });
+});
+
+check('the mapping answers are right', () => {
+  expect('tr-mapping', 'Apply (x - 1, y - 7) to the point (-3, 8)', pt([-3 - 1, 8 - 7]));
+  expect('tr-mapping', 'regular pentagon maps onto itself every', (360 / 5) + '°');
+  expect('tr-mapping', 'reflect over the x-axis, which coordinate', 'The x-coordinate');
+  expect('tr-mapping', 'reflect over the y-axis, which coordinate', 'The y-coordinate');
+  // And that agrees with the rules the transformation unit already carries.
+  const overX = REFERENCE['Reflection over the x-axis'];
+  const overY = REFERENCE['Reflection over the y-axis'];
+  SAMPLES.forEach(([x, y]) => {
+    assert.strictEqual(overX(x, y)[0], x, 'reflecting over the x-axis moved x');
+    assert.strictEqual(overY(x, y)[1], y, 'reflecting over the y-axis moved y');
+  });
+});
+
+check('the polynomial products and differences expand correctly', () => {
+  const stated = applied('poly-multiply', '(2x² + 5)(x² - 11x + 6) equals').answer;
+  [-2, -0.5, 0, 1.5, 3].forEach(x => {
+    const real = (2 * x * x + 5) * (x * x - 11 * x + 6);
+    if (!close(polyEval(stated, x), real, 1e-9)) {
+      throw new Error('the product reads ' + stated + ', which is ' + polyEval(stated, x) +
+        ' at x = ' + x + ' instead of ' + real);
+    }
+  });
+  const diff = applied('poly-multiply', '(-7x² + 8x - 8) - (3x² + 15x - 3) equals').answer;
+  [-3, -1, 0, 2, 4].forEach(x => {
+    const real = (-7 * x * x + 8 * x - 8) - (3 * x * x + 15 * x - 3);
+    if (!close(polyEval(diff, x), real, 1e-9)) {
+      throw new Error('the difference reads ' + diff + ', which is ' + polyEval(diff, x) +
+        ' at x = ' + x + ' instead of ' + real);
+    }
+  });
+  expect('poly-multiply', 'two x² terms collect to', '17x²');
+  expect('poly-multiply', '-7x² - 3x² gives', '-10x²');
+  expect('poly-multiply', '8x - 15x gives', '-7x');
+  expect('poly-multiply', '-8 - (-3) gives', String(-8 - (-3)));
+  expect('poly-multiply', 'degree of (2x² + 5)(x² - 11x + 6)', '4');
+});
+
+check('the shaded area really is outer minus inner', () => {
+  const outer = applied('poly-area', '(3x + 2) by (x + 15)').answer;
+  const inner = applied('poly-area', '2x by (x + 1)').answer;
+  const shaded = applied('poly-area', 'shaded area between those two').answer;
+  [-5, 0, 1, 4.5, 9].forEach(x => {
+    const o = (3 * x + 2) * (x + 15);
+    const i = 2 * x * (x + 1);
+    assert.ok(close(polyEval(outer, x), o, 1e-9), 'the outer area is wrong at x = ' + x);
+    assert.ok(close(polyEval(inner, x), i, 1e-9), 'the inner area is wrong at x = ' + x);
+    assert.ok(close(polyEval(shaded, x), o - i, 1e-9), 'the shaded area is wrong at x = ' + x);
+  });
+  expect('poly-area', '47x - 2x gives', '45x');
+});
+
+check('the factor test divisions check out', () => {
+  // (x - 2) into 2x^3 + x^2 - 6x - 8, remainder 0.
+  const q1 = applied('poly-factor', 'quotient of that division is').answer;
+  [-3, 0, 1, 2.5, 5].forEach(x => {
+    const rebuilt = (x - 2) * polyEval(q1, x);
+    const dividend = 2 * x ** 3 + x ** 2 - 6 * x - 8;
+    assert.ok(close(rebuilt, dividend, 1e-6),
+      '(x - 2) times ' + q1 + ' is ' + rebuilt + ' at x = ' + x + ', not ' + dividend);
+  });
+  expect('poly-factor', 'So (x - 2) is', 'A factor of 2x³ + x² - 6x - 8');
+
+  // x^3 + x divided by x - 1, quotient x^2 + x + 2 remainder 2.
+  const q2 = applied('poly-factor', 'x³ + x by x - 1 gives a quotient').answer;
+  const r2 = Number(applied('poly-factor', '...and a remainder of').answer);
+  [-2, 0, 3, 4.5].forEach(x => {
+    const rebuilt = (x - 1) * polyEval(q2, x) + r2;
+    assert.ok(close(rebuilt, x ** 3 + x, 1e-6),
+      'x³ + x does not rebuild at x = ' + x + ' (got ' + rebuilt + ')');
+  });
+  expect('poly-factor', 'coefficient row for x³ + x', '1, 0, 1, 0');
+});
+
+check('the proof reasons name the right rules', () => {
+  assert.ok(/linear pair/i.test(term('pf-theorems', 'What the vertical angle theorem is proved from')));
+  assert.ok(/corresponding/i.test(term('pf-theorems', 'What the alternate interior angle theorem is proved from')));
+  expect('pf-theorems', 'vertical angle theorem is proved from', 'The linear pair postulate');
+  expect('pf-theorems', 'alternate interior angle theorem is proved from', 'The corresponding angle postulate');
+  expect('pf-theorems', 'How many congruence shortcuts', '5');
+  // The five it means are the five the congruence topic already lists.
+  ['SSS', 'SAS', 'ASA', 'AAS', 'HL'].forEach(k => term('tri-congruence', k));
+
+  expect('pf-clues', 'tells you something outright', 'Given');
+  expect('pf-clues', 'same segment appears in both triangles', 'The Reflexive Property');
+  expect('pf-clues', 'cross and make an X', 'Vertical angles');
+  expect('pf-clues', 'Z or N shape', 'Alternate interior angles');
+  expect('pf-clues', 'F shape', 'Corresponding angles');
+  expect('pf-clues', 'already proved congruent', 'CPCTC');
+
+  expect('pf-worked', 'isosceles proof, the reason for "angle ABD', 'Definition of an angle bisector');
+  expect('pf-worked', 'isosceles proof reaches congruent triangles by', 'SAS');
+  expect('pf-worked', 'Given angle A, then side AB, then angle B', 'ASA');
+  // CPCTC must never be the reason that establishes congruence itself.
+  const cpctcRows = (T.APPLIED['pf-worked'] || []).filter(r => r.answer === 'CPCTC');
+  assert.ok(cpctcRows.length >= 1, 'no CPCTC step in the worked proofs');
+  cpctcRows.forEach(r => {
+    assert.ok(/after|finishes|congruent by/i.test(r.prompt),
+      'a CPCTC card does not make clear it comes after the congruence: ' + r.prompt);
+  });
+});
+
+check('the converse example is judged correctly', () => {
+  expect('ln-logic', 'If it is Atlanta, then it is in the U.S.', 'True');
+  expect('ln-logic', 'If it is in the U.S., then it is Atlanta', 'False');
+  expect('ln-logic', 'conditional and its converse', 'Can differ in truth value');
+});
+
 console.log(failures ? '\n' + failures + ' GEOMETRY ACCURACY CHECK(S) FAILED' : '\nALL GEOMETRY ACCURACY CHECKS PASSED');
 process.exit(failures ? 1 : 0);
