@@ -25,7 +25,8 @@ fs.mkdirSync(PROGRESS_DIR, { recursive: true });
 // nothing else in this file needs to change.
 const SUBJECTS = {
   aphg: { label: 'AP Human Geography', file: 'aphg.html' },
-  spanish: { label: 'Spanish', file: 'spanish.html' }
+  spanish: { label: 'Spanish', file: 'spanish.html' },
+  geometry: { label: 'Geometry', file: 'geometry.html' }
 };
 
 function loadTemplate(file) {

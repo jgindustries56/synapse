@@ -1991,6 +1991,11 @@
           try{
             google.accounts.id.renderButton(slot, {theme:'outline', size:'medium', text:'signin'});
           }catch(e){ /* the Google script has not loaded yet; the chrome redraws when it does */ }
+        },
+        // The engine's own fallback button, pressed only when Google's never
+        // arrived. Without this it was decoration.
+        prompt: function(){
+          try{ google.accounts.id.prompt(); }catch(e){}
         }
       }
     });

@@ -26,6 +26,10 @@ const server = require('./server.js');
 const VIEWPORTS = [{ name: 'phone', width: 390, height: 780 },
                    { name: 'desktop', width: 1280, height: 900 }];
 
+// Which chrome each subject is supposed to wear on a wide screen. AP HG runs a
+// top tab strip; Spanish and Geometry run a side rail.
+const DESKTOP_CHROME = { aphg: 'tabs', spanish: 'rail', geometry: 'rail' };
+
 (async () => {
   const listener = server.app.listen(0);
   await new Promise(r => listener.once('listening', r));
@@ -34,7 +38,7 @@ const VIEWPORTS = [{ name: 'phone', width: 390, height: 780 },
 
   let failures = 0;
   for (const vp of VIEWPORTS) {
-    for (const subject of ['aphg', 'spanish']) {
+    for (const subject of Object.keys(DESKTOP_CHROME)) {
       for (const signedIn of [false, true]) {
         const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
         if (signedIn) {
@@ -73,8 +77,8 @@ const VIEWPORTS = [{ name: 'phone', width: 390, height: 780 },
           if (r.rail) problems.push('the rail is still showing alongside it');
         } else {
           if (r.bottom) problems.push('the bottom bar is showing on a desktop');
-          if (subject === 'aphg' && !r.tabs) problems.push('no top tab strip');
-          if (subject === 'spanish' && !r.rail) problems.push('no rail');
+          const want = DESKTOP_CHROME[subject];
+          if (!r[want]) problems.push('no ' + (want === 'tabs' ? 'top tab strip' : 'side rail'));
         }
         if (!r.auth) problems.push('no sign-in area anywhere on the page');
         else if (signedIn && !r.signOut) problems.push('signed in but no way to sign out');

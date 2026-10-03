@@ -70,7 +70,16 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
     pageErrors.push('console: ' + t);
   });
 
-  for (const subject of ['aphg', 'spanish']) {
+  // How many cards each deck holds, as the console prints it, and a term that
+  // must be findable in it. A subject listed in CLASSIC still carries the
+  // previous interface behind ?classic=1; Geometry was built on the engine
+  // from the start and has nothing to fall back to.
+  const DECK_SIZE = { aphg: '432', spanish: '1,322', geometry: '630' };
+  const SEARCH_FOR = { aphg: 'migration', spanish: 'car gar zar', geometry: 'rotation' };
+  const UNIT_SCOPE = { aphg: /Chapter 3/, spanish: null, geometry: /Transformations/ };
+  const CLASSIC = { aphg: true, spanish: true, geometry: false };
+
+  for (const subject of Object.keys(DECK_SIZE)) {
     calls.length = 0;
     await page.goto(base + '/' + subject, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1100);
@@ -116,8 +125,21 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         if (b) b.click();
         return document.querySelector('#app').innerText;
       });
-      const expect = subject === 'aphg' ? '432' : '1,322';
+      const expect = DECK_SIZE[subject];
       ok(txt.includes(expect), 'console does not mention the full deck (' + expect + ')');
+    });
+
+    /* A third subject found two Spanish strings hardcoded into the rail
+       layout, so Geometry opened with "Buenos dias" and "Where your Spanish
+       stands". The copy belongs to the subject, not the chrome. */
+    await check(subject + ': the console speaks in this subject\'s own voice', async () => {
+      const txt = await page.evaluate(() => document.querySelector('#app').innerText);
+      const strangers = Object.keys(DECK_SIZE)
+        .filter(x => x !== subject)
+        .map(x => ({ aphg: 'Human Geography', spanish: 'Spanish', geometry: 'Geometry' })[x])
+        .filter(name => txt.includes(name));
+      ok(strangers.length === 0, 'the console mentions another subject: ' + strangers.join(', '));
+      if (subject === 'spanish') ok(/Buenos d/.test(txt), 'Spanish lost its own greeting');
     });
 
     // ---- answering must reach the server -------------------------------
@@ -146,7 +168,7 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         if (b) b.click();
       });
       await page.waitForTimeout(400);
-      const term = subject === 'spanish' ? 'car gar zar' : 'migration';
+      const term = SEARCH_FOR[subject];
       await page.fill('#find-input', term);
       await page.waitForTimeout(400);
       const res = await page.locator('.resbar').innerText().catch(() => '');
@@ -179,9 +201,11 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
       ok(scopes.length >= 2, 'Blast offers no way to choose what to play: ' + JSON.stringify(scopes));
       ok(scopes[0] === 'Everything', 'the first Blast scope should be Everything, got ' + scopes[0]);
 
-      // AP HG must be able to play the migration chapter on its own.
-      const wanted = subject === 'aphg'
-        ? scopes.find(x => /Chapter 3/.test(x))
+      // Where a subject has a unit that must be playable on its own — the
+      // migration chapter, the transformations unit — insist on that one.
+      const want = UNIT_SCOPE[subject];
+      const wanted = want
+        ? scopes.find(x => want.test(x))
         : scopes.find(x => x !== 'Everything');
       ok(wanted, 'no unit scope to pick from: ' + JSON.stringify(scopes));
 
@@ -270,12 +294,21 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
         'server holds ' + seenCards + ' answered cards but the fresh page restored ' + restored);
     });
 
-    await check(subject + ': ?classic=1 still brings back the previous interface', async () => {
-      await page.goto(base + '/' + subject + '?classic=1', { waitUntil: 'domcontentloaded' });
-      await page.waitForTimeout(900);
-      const has = await page.evaluate(() => !!document.querySelector('.info-btn, .nav-wrap'));
-      ok(has, 'the classic fallback did not render');
-    });
+    if (CLASSIC[subject]) {
+      await check(subject + ': ?classic=1 still brings back the previous interface', async () => {
+        await page.goto(base + '/' + subject + '?classic=1', { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(900);
+        const has = await page.evaluate(() => !!document.querySelector('.info-btn, .nav-wrap'));
+        ok(has, 'the classic fallback did not render');
+      });
+    } else {
+      await check(subject + ': ?classic=1 is harmless where there is no fallback', async () => {
+        await page.goto(base + '/' + subject + '?classic=1', { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(900);
+        const mounted = await page.evaluate(() => !!document.querySelector('#app[data-engine]'));
+        ok(mounted, 'the engine did not mount with ?classic=1 on the URL');
+      });
+    }
   }
 
   await check('no uncaught errors anywhere in the run', () => {

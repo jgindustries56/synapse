@@ -33,6 +33,16 @@
   --display:'Chivo',ui-sans-serif,system-ui,sans-serif;
   --r:14px;
 }
+[data-sub="geometry"]{
+  --ground:#EDF0F4; --panel:#FFFFFF; --panel2:#F4F6FA; --edge:#D3D9E3; --edge-soft:#E4E8EF;
+  --ink:#15181F; --label:#525B6B; --mute:#858EA0;
+  --data:#3A4FA0; --data-soft:rgba(58,79,160,.13);
+  --good:#1E6A52; --bad:#A33B34; --alert:#8B5A0E;
+  --sans:'Inter',ui-sans-serif,system-ui,sans-serif;
+  --display:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --r:4px;
+}
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --ground:#0C1116; --panel:#141B21; --panel2:#1A232A; --edge:#27333C; --edge-soft:#1E282F;
@@ -52,6 +62,12 @@
     --data:#E2A945; --data-soft:rgba(226,169,69,.16);
     --good:#63C08F; --bad:#E38470; --alert:#E2A945;
   }
+  :root:not([data-theme="light"]) [data-sub="geometry"]{
+    --ground:#0B0E14; --panel:#141822; --panel2:#1A202C; --edge:#28303E; --edge-soft:#1F2632;
+    --ink:#E7EAF2; --label:#97A1B5; --mute:#68728A;
+    --data:#8FA3F0; --data-soft:rgba(143,163,240,.16);
+    --good:#5CC29B; --bad:#E4796C; --alert:#DFA84C;
+  }
 }
 :root[data-theme="dark"]{
   --ground:#0C1116; --panel:#141B21; --panel2:#1A232A; --edge:#27333C; --edge-soft:#1E282F;
@@ -70,6 +86,12 @@
   --ink:#F0EADD; --label:#B0A48F; --mute:#7D7261;
   --data:#E2A945; --data-soft:rgba(226,169,69,.16);
   --good:#63C08F; --bad:#E38470; --alert:#E2A945;
+}
+:root[data-theme="dark"] [data-sub="geometry"]{
+  --ground:#0B0E14; --panel:#141822; --panel2:#1A202C; --edge:#28303E; --edge-soft:#1F2632;
+  --ink:#E7EAF2; --label:#97A1B5; --mute:#68728A;
+  --data:#8FA3F0; --data-soft:rgba(143,163,240,.16);
+  --good:#5CC29B; --bad:#E4796C; --alert:#DFA84C;
 }
 
 *{box-sizing:border-box;}
@@ -146,6 +168,16 @@ input{font-family:inherit;}
 .phead .eyebrow{font-size:.82rem; color:var(--mute);}
 .phead h1{font-size:1.6rem; letter-spacing:-.018em; margin-top:4px;}
 [data-sub="spanish"] .phead h1{font-weight:900; letter-spacing:-.03em;}
+[data-sub="geometry"] .phead h1{letter-spacing:-.02em;}
+/* Graph paper, visible only in the gutters between the opaque panels. The one
+   decoration that tells you at a glance which subject you are in. */
+[data-sub="geometry"]{
+  background-image:
+    linear-gradient(var(--edge-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--edge-soft) 1px, transparent 1px);
+  background-size:28px 28px;
+  background-position:-1px -1px;
+}
 
 /* the lead sentence — the Headline Console idea, kept everywhere */
 .lead{background:var(--panel); border:1px solid var(--edge); border-left:4px solid var(--data);

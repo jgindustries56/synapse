@@ -9,6 +9,8 @@
      window.Synapse.mount({
        subject, name, short, tagline, nav: 'top' | 'rail', shell, cats, goal,
        unitWord, speak, lang, rootId,
+       greeting, dateWord, catsNote,   // optional voice, used by the rail console
+
        data:     { topics, units, icons, items },
        progress: { read, save, record, logSession, reset, setGoal },
        auth:     { user, configured, signOut, mountButton }
@@ -159,11 +161,15 @@
   function unseenCount(cfg) {
     return cfg.data.items.filter(function (it) { return isUnseen(cfg, it.id); }).length;
   }
+  /* The host records a card's correct answers under `correct`; this read
+     `right`, which nothing writes, so lifetime accuracy always showed 0%.
+     Both names are accepted now in case a host ever uses the other. */
   function lifetime(cfg) {
     var P = load(cfg), seen = 0, right = 0;
     Object.keys(P.items).forEach(function (id) {
-      seen += P.items[id].seen || 0;
-      right += P.items[id].right || 0;
+      var it = P.items[id] || {};
+      seen += it.seen || 0;
+      right += (it.correct != null ? it.correct : it.right) || 0;
     });
     return { seen: seen, right: right, pct: pct(right, seen) };
   }
@@ -815,8 +821,11 @@
     var g = goalToday(c);
     var lt = lifetime(c);
 
-    add(f, pageHead('Hoy · ' + today().toLocaleDateString(undefined, { day: 'numeric', month: 'long' }),
-      'Buenos días'));
+    // The greeting belongs to the subject, not to the layout. Spanish supplies
+    // its own; anything else gets its own name and a plain date.
+    add(f, pageHead((c.dateWord || 'Today') + ' · ' +
+      today().toLocaleDateString(undefined, { day: 'numeric', month: 'long' }),
+      c.greeting || c.name));
 
     add(f, lead(
       g.done >= g.goal
@@ -845,7 +854,8 @@
 
     var cats = Object.keys(c.cats);
     add(f, panel(
-      says('Where your Spanish stands.', 'Grammar, verbs and vocabulary scored the same way.'),
+      says('Where your ' + c.name + ' stands.',
+        c.catsNote || 'Every kind of card, scored the same way.'),
       table(
         [{ label: 'Kind' }, { label: 'Cards' }, { label: 'Share you know', width: '40%' }, { label: '' }],
         cats.map(function (k) {

@@ -107,7 +107,7 @@ function seed(subject) {
   const base = 'http://127.0.0.1:' + listener.address().port;
   const browser = await chromium.launch({ executablePath: CHROME });
 
-  for (const subject of ['aphg', 'spanish']) {
+  for (const subject of ['aphg', 'spanish', 'geometry']) {
     seed(subject);
 
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
@@ -164,6 +164,19 @@ function seed(subject) {
         document.querySelectorAll('.dgcell.l1, .dgcell.l2, .dgcell.l3, .dgcell.l4').length);
       ok(filled >= DAY_COUNTS.length,
         'only ' + filled + ' days shaded in the calendar, seeded ' + DAY_COUNTS.length);
+    });
+
+    /* The rail console prints a lifetime accuracy. It once read the wrong field
+       off each card and so always showed 0%, which is exactly the kind of
+       number that looks plausible and is not. */
+    await check(subject + ': lifetime accuracy matches the answers on record', async () => {
+      if (!/Lifetime accuracy/.test(home)) return;       // the wide console does not print it
+      const seen = KNOWN * 6 + LEARNING * 2;
+      const right = KNOWN * 5 + LEARNING * 1;
+      const want = Math.round(100 * right / seen) + '%';
+      const m = home.match(/Lifetime accuracy ([\d]+%)/);
+      ok(m, 'the console does not state a lifetime accuracy');
+      ok(m[1] === want, 'console says ' + m[1] + ', the seeded answers give ' + want);
     });
 
     await check(subject + ': the Progress page agrees with the console', async () => {
