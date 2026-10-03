@@ -26,7 +26,9 @@ fs.mkdirSync(PROGRESS_DIR, { recursive: true });
 const SUBJECTS = {
   aphg: { label: 'AP Human Geography', file: 'aphg.html' },
   spanish: { label: 'Spanish', file: 'spanish.html' },
-  geometry: { label: 'Geometry', file: 'geometry.html' }
+  // The id stays 'geometry' so the URL and anyone's saved progress keep
+  // working; the section itself covers more than geometry now.
+  geometry: { label: 'Math', file: 'geometry.html' }
 };
 
 function loadTemplate(file) {

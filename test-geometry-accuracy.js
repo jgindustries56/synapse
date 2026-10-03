@@ -305,7 +305,7 @@ check('the polygon angle answers are right', () => {
 
 check('the symmetry answers follow 360 ÷ n', () => {
   expect('tr-symmetry', 'regular pentagon', eachExterior(5) + '°');
-  expect('tr-symmetry', 'equilateral triangle', eachExterior(3) + '°');
+  expect('tr-symmetry', 'rotational symmetry of an equilateral triangle', eachExterior(3) + '°');
   expect('tr-symmetry', 'lines of symmetry does a regular hexagon', '6');
   expect('tr-symmetry', 'rotational symmetry of a square', '4');
   expect('tr-symmetry', '12 lines of symmetry', '12');
@@ -452,6 +452,10 @@ check('no explanation contradicts its own answer', () => {
         // Two operands or it is a fragment: "gives n - 2 = 6" must not be
         // read as the sum "- 2 = 6".
         if ((expr.match(/\d+(?:\.\d+)?/g) || []).length < 2) continue;
+        // A chained equality such as "4/8 = 6/12 = 8/16" is a run of equal
+        // ratios, not a sum: the number after the first equals sign starts the
+        // next fraction, so it must not be read as a total.
+        if (r.note[m.index + m[0].length] === '/') continue;
         const opens = (expr.match(/\(/g) || []).length;
         const closes = (expr.match(/\)/g) || []).length;
         if (opens !== closes) continue;                   // a fragment of a bracketed expression
@@ -473,6 +477,375 @@ check('no explanation contradicts its own answer', () => {
   });
   if (verified < 25) throw new Error('only ' + verified + ' worked sums could be verified');
   console.log('     (verified ' + verified + ' worked sums inside the explanations)');
+});
+
+
+/* ==================================================================
+   The material the second pass added: trigonometry, the unit circle,
+   similarity and polynomial division. Same rule as above — nothing here
+   trusts the card. Radicals are parsed into numbers, angles are evaluated
+   with Math.sin and Math.cos, and each polynomial quotient is multiplied
+   back out against its divisor.
+   ================================================================== */
+
+const RAD = Math.PI / 180;
+
+/* "2√10", "-√3/2", "1/2", "-2√3/3", "7√2" -> a number. */
+function value(src) {
+  let t = String(src).trim().replace(/\s+/g, '');
+  let sign = 1;
+  if (t[0] === '-') { sign = -1; t = t.slice(1); }
+  const part = p => {
+    const m = p.match(/^(\d*)√(\d+)$/);
+    if (m) return (m[1] === '' ? 1 : Number(m[1])) * Math.sqrt(Number(m[2]));
+    if (/^\d+(\.\d+)?$/.test(p)) return Number(p);
+    throw new Error('cannot read "' + src + '"');
+  };
+  const bits = t.split('/');
+  if (bits.length === 2) return sign * part(bits[0]) / part(bits[1]);
+  if (bits.length === 1) return sign * part(bits[0]);
+  throw new Error('cannot read "' + src + '"');
+}
+
+function close(a, b, tol) { return Math.abs(a - b) < (tol || 1e-9); }
+
+check('the radical shorthand on the cards is arithmetically right', () => {
+  const pairs = [['2√10', 40], ['2√37', 148], ['6√2', 72], ['3√2', 18],
+                 ['2√2', 8], ['4√2', 32], ['7√2', 98], ['7√3', 147],
+                 ['6√3', 108], ['25√3', 1875]];
+  pairs.forEach(([text, square]) => {
+    const v = value(text);
+    if (!close(v * v, square, 1e-6)) {
+      throw new Error(text + ' squares to ' + (v * v) + ', expected ' + square);
+    }
+  });
+});
+
+check('the worked midpoint and distance answers are right', () => {
+  expect('co-worked', 'midpoint of (2, 5) and (-4, 3)', pt(mid([2, 5], [-4, 3])));
+  expect('co-worked', 'midpoint of (-1, 7) and (-3, -5)', pt(mid([-1, 7], [-3, -5])));
+  const d1 = applied('co-worked', 'distance between (2, 5) and (-4, 3)').answer;
+  const d2 = applied('co-worked', 'distance between (-1, 7) and (-3, -5)').answer;
+  if (!close(value(d1), dist([2, 5], [-4, 3]), 1e-9)) throw new Error('first distance reads ' + d1);
+  if (!close(value(d2), dist([-1, 7], [-3, -5]), 1e-9)) throw new Error('second distance reads ' + d2);
+  [['√40 simplifies', 40], ['√148 simplifies', 148], ['√72 simplifies', 72]]
+    .forEach(([needle, n]) => {
+      const got = value(applied('co-worked', needle).answer);
+      if (!close(got, Math.sqrt(n), 1e-9)) throw new Error(needle + ' gives ' + got);
+    });
+  const diag = value(applied('co-worked', '(0, 0) and (3, 3)').answer);
+  if (!close(diag, dist([0, 0], [3, 3]), 1e-9)) throw new Error('(0,0)-(3,3) distance is wrong');
+});
+
+check('the four-coordinate example really is a rectangle', () => {
+  const E = [-6, -4], F = [-4, -6], G = [0, -2], H = [-2, 0];
+  const sides = [[E, F], [F, G], [G, H], [H, E]];
+  const slopes = sides.map(([a, b]) => slope(a, b));
+  const lengths = sides.map(([a, b]) => dist(a, b));
+  // Opposite sides parallel, adjacent sides perpendicular.
+  assert.ok(close(slopes[0], slopes[2]) && close(slopes[1], slopes[3]), 'opposite sides are not parallel');
+  assert.ok(close(slopes[0] * slopes[1], -1), 'adjacent sides are not perpendicular');
+  // Two pairs of congruent sides, and the pairs differ — a rectangle, not a square.
+  assert.ok(close(lengths[0], lengths[2]) && close(lengths[1], lengths[3]), 'sides are not congruent in pairs');
+  assert.ok(!close(lengths[0], lengths[1]), 'all four sides are equal, so it would be a square');
+  expect('co-classify', 'G(0, -2), H(-2, 0) form', 'A rectangle');
+  if (!close(value(applied('co-classify', 'EF measures').answer), dist(E, F))) throw new Error('EF is wrong');
+  if (!close(value(applied('co-classify', 'EH measures').answer), dist(E, H))) throw new Error('EH is wrong');
+});
+
+check('the rearranged line equations are right', () => {
+  // x + 4y = 8 and x + 10y = 5, solved for y and checked at two x values.
+  [[4, 8, 'x + 4y = 8'], [10, 5, 'x + 10y = 5']].forEach(([b, c, label]) => {
+    const stated = applied('ln-distinguish', 'Rearranging ' + label).answer;
+    const m = stated.match(/^y = (-?\d+)\/(\d+) x \+ (\d+)(?:\/(\d+))?$/);
+    if (!m) throw new Error('cannot read "' + stated + '"');
+    const slopeStated = Number(m[1]) / Number(m[2]);
+    const interceptStated = m[4] ? Number(m[3]) / Number(m[4]) : Number(m[3]);
+    assert.ok(close(slopeStated, -1 / b), label + ' slope reads ' + slopeStated);
+    assert.ok(close(interceptStated, c / b), label + ' intercept reads ' + interceptStated);
+  });
+  expect('ln-distinguish', 'y = 4x + 3 and x + 4y = 8', 'Perpendicular');
+  expect('ln-distinguish', 'y = 3x + 2 and x + 10y = 5', 'Neither');
+  assert.ok(close(4 * (-1 / 4), -1), 'the perpendicular claim does not hold');
+  assert.ok(!close(3 * (-1 / 10), -1) && !close(3, -1 / 10), 'the neither claim does not hold');
+});
+
+/* ------------------------------- trigonometry ------------------------------- */
+
+check('every Pythagorean triple on a card really is one', () => {
+  const triples = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10], [9, 12, 15]];
+  triples.forEach(([a, b, c]) => {
+    assert.strictEqual(a * a + b * b, c * c, a + '-' + b + '-' + c + ' is not a triple');
+    expect('trig-triples', 'Legs of ' + a + ' and ' + b, String(c));
+  });
+  // And the one the card calls a fake really is one.
+  expect('trig-triples', 'NOT a Pythagorean triple', '4-5-6');
+  assert.notStrictEqual(4 * 4 + 5 * 5, 6 * 6, '4-5-6 would actually be a triple');
+  expect('trig-triples', 'hypotenuse of 13 with one leg of 5', '12');
+});
+
+check('the special right triangle answers follow the ratios', () => {
+  // 45-45-90 is 1 : 1 : root 2, 30-60-90 is 1 : root 3 : 2.
+  const isos = leg => leg * Math.SQRT2;
+  const halfEq = short => ({ long: short * Math.sqrt(3), hyp: short * 2 });
+  const cases = [
+    ['legs of 7 has a hypotenuse', isos(7)],
+    ['hypotenuse of 8 has legs', 8 / Math.SQRT2],
+    ['short leg of 6 has a hypotenuse', halfEq(6).hyp],
+    ['short leg of 6 has a long leg', halfEq(6).long],
+    ['hypotenuse of 14 has a short leg', 14 / 2],
+    ['hypotenuse of 14 has a long leg', halfEq(7).long],
+    ['8/√2 rationalised', 8 / Math.SQRT2]
+  ];
+  cases.forEach(([needle, want]) => {
+    const got = value(applied('trig-special', needle).answer);
+    if (!close(got, want, 1e-9)) throw new Error('"' + needle + '" gives ' + got + ', computed ' + want);
+  });
+  assert.strictEqual(term('trig-special', '45-45-90 side ratio'), '1 : 1 : √2');
+  assert.strictEqual(term('trig-special', '30-60-90 side ratio'), '1 : √3 : 2');
+});
+
+check('the cofunction pairs really are equal', () => {
+  const pairs = [['sin(50°) equals', 50, 'cos', 40], ['cos(62°) equals', 62, 'sin', 28],
+                 ['sin(30°) equals', 30, 'cos', 60], ['cos(15°) equals', 15, 'sin', 75]];
+  pairs.forEach(([needle, from, fn, to]) => {
+    const stated = applied('trig-cofunction', needle).answer;
+    assert.strictEqual(stated, fn + '(' + to + '°)', needle + ' answers ' + stated);
+    assert.strictEqual(from + to, 90, 'the two angles do not add to 90');
+    const left = /^sin/.test(needle) ? Math.sin(from * RAD) : Math.cos(from * RAD);
+    const right = fn === 'cos' ? Math.cos(to * RAD) : Math.sin(to * RAD);
+    assert.ok(close(left, right, 1e-12), needle + ' is not actually an identity');
+  });
+  expect('trig-cofunction', 'tan(20°) equals', 'cot(70°)');
+  assert.ok(close(Math.tan(20 * RAD), 1 / Math.tan(70 * RAD), 1e-12), 'tan/cot pairing fails');
+});
+
+check('the reciprocal ratio answers are the reciprocals', () => {
+  [['cos(A) = 3/5', 3 / 5, '5/3'], ['cos(A) = 35/37', 35 / 37, '37/35']].forEach(([needle, c, want]) => {
+    const stated = applied('trig-ratios', needle).answer;
+    assert.strictEqual(stated, want, needle + ' answers ' + stated);
+    const bits = stated.split('/');
+    assert.ok(close(Number(bits[0]) / Number(bits[1]), 1 / c), needle + ' is not the reciprocal');
+  });
+});
+
+check('the solve-for-a-side answers are the right rearrangements', () => {
+  expect('trig-solve', 'sin(25°) = x/6', '6 sin(25°)');
+  expect('trig-solve', 'sin(35°) = 5/x', '5 ÷ sin(35°)');
+  // x = 6 sin25 must satisfy sin25 = x/6, and x = 5 / sin35 must satisfy sin35 = 5/x.
+  const x1 = 6 * Math.sin(25 * RAD);
+  assert.ok(close(Math.sin(25 * RAD), x1 / 6), 'the first rearrangement does not check out');
+  const x2 = 5 / Math.sin(35 * RAD);
+  assert.ok(close(Math.sin(35 * RAD), 5 / x2), 'the second rearrangement does not check out');
+  const stated53 = Number(applied('trig-solve', 'tan(53°) = 89/x').answer);
+  assert.ok(close(stated53, 89 / Math.tan(53 * RAD), 5e-4), 'tan(53) case reads ' + stated53);
+  const statedAng = applied('trig-solve', 'tan θ = 1456/2640').answer;
+  const ang = Number(statedAng.replace('°', '').replace('about ', ''));
+  assert.ok(close(ang, Math.atan(1456 / 2640) / RAD, 5e-4), 'the inverse-tangent case reads ' + statedAng);
+});
+
+check('the elevation and depression answers recompute', () => {
+  const building = 24 / Math.tan(54 * RAD) + 1.65;
+  const stated = Number(applied('trig-apps', 'tan(54°) = 24/x').answer);
+  assert.ok(close(stated, building, 5e-4), 'building height reads ' + stated + ', computed ' + building);
+
+  const lake = 1500 / Math.tan(37 * RAD) - 1500 / Math.tan(44 * RAD);
+  const statedLake = Number(applied('trig-apps', 'tan(37°) = 1500/y').answer.replace(' ft', ''));
+  assert.ok(close(statedLake, lake, 5e-4), 'lake width reads ' + statedLake + ', computed ' + lake);
+
+  const wheel = 100 + 100 * Math.sin(45 * RAD);
+  const statedWheel = Number(applied('trig-apps', 'ferris wheel').answer.match(/about ([\d.]+)/)[1]);
+  assert.ok(close(statedWheel, wheel, 5e-4), 'ferris wheel reads ' + statedWheel + ', computed ' + wheel);
+
+  const area = 0.5 * 10 * 5 * Math.sqrt(3);
+  const statedArea = value(applied('trig-apps', 'base 10 km and height').answer.replace(' km²', ''));
+  assert.ok(close(statedArea, area, 1e-9), 'the area reads ' + statedArea);
+});
+
+/* ------------------------------- the unit circle ------------------------------ */
+
+check('the coterminal and reference angle answers are right', () => {
+  [[32 - 360, '32° - 360°'], [32 + 360, '32° + 360°'], [32 + 720, '32° + 720°']]
+    .forEach(([want, needle]) => expect('uc-angles', needle, want + '°'));
+  expect('uc-angles', '540° reduced', (540 - 360) + '°');
+  expect('uc-angles', '585° reduced', (585 - 360) + '°');
+  expect('uc-angles', 'reference angle for 225', (225 - 180) + '°');
+  expect('uc-angles', 'reference angle for 210', (210 - 180) + '°');
+});
+
+check('every unit circle point is where it says it is', () => {
+  const rows = { 0: 'The point at 0°', 30: 'The point at 30°', 45: 'The point at 45°',
+                 60: 'The point at 60°', 90: 'The point at 90°', 180: 'The point at 180°',
+                 210: 'The point at 210°', 225: 'The point at 225°', 270: 'The point at 270°' };
+  Object.keys(rows).forEach(deg => {
+    const stated = term('uc-values', rows[deg]);
+    const m = stated.match(/^\(([^,]+),\s*([^)]+)\)$/);
+    if (!m) throw new Error(rows[deg] + ' is not a coordinate pair: ' + stated);
+    const x = value(m[1]), y = value(m[2]);
+    const d = Number(deg);
+    assert.ok(close(x, Math.cos(d * RAD), 1e-9), deg + '° x reads ' + x);
+    assert.ok(close(y, Math.sin(d * RAD), 1e-9), deg + '° y reads ' + y);
+    assert.ok(close(x * x + y * y, 1, 1e-9), deg + '° is not on the unit circle');
+  });
+});
+
+check('the unit circle question answers match the circle', () => {
+  const cases = [['cos(60°)', Math.cos(60 * RAD)], ['sin(30°)', Math.sin(30 * RAD)],
+                 ['cos(45°)', Math.cos(45 * RAD)], ['sin(90°)', Math.sin(90 * RAD)],
+                 ['cos(180°)', Math.cos(180 * RAD)], ['sin(180°)', Math.sin(180 * RAD)],
+                 ['cos(-60°)', Math.cos(-60 * RAD)], ['sin(225°)', Math.sin(225 * RAD)]];
+  cases.forEach(([needle, want]) => {
+    const got = value(applied('uc-values', needle + ' equals').answer);
+    if (!close(got, want, 1e-9)) throw new Error(needle + ' reads ' + got + ', computed ' + want);
+  });
+});
+
+check('the reciprocal and undefined evaluations are right', () => {
+  const cases = [
+    ['csc(225°) equals', 1 / Math.sin(225 * RAD)],
+    ['cot(210°) equals', Math.cos(210 * RAD) / Math.sin(210 * RAD)],
+    ['tan(225°) equals', Math.tan(225 * RAD)],
+    ['csc(-60°) equals', 1 / Math.sin(-60 * RAD)],
+    ['tan(540°) equals', Math.tan(180 * RAD)]
+  ];
+  cases.forEach(([needle, want]) => {
+    const got = value(applied('uc-evaluate', needle).answer);
+    if (!close(got, want, 1e-9)) throw new Error(needle + ' reads ' + got + ', computed ' + want);
+  });
+  // tan(90) has a zero denominator, so "undefined" is the only right answer.
+  assert.strictEqual(applied('uc-evaluate', 'tan(90°) is').answer, 'Undefined');
+  assert.ok(close(Math.cos(90 * RAD), 0, 1e-15), 'cos(90) is not zero, so tan(90) would be defined');
+});
+
+check('the trig equation solution sets are complete and correct', () => {
+  const sets = [
+    ['cos θ = √2/2 on', Math.cos, Math.SQRT2 / 2],
+    ['sin θ = √2/2 on', Math.sin, Math.SQRT2 / 2],
+    ['cos θ = -1 on', Math.cos, -1],
+    ['cos θ = -1/2 on', Math.cos, -0.5],
+    ['cos θ = 1/2 on', Math.cos, 0.5]
+  ];
+  sets.forEach(([needle, fn, target]) => {
+    const stated = applied('uc-equations', needle).answer;
+    const given = (stated.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+    if (!given.length) throw new Error(needle + ' states no angles');
+    // Every angle given must work...
+    given.forEach(a => {
+      if (!close(fn(a * RAD), target, 1e-9)) {
+        throw new Error(needle + ' offers ' + a + '°, where the value is ' + fn(a * RAD));
+      }
+    });
+    // ...and no whole-degree angle in range may be missing.
+    const all = [];
+    for (let a = 0; a < 360; a++) if (close(fn(a * RAD), target, 1e-9)) all.push(a);
+    assert.deepStrictEqual(given.slice().sort((x, y) => x - y), all,
+      needle + ' gives ' + JSON.stringify(given) + ', the circle gives ' + JSON.stringify(all));
+  });
+  expect('uc-equations', 'Factoring 2x² + 3x + 1', '(x + 1)(2x + 1)');
+  // (x + 1)(2x + 1) really does expand to 2x^2 + 3x + 1.
+  [-2, 0, 1, 3.5].forEach(x => {
+    assert.ok(close((x + 1) * (2 * x + 1), 2 * x * x + 3 * x + 1), 'the factorisation is wrong at x = ' + x);
+  });
+});
+
+/* -------------------------------- similarity -------------------------------- */
+
+check('the similarity answers hold up', () => {
+  // 15/3 = (x + 12)/4 has one solution, and the card must give it.
+  const x = (15 / 3) * 4 - 12;
+  expect('sim-scale', 'Solving 15/3 = (x + 12)/4', String(x));
+  assert.ok(close(15 / 3, (x + 12) / 4), 'the stated solution does not satisfy the proportion');
+  // Scale factors.
+  expect('sim-scale', 'sides 3, 2, 4 and 15, 10, 20', String(15 / 3));
+  [[3, 15], [2, 10], [4, 20]].forEach(([a, b]) => assert.ok(close(b / a, 5), 'ratios disagree'));
+  expect('sim-scale', 'Sides 4 and 6 correspond to 8 and x', String(6 * (8 / 4)));
+  expect('sim-scale', 'scale factor of 3. A side of 7', String(7 * 3));
+  // SSS similarity ratio.
+  const ratio = applied('sim-shortcuts', 'Sides 4, 6, 8 against 8, 12, 16').answer;
+  assert.ok(close(value(ratio), 4 / 8), 'the SSS ratio reads ' + ratio);
+  [[4, 8], [6, 12], [8, 16]].forEach(([a, b]) => assert.ok(close(a / b, 0.5), 'SSS ratios disagree'));
+  // The "not similar" pair really is not similar.
+  const abc = [40, 60, 180 - 40 - 60].sort((a, b) => a - b);
+  const def = [40, 70, 180 - 40 - 70].sort((a, b) => a - b);
+  assert.notDeepStrictEqual(abc, def, 'those two triangles would in fact be similar');
+  expect('sim-shortcuts', 'angles of 40° and 60°', 'Not similar');
+});
+
+/* ---------------------------- polynomial division ---------------------------- */
+
+/* Evaluates "3x⁴ - 3x² + 3x - 15" at a value of x. */
+function polyEval(src, x) {
+  const s = String(src).replace(/⁴/g, '^4').replace(/³/g, '^3')
+    .replace(/²/g, '^2').replace(/\s+/g, '');
+  const terms = s.replace(/-/g, '+-').split('+').filter(Boolean);
+  let total = 0;
+  terms.forEach(t => {
+    const m = t.match(/^(-?\d*)x?(?:\^(\d+))?$/);
+    if (!m) throw new Error('cannot read term "' + t + '" of "' + src + '"');
+    const c = (m[1] === '' || m[1] === '-') ? Number(m[1] + '1') : Number(m[1]);
+    const p = t.indexOf('x') === -1 ? 0 : (m[2] ? Number(m[2]) : 1);
+    total += c * Math.pow(x, p);
+  });
+  return total;
+}
+
+check('every polynomial quotient multiplies back out to its dividend', () => {
+  const cases = [
+    { label: 'long division, x² + 1',
+      dividend: x => x ** 3 + 6 * x ** 2 + x + 4,
+      divisor: x => x ** 2 + 1,
+      quotient: applied('poly-long', '(x³ + 6x² + x + 4)').answer,
+      remainder: Number(applied('poly-long', '...and a remainder of').answer) },
+    { label: 'long division, 4x - 1',
+      dividend: x => 8 * x ** 3 + 34 * x ** 2 + 27 * x - 9,
+      divisor: x => 4 * x - 1,
+      quotient: applied('poly-long', '(8x³ + 34x² + 27x - 9)').answer,
+      remainder: 0 },
+    { label: 'synthetic division, x + 1',
+      dividend: x => 3 * x ** 4 - 12 * x + 5,
+      divisor: x => x + 1,
+      quotient: applied('poly-synthetic', '(3x⁴ - 12x + 5)').answer,
+      remainder: Number(applied('poly-synthetic', '...and a remainder of').answer) }
+  ];
+  cases.forEach(c => {
+    [-3, -0.5, 0, 2, 4.5].forEach(x => {
+      const rebuilt = c.divisor(x) * polyEval(c.quotient, x) + c.remainder;
+      if (!close(rebuilt, c.dividend(x), 1e-6)) {
+        throw new Error(c.label + ': quotient "' + c.quotient + '" with remainder ' + c.remainder +
+          ' rebuilds to ' + rebuilt + ' at x = ' + x + ', but the dividend is ' + c.dividend(x));
+      }
+    });
+  });
+});
+
+check('the factored quotient really is the quotient', () => {
+  expect('poly-long', '2x² + 9x + 9 factors', '(2x + 3)(x + 3)');
+  [-4, -1, 0, 2.5, 6].forEach(x => {
+    assert.ok(close((2 * x + 3) * (x + 3), 2 * x * x + 9 * x + 9),
+      'the factorisation fails at x = ' + x);
+  });
+});
+
+check('synthetic division uses the root, not the constant', () => {
+  expect('poly-synthetic', 'Dividing by (x + 1)', '-1');
+  expect('poly-synthetic', 'Dividing by (x - 3)', '3');
+  assert.ok(/root of the divisor/i.test(term('poly-synthetic', 'The number that goes in the corner')));
+  assert.ok(/linear/i.test(term('poly-synthetic', 'When synthetic division may be used')));
+});
+
+/* ------------------------------ symmetry counts ------------------------------ */
+
+check('the lines-of-symmetry counts and the arms equation agree', () => {
+  expect('tr-symmetry', 'isosceles trapezoid have', '1');
+  expect('tr-symmetry', 'circle have', 'Infinitely many');
+  expect('tr-symmetry', 'kite have', '1');
+  expect('tr-symmetry', 'lines of symmetry does an equilateral triangle', '3');
+  expect('tr-symmetry', '8 identical arms has a smallest rotation', (360 / 8) + '°');
+  expect('tr-symmetry', 'only works when', 'All the arms are the same');
+  expect('tr-symmetry', 'smallest rotation is 360', 'Has no rotational symmetry');
+  // The notes' claim about O, I, H and X is repeated, but corrected on the card.
+  const letters = term('tr-symmetry', 'O, I, H and X');
+  assert.ok(/exactly two/i.test(letters), 'the letters card does not correct the "infinite" claim');
 });
 
 console.log(failures ? '\n' + failures + ' GEOMETRY ACCURACY CHECK(S) FAILED' : '\nALL GEOMETRY ACCURACY CHECKS PASSED');

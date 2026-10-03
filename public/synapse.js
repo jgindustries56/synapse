@@ -9,7 +9,7 @@
      window.Synapse.mount({
        subject, name, short, tagline, nav: 'top' | 'rail', shell, cats, goal,
        unitWord, speak, lang, rootId,
-       greeting, dateWord, catsNote,   // optional voice, used by the rail console
+       greeting, dateWord, catsTitle, catsNote,   // optional voice, rail console only
 
        data:     { topics, units, icons, items },
        progress: { read, save, record, logSession, reset, setGoal },
@@ -854,7 +854,7 @@
 
     var cats = Object.keys(c.cats);
     add(f, panel(
-      says('Where your ' + c.name + ' stands.',
+      says(c.catsTitle || ('Where your ' + c.name + ' stands.'),
         c.catsNote || 'Every kind of card, scored the same way.'),
       table(
         [{ label: 'Kind' }, { label: 'Cards' }, { label: 'Share you know', width: '40%' }, { label: '' }],

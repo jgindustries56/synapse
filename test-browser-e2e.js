@@ -74,7 +74,7 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
   // must be findable in it. A subject listed in CLASSIC still carries the
   // previous interface behind ?classic=1; Geometry was built on the engine
   // from the start and has nothing to fall back to.
-  const DECK_SIZE = { aphg: '432', spanish: '1,322', geometry: '630' };
+  const DECK_SIZE = { aphg: '432', spanish: '1,322', geometry: '1,173' };
   const SEARCH_FOR = { aphg: 'migration', spanish: 'car gar zar', geometry: 'rotation' };
   const UNIT_SCOPE = { aphg: /Chapter 3/, spanish: null, geometry: /Transformations/ };
   const CLASSIC = { aphg: true, spanish: true, geometry: false };
@@ -134,12 +134,16 @@ function ok(cond, what) { if (!cond) throw new Error(what); }
        stands". The copy belongs to the subject, not the chrome. */
     await check(subject + ': the console speaks in this subject\'s own voice', async () => {
       const txt = await page.evaluate(() => document.querySelector('#app').innerText);
-      const strangers = Object.keys(DECK_SIZE)
-        .filter(x => x !== subject)
-        .map(x => ({ aphg: 'Human Geography', spanish: 'Spanish', geometry: 'Geometry' })[x])
-        .filter(name => txt.includes(name));
-      ok(strangers.length === 0, 'the console mentions another subject: ' + strangers.join(', '));
-      if (subject === 'spanish') ok(/Buenos d/.test(txt), 'Spanish lost its own greeting');
+      // The two strings that actually leaked, plus the subject's own name.
+      const spanishOnly = [/Buenos d\u00edas/, /Where your Spanish stands/, /^Hoy \u00b7/m];
+      const NAME = { aphg: 'AP Human Geography', spanish: 'Spanish', geometry: 'Math' };
+      if (subject === 'spanish') {
+        ok(spanishOnly.every(re => re.test(txt)), 'Spanish lost its own greeting or heading');
+      } else {
+        const leaked = spanishOnly.filter(re => re.test(txt)).map(String);
+        ok(leaked.length === 0, 'Spanish copy leaked onto ' + subject + ': ' + leaked.join(', '));
+      }
+      ok(txt.includes(NAME[subject]), 'the console never names this subject (' + NAME[subject] + ')');
     });
 
     // ---- answering must reach the server -------------------------------

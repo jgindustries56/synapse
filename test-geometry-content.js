@@ -45,8 +45,8 @@ function check(name, fn) {
 /* ---------------------------- the deck ---------------------------- */
 
 check('the deck is a real deck, not a stub', () => {
-  assert.ok(T.ALL_ITEMS.length >= 400, 'only ' + T.ALL_ITEMS.length + ' cards');
-  assert.ok(T.TOPICS.length >= 20, 'only ' + T.TOPICS.length + ' topics');
+  assert.ok(T.ALL_ITEMS.length >= 1000, 'only ' + T.ALL_ITEMS.length + ' cards');
+  assert.ok(T.TOPICS.length >= 40, 'only ' + T.TOPICS.length + ' topics');
 });
 
 check('no duplicate item ids', () => {
@@ -221,7 +221,7 @@ check('engineData hands the engine a complete, well-formed deck', () => {
   d.topics.forEach(t => {
     if (!t.source || !t.source.unit) throw new Error(t.id + ' lost its unit');
     if (!t.source.section) throw new Error(t.id + ' lost its section');
-    if (t.source.book !== 'Geometry') throw new Error(t.id + ' has the wrong book');
+    if (t.source.book !== 'Math') throw new Error(t.id + ' has the wrong book');
   });
   d.units.forEach(u => { if (!u.title) throw new Error(u.id + ' lost its title'); });
 });
